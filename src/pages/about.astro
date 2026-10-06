@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/layout/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import SocialLinks from '@/components/ui/SocialLinks.astro';
+import ExperienceItem from '@/components/about/ExperienceItem.astro';
+import SkillList from '@/components/about/SkillList.astro';
+import { about, experience } from '@/data/about';
+---
+
+<BaseLayout title="About">
+  <Container as="section" class="pt-40 pb-20">
+    <h1 class="text-6xl leading-[1.1] font-medium tracking-tight">{about.heading}</h1>
+    <div class="mt-10 max-w-3xl space-y-6 text-xl leading-relaxed text-muted">
+      {about.bio.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+  </Container>
+
+  <Container as="section">
+    <div class="aspect-[4/5] w-5/12 overflow-hidden bg-surface">
+      <img src={about.portrait} alt={about.portraitAlt} class="h-full w-full object-cover" />
+    </div>
+  </Container>
+
+  <Container as="section" class="pt-20">
+    <SectionHeading title="Contact" />
+    <SocialLinks />
+  </Container>
+
+  <Container as="section" class="pt-32">
+    <SectionHeading title="Experience" class="mb-0" />
+    <div>
+      {experience.map((item) => <ExperienceItem item={item} />)}
+    </div>
+  </Container>
+
+  <Container as="section" class="pt-32">
+    <SectionHeading title="Skills" />
+    <SkillList />
+  </Container>
+</BaseLayout>

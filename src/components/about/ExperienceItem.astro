@@ -1,0 +1,29 @@
+---
+import type { Experience } from '@/data/about';
+
+interface Props {
+  item: Experience;
+}
+
+const { role, org, period, location, details } = Astro.props.item;
+---
+
+<details class="group border-b border-line">
+  <summary
+    class="grid cursor-pointer list-none grid-cols-12 items-baseline gap-8 py-6 hover:bg-surface [&::-webkit-details-marker]:hidden"
+  >
+    <span class="col-span-5 font-medium">{role}</span>
+    <span class="col-span-3 text-muted">{org}</span>
+    <span class="col-span-3 text-sm text-muted tabular-nums">{period}</span>
+    <span class="col-span-1 text-right text-xl leading-none text-muted" aria-hidden="true">
+      <span class="group-open:hidden">+</span>
+      <span class="hidden group-open:inline">−</span>
+    </span>
+  </summary>
+  <div class="grid grid-cols-12 gap-8 pb-8">
+    <div class="col-span-5 text-sm text-muted">{location}</div>
+    <ul class="col-span-6 list-disc space-y-2 pl-5 text-muted">
+      {details.map((d) => <li>{d}</li>)}
+    </ul>
+  </div>
+</details>

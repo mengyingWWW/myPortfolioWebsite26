@@ -1,0 +1,37 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/layout/Container.astro';
+import ProjectHero from '@/components/project/ProjectHero.astro';
+import MetaPanel from '@/components/project/MetaPanel.astro';
+import NextProject from '@/components/project/NextProject.astro';
+import { mdxComponents } from '@/components/mdx';
+import { getSortedWork, type WorkEntry } from '@/lib/work';
+
+export async function getStaticPaths() {
+  const projects = await getSortedWork();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+
+interface Props {
+  project: WorkEntry;
+  next: WorkEntry;
+}
+
+const { project, next } = Astro.props;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={project.data.title} description={project.data.summary}>
+  <article>
+    <ProjectHero project={project} />
+    <MetaPanel project={project} />
+    <Container class="prose-body pt-8">
+      <Content components={mdxComponents} />
+    </Container>
+  </article>
+  {next.id !== project.id && <NextProject project={next} />}
+</BaseLayout>

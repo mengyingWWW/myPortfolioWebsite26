@@ -1,0 +1,41 @@
+---
+interface Props {
+  /** A YouTube/Vimeo URL, any embeddable iframe URL, or a local video file (e.g. "/videos/demo.mp4"). */
+  src: string;
+  title?: string;
+  caption?: string;
+  poster?: string;
+}
+
+const { src, title = 'Video', caption, poster } = Astro.props;
+
+const isFile = /\.(mp4|webm|mov)(\?.*)?$/i.test(src);
+
+function toEmbedUrl(url: string): string {
+  const youtube = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);
+  if (youtube) return `https://www.youtube-nocookie.com/embed/${youtube[1]}`;
+  const vimeo = url.match(/^https?:\/\/(?:www\.)?vimeo\.com\/(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+  return url;
+}
+---
+
+<figure class="my-20">
+  <div class="aspect-video overflow-hidden bg-surface">
+    {
+      isFile ? (
+        <video src={src} poster={poster} controls playsinline class="h-full w-full object-cover" />
+      ) : (
+        <iframe
+          src={toEmbedUrl(src)}
+          title={title}
+          class="h-full w-full"
+          loading="lazy"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+        />
+      )
+    }
+  </div>
+  {caption && <figcaption class="mt-4 text-sm text-muted">{caption}</figcaption>}
+</figure>

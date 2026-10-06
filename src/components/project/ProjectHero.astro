@@ -1,0 +1,30 @@
+---
+import Container from '@/components/layout/Container.astro';
+import Tag from '@/components/ui/Tag.astro';
+import type { WorkEntry } from '@/lib/work';
+
+interface Props {
+  project: WorkEntry;
+}
+
+const { title, subtitle, status, cover, summary } = Astro.props.project.data;
+---
+
+<section>
+  <Container class="pt-32 pb-16">
+    <Tag variant="solid">{status}</Tag>
+    <h1 class="mt-8 max-w-5xl text-6xl leading-[1.1] font-medium tracking-tight">{title}</h1>
+    <p class="mt-6 max-w-3xl text-2xl leading-snug text-muted">{subtitle}</p>
+  </Container>
+
+  <Container>
+    <div class="aspect-[16/9] overflow-hidden bg-surface">
+      <img src={cover} alt={`${title} hero`} class="h-full w-full object-cover" />
+    </div>
+  </Container>
+
+  <Container class="grid grid-cols-12 gap-8 pt-20">
+    <h2 class="col-span-3 text-sm font-medium tracking-wide text-muted uppercase">Overview</h2>
+    <p class="col-span-9 max-w-3xl text-xl leading-relaxed">{summary}</p>
+  </Container>
+</section>

@@ -1,0 +1,19 @@
+---
+import Tag from '@/components/ui/Tag.astro';
+import { skillGroups } from '@/data/about';
+---
+
+<div class="grid grid-cols-3 gap-12">
+  {
+    skillGroups.map((group) => (
+      <div>
+        <h3 class="font-medium">{group.label}</h3>
+        <div class="mt-4 flex flex-wrap gap-2">
+          {group.items.map((skill) => (
+            <Tag>{skill}</Tag>
+          ))}
+        </div>
+      </div>
+    ))
+  }
+</div>

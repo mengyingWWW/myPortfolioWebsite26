@@ -1,0 +1,25 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  title?: string;
+  caption?: string;
+  /** Put the image on the right instead of the left. */
+  reverse?: boolean;
+}
+
+const { src, alt, title, caption, reverse = false } = Astro.props;
+---
+
+<div class="my-20 grid grid-cols-2 items-center gap-16">
+  <figure class:list={[reverse && 'order-2']}>
+    <div class="overflow-hidden bg-surface">
+      <img src={src} alt={alt} class="w-full" loading="lazy" />
+    </div>
+    {caption && <figcaption class="mt-4 text-sm text-muted">{caption}</figcaption>}
+  </figure>
+  <div class="[&>*+*]:mt-4">
+    {title && <h3 class="text-xl font-medium tracking-tight">{title}</h3>}
+    <slot />
+  </div>
+</div>

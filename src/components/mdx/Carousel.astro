@@ -1,0 +1,82 @@
+---
+interface Slide {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
+interface Props {
+  images: Slide[];
+}
+
+const { images } = Astro.props;
+---
+
+<figure class="my-20" data-carousel>
+  <div
+    class="flex snap-x snap-mandatory overflow-x-auto bg-surface [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    data-carousel-track
+  >
+    {
+      images.map((image) => (
+        <div class="w-full shrink-0 snap-start" data-carousel-slide data-caption={image.caption ?? ''}>
+          <img src={image.src} alt={image.alt} class="w-full" loading="lazy" />
+        </div>
+      ))
+    }
+  </div>
+  <div class="mt-4 flex items-center justify-between gap-8">
+    <figcaption class="text-sm text-muted" data-carousel-caption>{images[0]?.caption}</figcaption>
+    <div class="flex shrink-0 items-center gap-4 text-sm">
+      <span class="text-muted tabular-nums" data-carousel-counter>1 / {images.length}</span>
+      <button
+        type="button"
+        class="h-9 w-9 rounded-full border border-line hover:border-ink disabled:opacity-30 disabled:hover:border-line"
+        aria-label="Previous image"
+        data-carousel-prev
+      >
+        ←
+      </button>
+      <button
+        type="button"
+        class="h-9 w-9 rounded-full border border-line hover:border-ink disabled:opacity-30 disabled:hover:border-line"
+        aria-label="Next image"
+        data-carousel-next
+      >
+        →
+      </button>
+    </div>
+  </div>
+</figure>
+
+<script>
+  function initCarousel(root: HTMLElement) {
+    const track = root.querySelector<HTMLElement>('[data-carousel-track]')!;
+    const slides = root.querySelectorAll<HTMLElement>('[data-carousel-slide]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]')!;
+    const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]')!;
+    const counter = root.querySelector<HTMLElement>('[data-carousel-counter]')!;
+    const caption = root.querySelector<HTMLElement>('[data-carousel-caption]')!;
+
+    const currentIndex = () => Math.round(track.scrollLeft / track.clientWidth);
+
+    const update = () => {
+      const i = currentIndex();
+      counter.textContent = `${i + 1} / ${slides.length}`;
+      caption.textContent = slides[i]?.dataset.caption ?? '';
+      prev.disabled = i <= 0;
+      next.disabled = i >= slides.length - 1;
+    };
+
+    const goTo = (i: number) => {
+      track.scrollTo({ left: i * track.clientWidth });
+    };
+
+    prev.addEventListener('click', () => goTo(currentIndex() - 1));
+    next.addEventListener('click', () => goTo(currentIndex() + 1));
+    track.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach(initCarousel);
+</script>

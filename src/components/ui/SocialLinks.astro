@@ -1,0 +1,29 @@
+---
+import { socialLinks } from '@/data/site';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<ul class:list={['flex items-center gap-8 text-sm', className]}>
+  {
+    socialLinks.map((link) => {
+      const external = link.href.startsWith('http');
+      return (
+        <li>
+          <a
+            href={link.href}
+            class="text-muted hover:text-ink"
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noopener noreferrer' : undefined}
+          >
+            {link.label}
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>

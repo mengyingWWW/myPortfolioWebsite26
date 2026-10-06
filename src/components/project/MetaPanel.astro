@@ -1,0 +1,41 @@
+---
+import Container from '@/components/layout/Container.astro';
+import type { WorkEntry } from '@/lib/work';
+
+interface Props {
+  project: WorkEntry;
+}
+
+const { role, skills, timeline, tools, team } = Astro.props.project.data;
+
+const items: { label: string; value: string | string[] }[] = [
+  { label: 'Role', value: role },
+  { label: 'Skills', value: skills },
+  { label: 'Timeline', value: timeline },
+  { label: 'Tools', value: tools },
+  { label: 'Team', value: team },
+];
+---
+
+<Container as="section" class="pt-20">
+  <dl class="grid grid-cols-5 gap-8 border-y border-line py-10">
+    {
+      items.map((item) => (
+        <div>
+          <dt class="text-sm font-medium tracking-wide text-muted uppercase">{item.label}</dt>
+          <dd class="mt-3">
+            {Array.isArray(item.value) ? (
+              <ul class="space-y-1">
+                {item.value.map((v) => (
+                  <li>{v}</li>
+                ))}
+              </ul>
+            ) : (
+              item.value
+            )}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</Container>

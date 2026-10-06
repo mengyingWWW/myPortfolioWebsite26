@@ -1,0 +1,24 @@
+---
+import Container from './Container.astro';
+import { site, navLinks } from '@/data/site';
+---
+
+<header class="sticky top-0 z-20 bg-paper/90 backdrop-blur">
+  <Container as="nav" class="flex h-20 items-center justify-between">
+    <a href="/" class="flex items-center gap-3 text-base font-medium tracking-tight">
+      <span class="h-3.5 w-3.5 rounded-full bg-ink" aria-hidden="true"></span>
+      {site.name}
+    </a>
+    <ul class="flex items-center gap-14 text-xs font-medium tracking-wider uppercase">
+      {
+        navLinks.map((link) => (
+          <li>
+            <a href={link.href} class="hover:text-muted">
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Container>
+</header>

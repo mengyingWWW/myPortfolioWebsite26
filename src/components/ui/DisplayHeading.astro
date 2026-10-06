@@ -1,0 +1,15 @@
+---
+interface Props {
+  /** Leading word(s) rendered in italic serif. */
+  italic: string;
+  /** Remaining words rendered in the sans font. */
+  text: string;
+  class?: string;
+}
+
+const { italic, text, class: className } = Astro.props;
+---
+
+<h2 class:list={['text-5xl leading-tight tracking-tight', className]}>
+  <em class="font-serif">{italic}</em>{' '}{text}
+</h2>

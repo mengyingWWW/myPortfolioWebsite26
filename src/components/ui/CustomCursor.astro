@@ -1,0 +1,239 @@
+---
+/**
+ * Custom cursor: a dot that tracks the mouse exactly and a ring that trails it.
+ *
+ * Mark any element to change the cursor while hovering it:
+ *   data-cursor="view"     ring grows, fills, and shows a label (default "View")
+ *   data-cursor="link"     ring grows, dot hides (applied automatically to links/buttons)
+ *   data-cursor="hide"     custom cursor hides
+ *   data-cursor="default"  opt an element out of automatic link styling
+ *   data-cursor-label="Play"  custom label text for the "view" state
+ */
+interface Props {
+  /** Label shown in the "view" state when an element doesn't set data-cursor-label. */
+  label?: string;
+}
+
+const { label = 'View' } = Astro.props;
+---
+
+<div class="cursor" data-custom-cursor aria-hidden="true">
+  <div class="cursor-pos" data-custom-cursor-part="ring">
+    <div class="cursor-ring">
+      <span class="cursor-label" data-custom-cursor-part="label">{label}</span>
+    </div>
+  </div>
+  <div class="cursor-pos" data-custom-cursor-part="dot">
+    <div class="cursor-dot"></div>
+  </div>
+</div>
+
+<style>
+  .cursor {
+    --cursor-color: #fff;
+    --cursor-dot: 8px;
+    --cursor-ring: 36px;
+    --cursor-ring-link: 60px;
+    --cursor-ring-view: 90px;
+    --cursor-press: 1;
+    --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .cursor[data-visible] {
+    opacity: 1;
+  }
+
+  .cursor[data-pressed] {
+    --cursor-press: 0.8;
+  }
+
+  .cursor-pos {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+
+  .cursor-ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--cursor-ring);
+    height: var(--cursor-ring);
+    border: 1px solid var(--cursor-color);
+    border-radius: 9999px;
+    background-color: transparent;
+    transform: translate(-50%, -50%) scale(var(--cursor-press));
+    transition:
+      width 0.35s var(--cursor-ease),
+      height 0.35s var(--cursor-ease),
+      background-color 0.2s ease,
+      transform 0.15s ease;
+  }
+
+  .cursor-dot {
+    width: var(--cursor-dot);
+    height: var(--cursor-dot);
+    border-radius: 9999px;
+    background-color: var(--cursor-color);
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
+  }
+
+  .cursor-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #000;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .cursor[data-state='link'] .cursor-ring {
+    width: var(--cursor-ring-link);
+    height: var(--cursor-ring-link);
+  }
+
+  .cursor[data-state='view'] .cursor-ring {
+    width: var(--cursor-ring-view);
+    height: var(--cursor-ring-view);
+    background-color: var(--cursor-color);
+  }
+
+  .cursor[data-state='view'] .cursor-label {
+    opacity: 1;
+  }
+
+  .cursor[data-state='link'] .cursor-dot,
+  .cursor[data-state='view'] .cursor-dot {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor,
+    .cursor-ring,
+    .cursor-dot,
+    .cursor-label {
+      transition: none;
+    }
+  }
+
+  :global(html.has-custom-cursor),
+  :global(html.has-custom-cursor *) {
+    cursor: none !important;
+  }
+
+  :global(
+    html.has-custom-cursor
+      :is(
+        input:not([type='checkbox'], [type='radio'], [type='range'], [type='button'], [type='submit'], [type='reset'], [type='file'], [type='color']),
+        textarea,
+        [contenteditable]:not([contenteditable='false'])
+      )
+  ) {
+    cursor: text !important;
+  }
+</style>
+
+<script>
+  const EASE = 0.15;
+  const TEXT_FIELD =
+    'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])';
+  const INTERACTIVE = 'a[href], button, [role="button"], summary, label, select';
+
+  const root = document.querySelector<HTMLElement>('[data-custom-cursor]');
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  if (root && finePointer) initCursor(root);
+
+  function initCursor(root: HTMLElement) {
+    const ring = root.querySelector<HTMLElement>('[data-custom-cursor-part="ring"]')!;
+    const dot = root.querySelector<HTMLElement>('[data-custom-cursor-part="dot"]')!;
+    const label = root.querySelector<HTMLElement>('[data-custom-cursor-part="label"]')!;
+    const defaultLabel = label.textContent ?? '';
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const mouse = { x: -100, y: -100 };
+    const ringPos = { x: -100, y: -100 };
+    let inside = false;
+    let hasMoved = false;
+    let state = 'default';
+
+    document.documentElement.classList.add('has-custom-cursor');
+
+    function resolveState(target: EventTarget | null): { state: string; label?: string } {
+      if (!(target instanceof Element)) return { state: 'default' };
+      if (target.closest(TEXT_FIELD)) return { state: 'hide' };
+      const el = target.closest<HTMLElement>(`[data-cursor], ${INTERACTIVE}`);
+      if (!el) return { state: 'default' };
+      if (el.dataset.cursor) return { state: el.dataset.cursor, label: el.dataset.cursorLabel };
+      return { state: 'link' };
+    }
+
+    function render() {
+      root.dataset.state = state;
+      root.toggleAttribute('data-visible', inside && hasMoved && state !== 'hide');
+    }
+
+    document.addEventListener('pointermove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+      if (!hasMoved) {
+        ringPos.x = mouse.x;
+        ringPos.y = mouse.y;
+        hasMoved = true;
+      }
+      inside = true;
+      render();
+    });
+
+    document.addEventListener('pointerover', (e) => {
+      const next = resolveState(e.target);
+      state = next.state;
+      label.textContent = next.label ?? defaultLabel;
+      render();
+    });
+
+    document.documentElement.addEventListener('mouseleave', () => {
+      inside = false;
+      render();
+    });
+
+    document.documentElement.addEventListener('mouseenter', () => {
+      inside = true;
+      render();
+    });
+
+    document.addEventListener('pointerdown', () => root.setAttribute('data-pressed', ''));
+    document.addEventListener('pointerup', () => root.removeAttribute('data-pressed'));
+    window.addEventListener('blur', () => root.removeAttribute('data-pressed'));
+
+    let last = performance.now();
+    function tick(now: number) {
+      const frames = Math.min(now - last, 100) / (1000 / 60);
+      last = now;
+      // Frame-rate independent lerp: same feel at 60Hz and 120Hz.
+      const t = reducedMotion.matches ? 1 : 1 - Math.pow(1 - EASE, frames);
+
+      ringPos.x += (mouse.x - ringPos.x) * t;
+      ringPos.y += (mouse.y - ringPos.y) * t;
+
+      dot.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`;
+      ring.style.transform = `translate3d(${ringPos.x}px, ${ringPos.y}px, 0)`;
+
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+</script>
