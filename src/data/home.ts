@@ -3,7 +3,7 @@ export const hero = {
   name: 'Mengying',
   tagline: 'A product designer who researches.',
   /** Rendered in italic serif, directly before `introRest`. */
-  introLead: '2+ years experience',
+  introLead: '2+ years of experience',
   introRest: 'in AI, B2B and B2C products,',
   introLine2: 'building research-driven & human-centered design.',
   /** Small italic line under the intro. */

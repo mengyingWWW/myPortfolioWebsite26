@@ -39,10 +39,10 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
 <script>
   import { sunPosition, type SunPosition } from '@/lib/sun';
   import { CITIES, DEFAULT_CITY, CHOSEN_DATE } from '@/data/sunlight';
+  // Darkest shadow brightness; shared with the cursor's cast shadow.
+  import { SHADOW_DARKNESS, SHADOW_ALPHA } from '@/data/shadow';
 
   // ---- Tuning -------------------------------------------------------------
-  /** Brightness of the darkest shadow (0.82 = 82% brightness). The lightest is always white. */
-  const SHADOW_DARKNESS = 0.82;
   /** Steepness of the tone curve; higher = whiter lights and more defined shadows. */
   const CONTRAST = 1.5;
   /** Breeze warp amplitude, in UV units. */
@@ -402,6 +402,16 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
       gl!.uniform3fv(uniforms.trail, trail);
       gl!.uniform2fv(uniforms.trailVel, trailVel);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+      syncShadowAlpha();
+    }
+
+    // Keeps the cursor's cast shadow as dark as the leaf shadows (lighter at dusk / night).
+    let sharedAlpha = '';
+    function syncShadowAlpha() {
+      const alpha = (SHADOW_ALPHA * sun.strength).toFixed(3);
+      if (alpha === sharedAlpha) return;
+      sharedAlpha = alpha;
+      document.documentElement.style.setProperty('--shadow-alpha', alpha);
     }
 
     function frame(now: number) {

@@ -8,9 +8,11 @@ import { hero } from '@/data/home';
 
 <!--
   Pulled up under the nav (h-20) so the hero spans exactly one viewport from the top.
+  data-hero: the nav stays transparent while this is in view.
+  data-cursor-zone="hero": the cursor becomes a leaf shadow over it.
   Entrance order continues from the nav (step 0).
 -->
-<section class="hero relative -mt-20 flex items-center overflow-hidden pt-20">
+<section class="hero relative -mt-20 flex items-center overflow-hidden pt-20" data-hero data-cursor-zone="hero">
   <Container class="relative z-10 -mt-20 text-center">
     <div class="text-glow" data-hero-content>
       <h1 class="text-6xl leading-[1.15] font-medium tracking-tight">
@@ -25,7 +27,7 @@ import { hero } from '@/data/home';
         {hero.introLine2}
       </p>
       <p class="enter mt-5 font-serif text-base text-[#555] italic [--enter:4]">{hero.education}</p>
-      <p class="enter mt-6 inline-flex items-center gap-2 text-sm [--enter:5]">
+      <p class="enter mt-6 flex items-center justify-center gap-2 text-sm [--enter:5]">
         <svg
           class="h-4 w-4"
           viewBox="0 0 24 24"
@@ -43,12 +45,12 @@ import { hero } from '@/data/home';
         <span class="h-3.5 border-l border-subtle" aria-hidden="true"></span>
         {hero.availability}
       </p>
+      <LatitudeLabels class="enter mt-5 [--enter:6]" />
     </div>
   </Container>
 
   <LeafShadow />
-  <ScrollHint target="work" />
-  <LatitudeLabels />
+  <ScrollHint target="work" class="enter [--enter:7]" />
 </section>
 
 <style>

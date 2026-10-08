@@ -1,7 +1,11 @@
 ---
 /**
- * Custom cursor: a small bright dot that eases after the mouse and grows into a
- * labeled black circle over clickable elements (a, button, [role="button"], [data-cursor]).
+ * Custom cursor with two zones:
+ *   hero   (over [data-cursor-zone="hero"]): a crisp dark dot plus a soft cast shadow
+ *          that trails behind it, offset down-right as if lit by the same sun.
+ *   normal (everywhere else): a white dot with difference blending.
+ * Over clickable elements (a, button, [role="button"], [data-cursor]) the dot grows into a
+ * solid black circle with a white label and the shadow fades out.
  *
  * Per-element overrides:
  *   data-cursor-label="EMAIL"  label shown in the circle (default "VIEW")
@@ -17,9 +21,14 @@ interface Props {
 const { label = 'VIEW' } = Astro.props;
 ---
 
-<div class="cursor" data-custom-cursor aria-hidden="true">
+<div class="cursor" data-custom-cursor data-zone="normal" data-state="default" aria-hidden="true">
+  <div class="cursor-pos" data-custom-cursor-part="shadow-pos">
+    <div class="cursor-stretch" data-custom-cursor-part="stretch">
+      <div class="cursor-shadow"></div>
+    </div>
+  </div>
   <div class="cursor-pos" data-custom-cursor-part="pos">
-    <div class="cursor-circle">
+    <div class="cursor-shape">
       <span class="cursor-label" data-custom-cursor-part="label">{label}</span>
     </div>
   </div>
@@ -28,11 +37,11 @@ const { label = 'VIEW' } = Astro.props;
 <style>
   .cursor {
     --cursor-size: 80px;
-    /* Dot size as a fraction of the circle: 18px / 80px. */
-    --cursor-dot-scale: 0.225;
-    /* One on-screen pixel at dot size, since the circle is scaled down. */
-    --cursor-px: calc(1px / var(--cursor-dot-scale));
+    --cursor-morph: 350ms ease-out;
     --cursor-press: 1;
+    /* Dot size as a fraction of --cursor-size. */
+    --cursor-scale: 0.225; /* 18px */
+    --cursor-fill: #fff;
 
     position: fixed;
     top: 0;
@@ -51,6 +60,22 @@ const { label = 'VIEW' } = Astro.props;
     --cursor-press: 0.85;
   }
 
+  /* Blend modes only work on the outermost element (inner layers are isolated). */
+  .cursor[data-zone='normal'][data-state='default'] {
+    mix-blend-mode: difference;
+  }
+
+  .cursor[data-zone='hero'][data-state='default'] {
+    --cursor-scale: 0.125; /* 10px */
+    --cursor-fill: #111;
+    mix-blend-mode: multiply;
+  }
+
+  .cursor[data-state='view'] {
+    --cursor-scale: 1;
+    --cursor-fill: #000;
+  }
+
   .cursor-pos {
     position: absolute;
     top: 0;
@@ -58,23 +83,24 @@ const { label = 'VIEW' } = Astro.props;
     will-change: transform;
   }
 
-  .cursor-circle {
+  .cursor-stretch {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .cursor-shape {
     display: flex;
     align-items: center;
     justify-content: center;
     width: var(--cursor-size);
     height: var(--cursor-size);
-    border-radius: 9999px;
-    /* Bright dot; the hairline and soft shadow keep it visible on white. */
-    background-color: rgb(255 255 255 / 0.9);
-    box-shadow:
-      0 0 0 var(--cursor-px) rgb(0 0 0 / 0.14),
-      0 calc(var(--cursor-px) * 2) calc(var(--cursor-px) * 8) rgb(0 0 0 / 0.12);
-    transform: translate(-50%, -50%) scale(calc(var(--cursor-dot-scale) * var(--cursor-press)));
+    border-radius: 50%;
+    background-color: var(--cursor-fill);
+    transform: translate(-50%, -50%) scale(calc(var(--cursor-scale) * var(--cursor-press)));
     transition:
-      transform 250ms ease-out,
-      background-color 250ms ease-out,
-      box-shadow 250ms ease-out;
+      transform var(--cursor-morph),
+      background-color var(--cursor-morph);
   }
 
   .cursor-label {
@@ -88,24 +114,47 @@ const { label = 'VIEW' } = Astro.props;
     transition: opacity 150ms ease-out;
   }
 
-  .cursor[data-state='view'] .cursor-circle {
-    background-color: #000;
-    box-shadow:
-      0 0 0 0 rgb(0 0 0 / 0),
-      0 0 0 0 rgb(0 0 0 / 0);
-    transform: translate(-50%, -50%) scale(var(--cursor-press));
-  }
-
   .cursor[data-state='view'] .cursor-label {
     opacity: 1;
-    transition-delay: 80ms;
+    transition-delay: 100ms;
+  }
+
+  /* Same gray as the darkest leaf shadow (--shadow-alpha comes from SHADOW_DARKNESS);
+     multiply deepens it where it overlaps a leaf shadow, like real overlapping shade.
+     --cursor-shadow-peak offsets the blur thinning the center of such a small shape. */
+  .cursor-shadow {
+    --cursor-shadow-peak: 1.12;
+    width: 42px;
+    height: 42px;
+    border-radius: 46% 54% 58% 42% / 52% 44% 56% 48%;
+    background-color: rgb(0 0 0 / calc(var(--shadow-alpha, 0.18) * var(--cursor-shadow-peak)));
+    filter: blur(10px);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 250ms ease-out;
+    animation: cursor-dapple 4s ease-in-out infinite alternate;
+  }
+
+  .cursor[data-zone='hero'][data-state='default'] .cursor-shadow {
+    opacity: 1;
+  }
+
+  @keyframes cursor-dapple {
+    to {
+      border-radius: 58% 42% 44% 56% / 46% 58% 42% 54%;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .cursor,
-    .cursor-circle,
-    .cursor-label {
+    .cursor-shape,
+    .cursor-label,
+    .cursor-shadow {
       transition: none;
+    }
+
+    .cursor-shadow {
+      animation: none;
     }
   }
 
@@ -127,10 +176,23 @@ const { label = 'VIEW' } = Astro.props;
 </style>
 
 <script>
-  const EASE = 0.2;
+  /** Dot follow lerp per zone (at 60fps); 1 = exactly at the pointer. */
+  const DOT_EASE = { hero: 1, normal: 0.2 };
+  /** Shadow follow lerp (at 60fps); lower than the dot so it trails slightly behind. */
+  const SHADOW_EASE = 0.28;
+  /** Resting offset of the cast shadow from the pointer, in px. */
+  const SHADOW_OFFSET = { x: 10, y: 14 };
+  /** Max elongation of the shadow along its direction of travel. */
+  const MAX_STRETCH = 1.12;
+  /** Shadow speed (px per frame) that reaches MAX_STRETCH. */
+  const STRETCH_SPEED = 20;
+
   const TEXT_FIELD =
     'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])';
   const CLICKABLE = 'a[href], button, [role="button"], [data-cursor]';
+  const HERO_ZONE = '[data-cursor-zone="hero"]';
+
+  type Zone = 'hero' | 'normal';
 
   const root = document.querySelector<HTMLElement>('[data-custom-cursor]');
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -138,21 +200,29 @@ const { label = 'VIEW' } = Astro.props;
   if (root && finePointer) initCursor(root);
 
   function initCursor(root: HTMLElement) {
-    const pos = root.querySelector<HTMLElement>('[data-custom-cursor-part="pos"]')!;
-    const label = root.querySelector<HTMLElement>('[data-custom-cursor-part="label"]')!;
+    const part = (name: string) => root.querySelector<HTMLElement>(`[data-custom-cursor-part="${name}"]`)!;
+    const pos = part('pos');
+    const shadowPos = part('shadow-pos');
+    const stretchEl = part('stretch');
+    const label = part('label');
     const defaultLabel = label.textContent ?? '';
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const mouse = { x: -100, y: -100 };
-    const current = { x: -100, y: -100 };
+    const dot = { x: -100, y: -100 };
+    const shadow = { x: -100, y: -100 };
     let inside = false;
     let hasMoved = false;
     let state = 'default';
+    let zone: Zone = 'normal';
+
+    let stretch = 1;
+    let angle = 0;
 
     document.documentElement.classList.add('has-custom-cursor');
 
-    function resolveState(target: EventTarget | null): { state: string; label?: string } {
-      if (!(target instanceof Element)) return { state: 'default' };
+    function resolveState(target: Element | null): { state: string; label?: string } {
+      if (!target) return { state: 'default' };
       if (target.closest(TEXT_FIELD)) return { state: 'hide' };
       const el = target.closest<HTMLElement>(CLICKABLE);
       if (!el) return { state: 'default' };
@@ -161,8 +231,28 @@ const { label = 'VIEW' } = Astro.props;
       return { state: 'view', label: el.closest<HTMLElement>('[data-cursor-label]')?.dataset.cursorLabel };
     }
 
+    // Overlays drawn above the hero (the nav) count as hero too, hence the rect check.
+    function resolveZone(target: Element | null, x: number, y: number): Zone {
+      if (target?.closest(HERO_ZONE)) return 'hero';
+      for (const zoneEl of document.querySelectorAll(HERO_ZONE)) {
+        const r = zoneEl.getBoundingClientRect();
+        if (x >= r.left && x < r.right && y >= r.top && y < r.bottom) return 'hero';
+      }
+      return 'normal';
+    }
+
+    function update(target: Element | null) {
+      const next = resolveState(target);
+      state = next.state;
+      zone = resolveZone(target, mouse.x, mouse.y);
+      // Keep the old label while shrinking back so it doesn't flash a different word.
+      if (state === 'view') label.textContent = next.label ?? defaultLabel;
+      render();
+    }
+
     function render() {
       root.dataset.state = state;
+      root.dataset.zone = zone;
       root.toggleAttribute('data-visible', inside && hasMoved && state !== 'hide');
     }
 
@@ -174,65 +264,79 @@ const { label = 'VIEW' } = Astro.props;
       mouse.x = e.clientX;
       mouse.y = e.clientY;
       if (!hasMoved) {
-        current.x = mouse.x;
-        current.y = mouse.y;
+        dot.x = mouse.x;
+        dot.y = mouse.y;
+        shadow.x = mouse.x + SHADOW_OFFSET.x;
+        shadow.y = mouse.y + SHADOW_OFFSET.y;
         hasMoved = true;
       }
       inside = inViewport(e.clientX, e.clientY);
-      render();
+      update(e.target instanceof Element ? e.target : null);
     });
+
+    // The page can scroll under a still mouse, changing both the element and the zone.
+    let scrollQueued = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (scrollQueued || !hasMoved) return;
+        scrollQueued = true;
+        requestAnimationFrame(() => {
+          scrollQueued = false;
+          update(document.elementFromPoint(mouse.x, mouse.y));
+        });
+      },
+      { passive: true },
+    );
 
     // mouseleave on <html> doesn't fire reliably when leaving onto the scrollbar or out of an
     // embedded browser, which left the cursor stranded at the edge.
+    const hide = () => {
+      inside = false;
+      render();
+    };
     document.addEventListener('mouseout', (e) => {
-      if (!e.relatedTarget || !inViewport(e.clientX, e.clientY)) {
-        inside = false;
-        render();
-      }
+      if (!e.relatedTarget || !inViewport(e.clientX, e.clientY)) hide();
     });
-    window.addEventListener('blur', () => {
-      inside = false;
-      render();
-    });
+    document.documentElement.addEventListener('mouseleave', hide);
+    window.addEventListener('blur', hide);
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        inside = false;
-        render();
-      }
-    });
-
-    document.addEventListener('pointerover', (e) => {
-      const next = resolveState(e.target);
-      state = next.state;
-      // Keep the old label while shrinking back so it doesn't flash a different word.
-      if (state === 'view') label.textContent = next.label ?? defaultLabel;
-      render();
-    });
-
-    document.documentElement.addEventListener('mouseleave', () => {
-      inside = false;
-      render();
-    });
-
-    document.documentElement.addEventListener('mouseenter', () => {
-      inside = true;
-      render();
+      if (document.hidden) hide();
     });
 
     document.addEventListener('pointerdown', () => root.setAttribute('data-pressed', ''));
     document.addEventListener('pointerup', () => root.removeAttribute('data-pressed'));
     window.addEventListener('blur', () => root.removeAttribute('data-pressed'));
 
+    // Frame-rate independent lerp factor: same feel at 60Hz and 120Hz.
+    const lerpFactor = (ease: number, frames: number) => (ease >= 1 ? 1 : 1 - Math.pow(1 - ease, frames));
+
     let last = performance.now();
     function tick(now: number) {
       const frames = Math.min(now - last, 100) / (1000 / 60);
       last = now;
-      // Frame-rate independent lerp: same feel at 60Hz and 120Hz.
-      const t = reducedMotion.matches ? 1 : 1 - Math.pow(1 - EASE, frames);
+      const reduced = reducedMotion.matches;
 
-      current.x += (mouse.x - current.x) * t;
-      current.y += (mouse.y - current.y) * t;
-      pos.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
+      const td = reduced ? 1 : lerpFactor(DOT_EASE[zone], frames);
+      dot.x += (mouse.x - dot.x) * td;
+      dot.y += (mouse.y - dot.y) * td;
+      pos.style.transform = `translate3d(${dot.x}px, ${dot.y}px, 0)`;
+
+      // The shadow trails behind and stretches along its direction of travel.
+      const ts = reduced ? 1 : lerpFactor(SHADOW_EASE, frames);
+      const prevX = shadow.x;
+      const prevY = shadow.y;
+      shadow.x += (mouse.x + SHADOW_OFFSET.x - shadow.x) * ts;
+      shadow.y += (mouse.y + SHADOW_OFFSET.y - shadow.y) * ts;
+      shadowPos.style.transform = `translate3d(${shadow.x}px, ${shadow.y}px, 0)`;
+
+      const vx = (shadow.x - prevX) / Math.max(frames, 0.01);
+      const vy = (shadow.y - prevY) / Math.max(frames, 0.01);
+      const speed = Math.hypot(vx, vy);
+      if (speed > 0.5) angle = Math.atan2(vy, vx);
+      const targetStretch = reduced ? 1 : 1 + (MAX_STRETCH - 1) * Math.min(speed / STRETCH_SPEED, 1);
+      stretch += (targetStretch - stretch) * (1 - Math.pow(0.8, frames));
+      stretchEl.style.transform = `rotate(${angle}rad) scale(${stretch}, ${1 / Math.sqrt(stretch)}) rotate(${-angle}rad)`;
 
       requestAnimationFrame(tick);
     }

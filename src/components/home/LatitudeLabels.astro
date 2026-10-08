@@ -9,10 +9,19 @@ const dateLabel = new Date(2000, CHOSEN_DATE.month - 1, CHOSEN_DATE.day).toLocal
   month: 'long',
   day: 'numeric',
 });
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
 ---
 
 <div
-  class="text-glow enter absolute inset-x-0 bottom-[36px] z-10 flex [--enter:6] justify-center gap-3 text-[11px] tracking-[0.12em] text-[#8a8a8a] tabular-nums"
+  class:list={[
+    'text-glow flex justify-center gap-3 text-[11px] tracking-[0.12em] text-[#8a8a8a] tabular-nums',
+    className,
+  ]}
   data-latitude-labels
 >
   {

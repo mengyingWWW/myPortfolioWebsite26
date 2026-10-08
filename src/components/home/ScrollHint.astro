@@ -1,21 +1,33 @@
 ---
 /**
- * "View my work" hint at the bottom of the hero. Smooth-scrolls to the target section
+ * "View my work (NN)" hint at the bottom of the hero. NN is the number of project
+ * cards ([data-project-card]) in the target section. Smooth-scrolls there on click
  * and fades out once the page has scrolled.
  */
+import { getSortedWork } from '@/lib/work';
+
 interface Props {
   /** id of the section to scroll to. */
   target: string;
   label?: string;
+  class?: string;
 }
 
-const { target, label = 'View my work' } = Astro.props;
+const { target, label = 'View my work', class: className } = Astro.props;
+// Server-rendered so there's no flash; the script recounts the cards on the page.
+const count = String((await getSortedWork()).length).padStart(2, '0');
 ---
 
-<div class="enter absolute inset-x-0 bottom-[76px] z-10 flex justify-center [--enter:6]">
+<div class:list={['absolute inset-x-0 bottom-8 z-10 flex justify-center', className]}>
   <a href={`#${target}`} class="scroll-hint text-glow" data-scroll-hint data-cursor-label="SCROLL">
-    <span class="text-[11px] font-medium tracking-[0.16em] text-[#555] uppercase">{label}</span>
-    <span class="scroll-hint-line" aria-hidden="true"></span>
+    <span class="scroll-hint-label">
+      {label} (<span data-scroll-hint-count>{count}</span>)
+    </span>
+    <span class="scroll-hint-track" aria-hidden="true">
+      <span class="scroll-hint-line">
+        <span class="scroll-hint-dot"></span>
+      </span>
+    </span>
   </a>
 </div>
 
@@ -24,7 +36,7 @@ const { target, label = 'View my work' } = Astro.props;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     transition: opacity 300ms ease-out;
   }
 
@@ -33,47 +45,77 @@ const { target, label = 'View my work' } = Astro.props;
     pointer-events: none;
   }
 
+  .scroll-hint-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #333;
+    transition: letter-spacing 300ms ease-out;
+  }
+
+  /* Reserves room for the extended line so hovering doesn't push the label up. */
+  .scroll-hint-track {
+    display: flex;
+    justify-content: center;
+    height: 56px;
+  }
+
   .scroll-hint-line {
     position: relative;
     width: 1px;
-    height: 32px;
-    overflow: hidden;
-    background-color: rgb(85 85 85 / 0.3);
+    height: 40px;
+    background-color: #333;
+    transition: height 300ms ease-out;
   }
 
-  .scroll-hint-line::after {
-    content: '';
+  .scroll-hint-dot {
     position: absolute;
-    inset-inline: 0;
     top: 0;
-    height: 12px;
-    background-color: #555;
-    animation: scroll-hint-drop 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background-color: #000;
+    transform: translate(-50%, -50%);
+    animation: scroll-hint-travel 2.2s ease-in-out infinite;
   }
 
-  @keyframes scroll-hint-drop {
+  @keyframes scroll-hint-travel {
     0% {
-      transform: translateY(-12px);
+      top: 0;
+      opacity: 0;
+    }
+    15% {
       opacity: 1;
     }
-    75%,
+    70% {
+      opacity: 1;
+    }
+    90%,
     100% {
-      transform: translateY(32px);
+      top: 100%;
       opacity: 0;
     }
   }
 
+  .scroll-hint:is(:hover, :focus-visible) .scroll-hint-label {
+    letter-spacing: 0.22em;
+  }
+
+  .scroll-hint:is(:hover, :focus-visible) .scroll-hint-line {
+    height: 56px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .scroll-hint {
+    .scroll-hint,
+    .scroll-hint-label,
+    .scroll-hint-line {
       transition: none;
     }
 
-    .scroll-hint-line {
-      background-color: #555;
-    }
-
-    .scroll-hint-line::after {
-      display: none;
+    .scroll-hint-dot {
+      animation: none;
     }
   }
 </style>
@@ -83,9 +125,13 @@ const { target, label = 'View my work' } = Astro.props;
 
   document.querySelectorAll<HTMLAnchorElement>('[data-scroll-hint]').forEach((hint) => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const target = document.querySelector(hint.hash);
+
+    const countEl = hint.querySelector('[data-scroll-hint-count]');
+    const cards = target?.querySelectorAll('[data-project-card]').length;
+    if (countEl && cards) countEl.textContent = String(cards).padStart(2, '0');
 
     hint.addEventListener('click', (e) => {
-      const target = document.querySelector(hint.hash);
       if (!target) return;
       e.preventDefault();
       target.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth' });

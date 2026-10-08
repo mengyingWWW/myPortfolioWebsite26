@@ -6,6 +6,7 @@ import Nav from '@/components/layout/Nav.astro';
 import Footer from '@/components/layout/Footer.astro';
 import CustomCursor from '@/components/ui/CustomCursor.astro';
 import { site } from '@/data/site';
+import { SHADOW_ALPHA } from '@/data/shadow';
 
 interface Props {
   title?: string;
@@ -21,7 +22,7 @@ const pageTitle = title ? `${title} — ${site.name}` : site.title;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" style={`--shadow-alpha: ${SHADOW_ALPHA}`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=1200" />

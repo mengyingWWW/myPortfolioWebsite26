@@ -3,7 +3,7 @@ import Container from './Container.astro';
 import { site, navLinks } from '@/data/site';
 
 interface Props {
-  /** Transparent until the page scrolls, so a full-bleed hero shows through. */
+  /** Transparent while the page's [data-hero] is in view, so a full-bleed hero shows through. */
   overlay?: boolean;
   /** Fade up on page load, as the first step of the hero entrance. */
   animateIn?: boolean;
@@ -12,15 +12,7 @@ interface Props {
 const { overlay = false, animateIn = false } = Astro.props;
 ---
 
-<header
-  class:list={[
-    'text-glow sticky top-0 z-20',
-    overlay
-      ? 'transition-colors duration-300 data-scrolled:bg-paper/90 data-scrolled:backdrop-blur'
-      : 'bg-paper/90 backdrop-blur',
-  ]}
-  data-nav-overlay={overlay ? '' : undefined}
->
+<header class="nav text-glow sticky top-0 z-20" data-nav-overlay={overlay ? '' : undefined}>
   <Container as="nav" class:list={['flex h-20 items-center justify-between', animateIn && 'enter [--enter:0]']}>
     <a href="/" class="flex items-center gap-3 text-base font-medium tracking-tight">
       <span class="h-3.5 w-3.5 rounded-full bg-ink" aria-hidden="true"></span>
@@ -37,6 +29,15 @@ const { overlay = false, animateIn = false } = Astro.props;
               rel={link.newTab ? 'noopener' : undefined}
             >
               {link.label}
+              {link.newTab && (
+                <>
+                  {' '}
+                  <span class="text-[0.85em]" aria-hidden="true">
+                    ↗
+                  </span>
+                  <span class="sr-only">(opens in a new tab)</span>
+                </>
+              )}
             </a>
           </li>
         ))
@@ -45,11 +46,38 @@ const { overlay = false, animateIn = false } = Astro.props;
   </Container>
 </header>
 
+<style>
+  /* Frosted, never solid. The hairline is an inset shadow so it doesn't add height. */
+  .nav {
+    background-color: rgb(255 255 255 / 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.05);
+    transition:
+      background-color 300ms ease,
+      backdrop-filter 300ms ease,
+      -webkit-backdrop-filter 300ms ease,
+      box-shadow 300ms ease;
+  }
+
+  .nav[data-nav-overlay]:not([data-scrolled]) {
+    background-color: rgb(255 255 255 / 0);
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0);
+  }
+</style>
+
 <script>
   const header = document.querySelector<HTMLElement>('[data-nav-overlay]');
-  if (header) {
-    const update = () => header.toggleAttribute('data-scrolled', window.scrollY > 8);
-    update();
-    window.addEventListener('scroll', update, { passive: true });
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (header && hero) {
+    // Frosted only once the whole hero has passed under the nav.
+    new IntersectionObserver(
+      ([entry]) => header.toggleAttribute('data-scrolled', !entry.isIntersecting),
+      { rootMargin: `-${header.offsetHeight}px 0px 0px 0px` },
+    ).observe(hero);
+  } else if (header) {
+    header.setAttribute('data-scrolled', '');
   }
 </script>
