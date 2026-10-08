@@ -1,0 +1,489 @@
+---
+/**
+ * Full-bleed leaf-shadow photo, graded to soft grayscale and animated in WebGL
+ * (breeze warp + cursor wind). Place inside a positioned section; it fills it.
+ * If the section contains [data-hero-content], shadows are lightened behind it.
+ * Listens for `sun-city-change` events (see LatitudeLabels.astro).
+ * Tuning constants live at the top of the <script> below.
+ */
+interface Props {
+  /** Shadow photo, relative to /public. Any size or aspect works (cover fit). */
+  src?: string;
+}
+
+const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
+---
+
+<div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+  <div class="leaf-shadow absolute inset-0 bg-cover bg-center" data-leaf-fallback></div>
+  <canvas class="leaf-shadow absolute inset-0 h-full w-full" data-leaf-shadow data-src={src}></canvas>
+</div>
+
+<style>
+  .leaf-shadow {
+    opacity: 0;
+    transition: opacity 600ms ease;
+  }
+
+  .leaf-shadow[data-ready] {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-shadow {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { sunPosition, type SunPosition } from '@/lib/sun';
+  import { CITIES, DEFAULT_CITY, CHOSEN_DATE } from '@/data/sunlight';
+
+  // ---- Tuning -------------------------------------------------------------
+  /** Brightness of the darkest shadow (0.82 = 82% brightness). The lightest is always white. */
+  const SHADOW_DARKNESS = 0.82;
+  /** Steepness of the tone curve; higher = whiter lights and more defined shadows. */
+  const CONTRAST = 1.5;
+  /** Breeze warp amplitude, in UV units. */
+  const BREEZE_AMOUNT = 0.006;
+  /** Speed of the breeze sway and shimmer. */
+  const BREEZE_SPEED = 1.0;
+  /** Radius of the cursor's wind, in fractions of the screen height. */
+  const WIND_RADIUS = 0.18;
+  /** How far the wind pushes the shadows per unit of mouse speed. */
+  const WIND_STRENGTH = 0.015;
+  /** Per-frame decay of each gust (at 60fps). ~0.95 flows back within 1–2s. */
+  const DECAY = 0.95;
+
+  /** Max push of a single gust, in fractions of the screen height. */
+  const MAX_PUSH = 0.03;
+  /** How much lighter the shadows are behind the hero text (0 = none, 1 = fully clear). */
+  const TEXT_CLEARING = 0.6;
+  /** Fraction of the cover-fitted photo shown, leaving a margin for the warps. */
+  const OVERSCAN = 0.92;
+  /** Duration (ms) of the transition when a city is chosen. */
+  const SUN_TRANSITION = 1500;
+  /** Canvas pixels per CSS pixel. */
+  const RESOLUTION = 0.6;
+  /** Number of recent cursor samples kept as wind sources. */
+  const RING_SIZE = 12;
+  /** Minimum time (ms) between new cursor samples. */
+  const SAMPLE_INTERVAL = 80;
+  // -------------------------------------------------------------------------
+
+  const VERTEX_SHADER = `
+    attribute vec2 aPosition;
+    void main() { gl_Position = vec4(aPosition, 0.0, 1.0); }
+  `;
+
+  const FRAGMENT_SHADER = `
+    precision highp float;
+    #define RING ${RING_SIZE}
+
+    uniform sampler2D uImage;
+    uniform vec2 uResolution;
+    uniform vec2 uCover;          // fraction of the photo visible on each axis
+    uniform vec2 uLevels;         // photo luminance black / white points
+    uniform float uTime;
+    uniform vec3 uTrail[RING];    // xy = position (screen-height units), z = strength
+    uniform vec2 uTrailVel[RING]; // push vector
+    uniform float uRadius;
+    uniform float uBreeze;
+    uniform float uContrast;
+    uniform float uDarkness;
+    uniform float uStrength;      // sun: 1 = full shadows, lower at dusk / night
+    uniform float uStretch;       // sun: >1 lengthens shadows vertically
+    uniform float uPan;           // sun: horizontal shift (morning vs evening)
+    uniform vec2 uFocus;
+    uniform vec2 uFocusSize;
+    uniform float uClearing;
+
+    float hash12(vec2 p) {
+      vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+      p3 += dot(p3, p3.yzx + 33.33);
+      return fract((p3.x + p3.y) * p3.z);
+    }
+
+    float noise(vec2 p) {
+      vec2 i = floor(p);
+      vec2 f = fract(p);
+      vec2 u = f * f * (3.0 - 2.0 * f);
+      return mix(
+        mix(hash12(i), hash12(i + vec2(1.0, 0.0)), u.x),
+        mix(hash12(i + vec2(0.0, 1.0)), hash12(i + vec2(1.0, 1.0)), u.x),
+        u.y
+      );
+    }
+
+    float fbm(vec2 p) {
+      float v = 0.0;
+      float a = 0.5;
+      for (int i = 0; i < 4; i++) {
+        v += a * noise(p);
+        p = mat2(0.8, -0.6, 0.6, 0.8) * p * 2.02 + 17.0;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    void main() {
+      vec2 s = gl_FragCoord.xy / uResolution;
+      float aspect = uResolution.x / uResolution.y;
+      vec2 p = vec2(s.x * aspect, s.y);
+
+      // Cursor wind: recent gusts with a gaussian falloff, plus a slight swirl.
+      vec2 wind = vec2(0.0);
+      for (int i = 0; i < RING; i++) {
+        vec3 source = uTrail[i];
+        if (source.z < 0.001) continue;
+        vec2 d = p - source.xy;
+        float falloff = exp(-dot(d, d) / (uRadius * uRadius)) * source.z;
+        vec2 push = uTrailVel[i];
+        vec2 swirl = vec2(-d.y, d.x) / uRadius * length(push) * 0.25;
+        wind += (push + swirl) * falloff;
+      }
+
+      // Breeze: slow drifting fbm sway plus a finer, quicker shimmer.
+      float t = uTime;
+      vec2 q = p * 2.5;
+      vec2 breeze = vec2(
+        fbm(q + vec2(t * 0.05, t * 0.03)),
+        fbm(q + vec2(5.2, 1.3) - vec2(t * 0.04, t * 0.06))
+      ) - 0.5;
+      breeze += (vec2(noise(p * 9.0 + t * 0.5), noise(p * 9.0 + 7.1 - t * 0.45)) - 0.5) * 0.3;
+      vec2 offset = breeze * 2.0 * uBreeze - wind;
+
+      // Slow breathing: ~1.5% scale over 20s and a gentle drift.
+      float breath = 1.0 + 0.0075 * sin(t * 0.31416);
+      vec2 drift = vec2(sin(t * 0.23), cos(t * 0.19)) * 0.004;
+
+      vec2 c = s - 0.5;
+      c.y /= uStretch;
+      vec2 uv = c * uCover / breath + 0.5 + drift + vec2(uPan, 0.0);
+      uv += offset * vec2(1.0 / aspect, 1.0) * uCover;
+
+      // Grayscale, normalized to the photo's own range, then a smooth S-curve.
+      vec3 rgb = texture2D(uImage, uv).rgb;
+      float lum = dot(rgb, vec3(0.2126, 0.7152, 0.0722));
+      float v = clamp((lum - uLevels.x) / (uLevels.y - uLevels.x), 0.0, 1.0);
+      float x = clamp((v - 0.5) * uContrast + 0.58, 0.0, 1.0);
+      v = x * x * (3.0 - 2.0 * x);
+
+      float shade = (1.0 - v) * uStrength;
+      vec2 fd = (p - uFocus) / uFocusSize;
+      shade *= 1.0 - uClearing * exp(-dot(fd, fd));
+
+      // Sub-pixel dither hides 8-bit banding across such a narrow gray range.
+      float dither = (hash12(gl_FragCoord.xy + fract(uTime)) - 0.5) / 255.0;
+      gl_FragColor = vec4(vec3(clamp(1.0 - shade * (1.0 - uDarkness) + dither, 0.0, 1.0)), 1.0);
+    }
+  `;
+
+  const DEG = Math.PI / 180;
+  const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+  const smoothstep = (a: number, b: number, x: number) => {
+    const t = clamp01((x - a) / (b - a));
+    return t * t * (3 - 2 * t);
+  };
+  const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+  const easeInOutCubic = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+
+  type SunParams = { strength: number; stretch: number; pan: number };
+
+  /** Sun for the chosen city on CHOSEN_DATE at the current time of day, or today at the default city. */
+  function currentSun(chosenCity: string | null): SunPosition {
+    const now = new Date();
+    if (!chosenCity) {
+      const city = CITIES.find((c) => c.name === DEFAULT_CITY) ?? CITIES[CITIES.length - 1];
+      return sunPosition(now, city.latitude, city.longitude);
+    }
+    const city = CITIES.find((c) => c.name === chosenCity)!;
+    const date = new Date(now);
+    date.setUTCMonth(CHOSEN_DATE.month - 1, CHOSEN_DATE.day);
+    return sunPosition(date, city.latitude, city.longitude);
+  }
+
+  /** Map a sun position to how the shadows look. */
+  function shadowParams({ altitude, azimuth }: SunPosition): SunParams {
+    const daylight = smoothstep(-6, 15, altitude);
+    const highSun = smoothstep(10, 70, altitude);
+    return {
+      strength: mix(0.4, 1, daylight),
+      stretch: mix(1.18, 1, highSun),
+      // Morning sun (east) shifts shadows one way, evening (west) the other.
+      pan: -Math.sin(azimuth * DEG) * 0.01,
+    };
+  }
+
+  /** Luminance black/white points of the photo (2nd and 98th percentile). */
+  function measureLevels(img: HTMLImageElement): [number, number] {
+    try {
+      const w = 96;
+      const h = Math.max(1, Math.round((w * img.naturalHeight) / img.naturalWidth));
+      const ctx = Object.assign(document.createElement('canvas'), { width: w, height: h }).getContext('2d')!;
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+      const lums: number[] = [];
+      for (let i = 0; i < data.length; i += 4) {
+        lums.push((0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255);
+      }
+      lums.sort((a, b) => a - b);
+      const lo = lums[Math.floor(lums.length * 0.02)];
+      const hi = lums[Math.floor(lums.length * 0.98)];
+      if (hi - lo > 0.05) return [lo, hi];
+    } catch {
+      // Cross-origin or decode failure: fall through to defaults.
+    }
+    return [0.5, 0.95];
+  }
+
+  /** Static CSS version: levels + contrast via filters, darkness via opacity over white. */
+  function showFallback(el: HTMLElement, src: string, [lo, hi]: [number, number]) {
+    el.style.backgroundImage = `url("${src}")`;
+    // brightness(b) then contrast(c) maps lo -> 0 and hi -> 1.
+    const b = 1 / (lo + hi);
+    const c = (lo + hi) / (hi - lo);
+    el.style.filter = `grayscale(1) brightness(${b}) contrast(${c}) contrast(${CONTRAST})`;
+    el.style.opacity = String(1 - SHADOW_DARKNESS);
+  }
+
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-leaf-shadow]');
+  const fallback = document.querySelector<HTMLElement>('[data-leaf-fallback]');
+  if (canvas && fallback && canvas.dataset.src) {
+    const src = canvas.dataset.src;
+    const img = new Image();
+    img.onload = () => {
+      const levels = measureLevels(img);
+      if (!initLeafShadow(canvas, img, levels)) showFallback(fallback, src, levels);
+    };
+    img.src = src;
+  }
+
+  function compile(gl: WebGLRenderingContext, type: number, source: string) {
+    const shader = gl.createShader(type)!;
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.warn('LeafShadow shader error:', gl.getShaderInfoLog(shader));
+      return null;
+    }
+    return shader;
+  }
+
+  /** Returns false if WebGL is unavailable, so the caller can show the CSS fallback. */
+  function initLeafShadow(canvas: HTMLCanvasElement, img: HTMLImageElement, levels: [number, number]) {
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false });
+    if (!gl) return false;
+
+    const vs = compile(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
+    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+    if (!vs || !fs) return false;
+    const program = gl.createProgram()!;
+    gl.attachShader(program, vs);
+    gl.attachShader(program, fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return false;
+    gl.useProgram(program);
+
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const aPosition = gl.getAttribLocation(program, 'aPosition');
+    gl.enableVertexAttribArray(aPosition);
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+
+    // Non-power-of-two textures in WebGL1 need clamp-to-edge and no mipmaps.
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    const u = (name: string) => gl.getUniformLocation(program, name);
+    const uniforms = {
+      resolution: u('uResolution'),
+      cover: u('uCover'),
+      time: u('uTime'),
+      trail: u('uTrail'),
+      trailVel: u('uTrailVel'),
+      strength: u('uStrength'),
+      stretch: u('uStretch'),
+      pan: u('uPan'),
+      focus: u('uFocus'),
+      focusSize: u('uFocusSize'),
+    };
+    gl.uniform1i(u('uImage'), 0);
+    gl.uniform2f(u('uLevels'), levels[0], levels[1]);
+    gl.uniform1f(u('uRadius'), WIND_RADIUS);
+    gl.uniform1f(u('uBreeze'), BREEZE_AMOUNT);
+    gl.uniform1f(u('uContrast'), CONTRAST);
+    gl.uniform1f(u('uDarkness'), SHADOW_DARKNESS);
+    gl.uniform1f(u('uClearing'), TEXT_CLEARING);
+
+    const section = canvas.closest('section') ?? canvas.parentElement!;
+    const content = section.querySelector<HTMLElement>('[data-hero-content]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const imageAspect = img.naturalWidth / img.naturalHeight;
+
+    const trail = new Float32Array(RING_SIZE * 3);
+    const trailVel = new Float32Array(RING_SIZE * 2);
+    let head = 0;
+    let lastSampleTime = 0;
+    let lastPointer: { x: number; y: number; t: number } | null = null;
+    const velocity = { x: 0, y: 0 };
+
+    // Random start so the breeze differs per visit; frozen here under reduced motion.
+    const timeOffset = Math.random() * 1000;
+    const startTime = performance.now();
+    let rafId = 0;
+    let lastFrame = performance.now();
+    let visible = true;
+
+    let chosenCity: string | null = null;
+    let sun = shadowParams(currentSun(chosenCity));
+    let sunFrom = sun;
+    let sunTo = sun;
+    let sunTweenStart = 0;
+    let sunTweenDuration = 0;
+
+    function setSunTarget(next: SunParams, duration: number) {
+      sunFrom = sun;
+      sunTo = next;
+      sunTweenStart = performance.now();
+      sunTweenDuration = reducedMotion ? 0 : duration;
+      if (sunTweenDuration === 0) sun = next;
+    }
+
+    function updateSun(now: number) {
+      if (sunTweenDuration <= 0) return;
+      const p = easeInOutCubic(clamp01((now - sunTweenStart) / sunTweenDuration));
+      sun = {
+        strength: mix(sunFrom.strength, sunTo.strength, p),
+        stretch: mix(sunFrom.stretch, sunTo.stretch, p),
+        pan: mix(sunFrom.pan, sunTo.pan, p),
+      };
+      if (p >= 1) sunTweenDuration = 0;
+    }
+
+    function resize() {
+      const rect = section.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.round(rect.width * RESOLUTION));
+      canvas.height = Math.max(1, Math.round(rect.height * RESOLUTION));
+      gl!.viewport(0, 0, canvas.width, canvas.height);
+      gl!.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+
+      // Cover fit: the axis where the photo overflows shows only part of it.
+      const aspect = rect.width / (rect.height || 1);
+      const cover = aspect > imageAspect ? [1, imageAspect / aspect] : [aspect / imageAspect, 1];
+      gl!.uniform2f(uniforms.cover, cover[0] * OVERSCAN, cover[1] * OVERSCAN);
+
+      if (content) {
+        const c = content.getBoundingClientRect();
+        const h = rect.height || 1;
+        gl!.uniform2f(uniforms.focus, (c.left + c.width / 2 - rect.left) / h, (rect.bottom - (c.top + c.height / 2)) / h);
+        gl!.uniform2f(uniforms.focusSize, (c.width / 2 / h) * 1.1, (c.height / 2 / h) * 1.4);
+      } else {
+        gl!.uniform2f(uniforms.focusSize, 1, 1);
+        gl!.uniform2f(uniforms.focus, -10, -10);
+      }
+      render(performance.now());
+    }
+
+    function render(now: number) {
+      const seconds = reducedMotion ? timeOffset : timeOffset + ((now - startTime) / 1000) * BREEZE_SPEED;
+      gl!.uniform1f(uniforms.time, seconds);
+      gl!.uniform1f(uniforms.strength, sun.strength);
+      gl!.uniform1f(uniforms.stretch, sun.stretch);
+      gl!.uniform1f(uniforms.pan, sun.pan);
+      gl!.uniform3fv(uniforms.trail, trail);
+      gl!.uniform2fv(uniforms.trailVel, trailVel);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+    }
+
+    function frame(now: number) {
+      const frames = Math.min(now - lastFrame, 100) / (1000 / 60);
+      lastFrame = now;
+      const decay = Math.pow(DECAY, frames);
+      for (let i = 0; i < RING_SIZE; i++) trail[i * 3 + 2] *= decay;
+      updateSun(now);
+      render(now);
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (reducedMotion || rafId || !visible) return;
+      lastFrame = performance.now();
+      rafId = requestAnimationFrame(frame);
+    }
+
+    function stop() {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+
+    function onPointerMove(e: PointerEvent) {
+      if (e.pointerType !== 'mouse' || !visible) return;
+      const rect = section.getBoundingClientRect();
+      const h = rect.height || 1;
+      const x = (e.clientX - rect.left) / h;
+      const y = (rect.bottom - e.clientY) / h;
+      const now = performance.now();
+
+      if (lastPointer) {
+        const dt = Math.max(now - lastPointer.t, 1) / 1000;
+        velocity.x = mix(velocity.x, (x - lastPointer.x) / dt, 0.5);
+        velocity.y = mix(velocity.y, (y - lastPointer.y) / dt, 0.5);
+      }
+      lastPointer = { x, y, t: now };
+
+      if (now - lastSampleTime > SAMPLE_INTERVAL) {
+        head = (head + 1) % RING_SIZE;
+        lastSampleTime = now;
+      }
+
+      let px = velocity.x * WIND_STRENGTH;
+      let py = velocity.y * WIND_STRENGTH;
+      const len = Math.hypot(px, py);
+      if (len > MAX_PUSH) {
+        px *= MAX_PUSH / len;
+        py *= MAX_PUSH / len;
+      }
+      trail.set([x, y, 1], head * 3);
+      trailVel.set([px, py], head * 2);
+    }
+
+    window.addEventListener('sun-city-change', (e) => {
+      chosenCity = (e as CustomEvent<string | null>).detail;
+      setSunTarget(shadowParams(currentSun(chosenCity)), SUN_TRANSITION);
+      if (reducedMotion) render(performance.now());
+    });
+
+    canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      stop();
+      canvas.removeAttribute('data-ready');
+    });
+
+    resize();
+    canvas.setAttribute('data-ready', '');
+
+    new ResizeObserver(resize).observe(section);
+    if (content) new ResizeObserver(resize).observe(content);
+
+    if (!reducedMotion) {
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      setInterval(() => setSunTarget(shadowParams(currentSun(chosenCity)), 5000), 60_000);
+      new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) start();
+        else stop();
+      }).observe(section);
+      start();
+    }
+    return true;
+  }
+</script>

@@ -7,9 +7,11 @@ export const site = {
   email: 'hello@example.com',
 };
 
-export const navLinks = [
+export const navLinks: { label: string; href: string; newTab?: boolean }[] = [
   { label: 'Work', href: '/#work' },
   { label: 'About', href: '/about' },
+  // Put the file at public/resume.pdf.
+  { label: 'Resume', href: '/resume.pdf', newTab: true },
 ];
 
 export const socialLinks = [

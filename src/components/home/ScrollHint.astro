@@ -1,0 +1,98 @@
+---
+/**
+ * "View my work" hint at the bottom of the hero. Smooth-scrolls to the target section
+ * and fades out once the page has scrolled.
+ */
+interface Props {
+  /** id of the section to scroll to. */
+  target: string;
+  label?: string;
+}
+
+const { target, label = 'View my work' } = Astro.props;
+---
+
+<div class="enter absolute inset-x-0 bottom-[76px] z-10 flex justify-center [--enter:6]">
+  <a href={`#${target}`} class="scroll-hint text-glow" data-scroll-hint data-cursor-label="SCROLL">
+    <span class="text-[11px] font-medium tracking-[0.16em] text-[#555] uppercase">{label}</span>
+    <span class="scroll-hint-line" aria-hidden="true"></span>
+  </a>
+</div>
+
+<style>
+  .scroll-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: opacity 300ms ease-out;
+  }
+
+  .scroll-hint[data-hidden] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .scroll-hint-line {
+    position: relative;
+    width: 1px;
+    height: 32px;
+    overflow: hidden;
+    background-color: rgb(85 85 85 / 0.3);
+  }
+
+  .scroll-hint-line::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 12px;
+    background-color: #555;
+    animation: scroll-hint-drop 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  @keyframes scroll-hint-drop {
+    0% {
+      transform: translateY(-12px);
+      opacity: 1;
+    }
+    75%,
+    100% {
+      transform: translateY(32px);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-hint {
+      transition: none;
+    }
+
+    .scroll-hint-line {
+      background-color: #555;
+    }
+
+    .scroll-hint-line::after {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const SCROLL_THRESHOLD = 80;
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-scroll-hint]').forEach((hint) => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    hint.addEventListener('click', (e) => {
+      const target = document.querySelector(hint.hash);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+    });
+
+    const update = () => hint.toggleAttribute('data-hidden', window.scrollY > SCROLL_THRESHOLD);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  });
+</script>

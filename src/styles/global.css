@@ -14,13 +14,8 @@
   --color-line: #e5e5e5;
   --color-surface: #f6f6f6;
   --color-paper: #ffffff;
-  /* Hover color for project titles and the "View" pill. */
+  /* Hover color for project titles. */
   --color-accent: #0a0a0a;
-
-  /* Soft glow at the bottom of the home hero. */
-  --color-glow-1: #e9e9e9;
-  --color-glow-2: #d4d4d4;
-  --color-glow-3: #f2f2f2;
 
   /* Max content width; side padding lives in Container.astro. */
   --container-site: 1600px;
@@ -38,6 +33,37 @@
 
   ::selection {
     @apply bg-ink text-paper;
+  }
+}
+
+/* Barely-there white halo that lifts text off the hero's leaf shadows. */
+@utility text-glow {
+  text-shadow:
+    0 0 24px rgba(255, 255, 255, 0.9),
+    0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+/*
+ * Page-load fade-up. Stagger with an index, e.g. class="enter [--enter:2]" (120ms per step).
+ * `backwards` fill so no transform lingers after the animation.
+ */
+@keyframes enter-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@layer components {
+  .enter {
+    animation: enter-fade-up 800ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--enter, 0) * 120ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .enter {
+      animation: none;
+    }
   }
 }
 

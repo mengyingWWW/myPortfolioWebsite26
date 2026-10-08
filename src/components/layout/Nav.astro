@@ -1,10 +1,27 @@
 ---
 import Container from './Container.astro';
 import { site, navLinks } from '@/data/site';
+
+interface Props {
+  /** Transparent until the page scrolls, so a full-bleed hero shows through. */
+  overlay?: boolean;
+  /** Fade up on page load, as the first step of the hero entrance. */
+  animateIn?: boolean;
+}
+
+const { overlay = false, animateIn = false } = Astro.props;
 ---
 
-<header class="sticky top-0 z-20 bg-paper/90 backdrop-blur">
-  <Container as="nav" class="flex h-20 items-center justify-between">
+<header
+  class:list={[
+    'text-glow sticky top-0 z-20',
+    overlay
+      ? 'transition-colors duration-300 data-scrolled:bg-paper/90 data-scrolled:backdrop-blur'
+      : 'bg-paper/90 backdrop-blur',
+  ]}
+  data-nav-overlay={overlay ? '' : undefined}
+>
+  <Container as="nav" class:list={['flex h-20 items-center justify-between', animateIn && 'enter [--enter:0]']}>
     <a href="/" class="flex items-center gap-3 text-base font-medium tracking-tight">
       <span class="h-3.5 w-3.5 rounded-full bg-ink" aria-hidden="true"></span>
       {site.name}
@@ -13,7 +30,12 @@ import { site, navLinks } from '@/data/site';
       {
         navLinks.map((link) => (
           <li>
-            <a href={link.href} class="hover:text-muted">
+            <a
+              href={link.href}
+              class="hover:text-muted"
+              target={link.newTab ? '_blank' : undefined}
+              rel={link.newTab ? 'noopener' : undefined}
+            >
               {link.label}
             </a>
           </li>
@@ -22,3 +44,12 @@ import { site, navLinks } from '@/data/site';
     </ul>
   </Container>
 </header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-nav-overlay]');
+  if (header) {
+    const update = () => header.toggleAttribute('data-scrolled', window.scrollY > 8);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+  }
+</script>

@@ -1,49 +1,44 @@
 ---
 /**
- * Custom cursor: a dot that tracks the mouse exactly and a ring that trails it.
+ * Custom cursor: a small bright dot that eases after the mouse and grows into a
+ * labeled black circle over clickable elements (a, button, [role="button"], [data-cursor]).
  *
- * Mark any element to change the cursor while hovering it:
- *   data-cursor="view"     ring grows, fills, and shows a label (default "View")
- *   data-cursor="link"     ring grows, dot hides (applied automatically to links/buttons)
- *   data-cursor="hide"     custom cursor hides
- *   data-cursor="default"  opt an element out of automatic link styling
- *   data-cursor-label="Play"  custom label text for the "view" state
+ * Per-element overrides:
+ *   data-cursor-label="EMAIL"  label shown in the circle (default "VIEW")
+ *   data-cursor="default"      keep the plain dot on a clickable element
+ *   data-cursor="hide"         hide the custom cursor
+ *   data-cursor (any other)    show the circle, even on non-clickable elements
  */
 interface Props {
-  /** Label shown in the "view" state when an element doesn't set data-cursor-label. */
+  /** Label shown when an element doesn't set data-cursor-label. */
   label?: string;
 }
 
-const { label = 'View' } = Astro.props;
+const { label = 'VIEW' } = Astro.props;
 ---
 
 <div class="cursor" data-custom-cursor aria-hidden="true">
-  <div class="cursor-pos" data-custom-cursor-part="ring">
-    <div class="cursor-ring">
+  <div class="cursor-pos" data-custom-cursor-part="pos">
+    <div class="cursor-circle">
       <span class="cursor-label" data-custom-cursor-part="label">{label}</span>
     </div>
-  </div>
-  <div class="cursor-pos" data-custom-cursor-part="dot">
-    <div class="cursor-dot"></div>
   </div>
 </div>
 
 <style>
   .cursor {
-    --cursor-color: #fff;
-    --cursor-dot: 8px;
-    --cursor-ring: 36px;
-    --cursor-ring-link: 60px;
-    --cursor-ring-view: 90px;
+    --cursor-size: 80px;
+    /* Dot size as a fraction of the circle: 18px / 80px. */
+    --cursor-dot-scale: 0.225;
+    /* One on-screen pixel at dot size, since the circle is scaled down. */
+    --cursor-px: calc(1px / var(--cursor-dot-scale));
     --cursor-press: 1;
-    --cursor-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
     position: fixed;
     top: 0;
     left: 0;
     z-index: 9999;
     pointer-events: none;
-    mix-blend-mode: difference;
     opacity: 0;
     transition: opacity 0.2s ease;
   }
@@ -53,7 +48,7 @@ const { label = 'View' } = Astro.props;
   }
 
   .cursor[data-pressed] {
-    --cursor-press: 0.8;
+    --cursor-press: 0.85;
   }
 
   .cursor-pos {
@@ -63,67 +58,52 @@ const { label = 'View' } = Astro.props;
     will-change: transform;
   }
 
-  .cursor-ring {
+  .cursor-circle {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--cursor-ring);
-    height: var(--cursor-ring);
-    border: 1px solid var(--cursor-color);
+    width: var(--cursor-size);
+    height: var(--cursor-size);
     border-radius: 9999px;
-    background-color: transparent;
-    transform: translate(-50%, -50%) scale(var(--cursor-press));
+    /* Bright dot; the hairline and soft shadow keep it visible on white. */
+    background-color: rgb(255 255 255 / 0.9);
+    box-shadow:
+      0 0 0 var(--cursor-px) rgb(0 0 0 / 0.14),
+      0 calc(var(--cursor-px) * 2) calc(var(--cursor-px) * 8) rgb(0 0 0 / 0.12);
+    transform: translate(-50%, -50%) scale(calc(var(--cursor-dot-scale) * var(--cursor-press)));
     transition:
-      width 0.35s var(--cursor-ease),
-      height 0.35s var(--cursor-ease),
-      background-color 0.2s ease,
-      transform 0.15s ease;
-  }
-
-  .cursor-dot {
-    width: var(--cursor-dot);
-    height: var(--cursor-dot);
-    border-radius: 9999px;
-    background-color: var(--cursor-color);
-    transform: translate(-50%, -50%);
-    transition: opacity 0.2s ease;
+      transform 250ms ease-out,
+      background-color 250ms ease-out,
+      box-shadow 250ms ease-out;
   }
 
   .cursor-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: #000;
+    color: #fff;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 150ms ease-out;
   }
 
-  .cursor[data-state='link'] .cursor-ring {
-    width: var(--cursor-ring-link);
-    height: var(--cursor-ring-link);
-  }
-
-  .cursor[data-state='view'] .cursor-ring {
-    width: var(--cursor-ring-view);
-    height: var(--cursor-ring-view);
-    background-color: var(--cursor-color);
+  .cursor[data-state='view'] .cursor-circle {
+    background-color: #000;
+    box-shadow:
+      0 0 0 0 rgb(0 0 0 / 0),
+      0 0 0 0 rgb(0 0 0 / 0);
+    transform: translate(-50%, -50%) scale(var(--cursor-press));
   }
 
   .cursor[data-state='view'] .cursor-label {
     opacity: 1;
-  }
-
-  .cursor[data-state='link'] .cursor-dot,
-  .cursor[data-state='view'] .cursor-dot {
-    opacity: 0;
+    transition-delay: 80ms;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .cursor,
-    .cursor-ring,
-    .cursor-dot,
+    .cursor-circle,
     .cursor-label {
       transition: none;
     }
@@ -147,10 +127,10 @@ const { label = 'View' } = Astro.props;
 </style>
 
 <script>
-  const EASE = 0.15;
+  const EASE = 0.2;
   const TEXT_FIELD =
     'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])';
-  const INTERACTIVE = 'a[href], button, [role="button"], summary, label, select';
+  const CLICKABLE = 'a[href], button, [role="button"], [data-cursor]';
 
   const root = document.querySelector<HTMLElement>('[data-custom-cursor]');
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -158,14 +138,13 @@ const { label = 'View' } = Astro.props;
   if (root && finePointer) initCursor(root);
 
   function initCursor(root: HTMLElement) {
-    const ring = root.querySelector<HTMLElement>('[data-custom-cursor-part="ring"]')!;
-    const dot = root.querySelector<HTMLElement>('[data-custom-cursor-part="dot"]')!;
+    const pos = root.querySelector<HTMLElement>('[data-custom-cursor-part="pos"]')!;
     const label = root.querySelector<HTMLElement>('[data-custom-cursor-part="label"]')!;
     const defaultLabel = label.textContent ?? '';
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const mouse = { x: -100, y: -100 };
-    const ringPos = { x: -100, y: -100 };
+    const current = { x: -100, y: -100 };
     let inside = false;
     let hasMoved = false;
     let state = 'default';
@@ -175,10 +154,11 @@ const { label = 'View' } = Astro.props;
     function resolveState(target: EventTarget | null): { state: string; label?: string } {
       if (!(target instanceof Element)) return { state: 'default' };
       if (target.closest(TEXT_FIELD)) return { state: 'hide' };
-      const el = target.closest<HTMLElement>(`[data-cursor], ${INTERACTIVE}`);
+      const el = target.closest<HTMLElement>(CLICKABLE);
       if (!el) return { state: 'default' };
-      if (el.dataset.cursor) return { state: el.dataset.cursor, label: el.dataset.cursorLabel };
-      return { state: 'link' };
+      const mode = el.dataset.cursor;
+      if (mode === 'default' || mode === 'hide') return { state: mode };
+      return { state: 'view', label: el.closest<HTMLElement>('[data-cursor-label]')?.dataset.cursorLabel };
     }
 
     function render() {
@@ -186,22 +166,46 @@ const { label = 'View' } = Astro.props;
       root.toggleAttribute('data-visible', inside && hasMoved && state !== 'hide');
     }
 
+    // Inside the page content, excluding the scrollbar gutter.
+    const inViewport = (x: number, y: number) =>
+      x >= 0 && y >= 0 && x < document.documentElement.clientWidth && y < document.documentElement.clientHeight;
+
     document.addEventListener('pointermove', (e) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
       if (!hasMoved) {
-        ringPos.x = mouse.x;
-        ringPos.y = mouse.y;
+        current.x = mouse.x;
+        current.y = mouse.y;
         hasMoved = true;
       }
-      inside = true;
+      inside = inViewport(e.clientX, e.clientY);
       render();
+    });
+
+    // mouseleave on <html> doesn't fire reliably when leaving onto the scrollbar or out of an
+    // embedded browser, which left the cursor stranded at the edge.
+    document.addEventListener('mouseout', (e) => {
+      if (!e.relatedTarget || !inViewport(e.clientX, e.clientY)) {
+        inside = false;
+        render();
+      }
+    });
+    window.addEventListener('blur', () => {
+      inside = false;
+      render();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        inside = false;
+        render();
+      }
     });
 
     document.addEventListener('pointerover', (e) => {
       const next = resolveState(e.target);
       state = next.state;
-      label.textContent = next.label ?? defaultLabel;
+      // Keep the old label while shrinking back so it doesn't flash a different word.
+      if (state === 'view') label.textContent = next.label ?? defaultLabel;
       render();
     });
 
@@ -226,11 +230,9 @@ const { label = 'View' } = Astro.props;
       // Frame-rate independent lerp: same feel at 60Hz and 120Hz.
       const t = reducedMotion.matches ? 1 : 1 - Math.pow(1 - EASE, frames);
 
-      ringPos.x += (mouse.x - ringPos.x) * t;
-      ringPos.y += (mouse.y - ringPos.y) * t;
-
-      dot.style.transform = `translate3d(${mouse.x}px, ${mouse.y}px, 0)`;
-      ring.style.transform = `translate3d(${ringPos.x}px, ${ringPos.y}px, 0)`;
+      current.x += (mouse.x - current.x) * t;
+      current.y += (mouse.y - current.y) * t;
+      pos.style.transform = `translate3d(${current.x}px, ${current.y}px, 0)`;
 
       requestAnimationFrame(tick);
     }
