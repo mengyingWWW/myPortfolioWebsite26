@@ -5,10 +5,10 @@
 export const aboutHero = {
   /** Put the photo at public/images/avatar.jpg; a gray circle shows until it exists. */
   portrait: { src: '/images/avatar.jpg', alt: 'Portrait of Mengying' },
-  /** One entry per line. The hyphens inside the italic phrases are non-breaking (U+2011). */
+  /** One entry per line. */
   headline: [
-    'A UX designer & researcher,',
-    'combining *research‑driven insight*, *human‑centered thinking*, and *hands‑on prototyping* to build AI products people understand, trust, and love to use.',
+    'A UX designer & researcher',
+    "who *starts with people* and *learns by making*, an architect's habit I now bring to AI products.",
   ],
   /** One entry per line. */
   bio: [

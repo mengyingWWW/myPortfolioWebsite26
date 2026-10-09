@@ -1,5 +1,6 @@
 ---
 import Container from './Container.astro';
+import MWLogo from '@/components/ui/MWLogo.astro';
 import { site, navLinks } from '@/data/site';
 
 interface Props {
@@ -16,7 +17,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 <header class="nav text-glow sticky top-0 z-20" data-nav-overlay={overlay ? '' : undefined}>
   <Container as="nav" class:list={['flex h-20 items-center justify-between', animateIn && 'enter [--enter:0]']}>
     <a href="/" class="flex items-center gap-3 text-base font-medium tracking-tight">
-      <span class="h-3.5 w-3.5 rounded-full bg-ink" aria-hidden="true"></span>
+      <MWLogo variant="mark" theme="light" />
       {site.name}
     </a>
     <ul class="flex items-center gap-14 text-xs font-medium tracking-wider uppercase">

@@ -1,5 +1,6 @@
 ---
 import Container from './Container.astro';
+import MWLogo from '@/components/ui/MWLogo.astro';
 import SocialLinks from '@/components/ui/SocialLinks.astro';
 import { site } from '@/data/site';
 
@@ -7,13 +8,14 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="mt-40 border-t border-line">
-  <Container class="flex items-end justify-between py-16">
+  <Container class="grid grid-cols-[1fr_auto_1fr] items-end gap-10 py-16">
     <div>
       <p class="text-3xl font-medium tracking-tight">Let’s work together.</p>
       <a href={`mailto:${site.email}`} class="mt-3 inline-block text-muted hover:text-ink">
         {site.email}
       </a>
     </div>
+    <MWLogo variant="live" label={`${site.fullName} monogram`} class="self-center" />
     <div class="flex flex-col items-end gap-6">
       <SocialLinks />
       <p class="text-sm text-subtle">© {year} {site.fullName}</p>

@@ -1,0 +1,168 @@
+---
+/**
+ * The MW monogram as two semi-transparent "glass" strokes: where they share the vertical
+ * line they overlap and read denser. The live variant adds a cast shadow and a sun that
+ * follow Seattle's real sun (a hollow moon at night).
+ */
+import {
+  DEFAULT_SHADOW,
+  GROUND,
+  LIVE_VIEWBOX,
+  MARK_VIEWBOX,
+  M_POINTS,
+  STROKE,
+  SUN_R,
+  W_POINTS,
+  shadowPath,
+  sunSpot,
+  toPath,
+} from '@/lib/monogram';
+
+interface Props {
+  variant?: 'mark' | 'live';
+  theme?: 'light' | 'dark';
+  /** Accessible name; without one the logo is decorative. */
+  label?: string;
+  class?: string;
+}
+
+const { variant = 'mark', theme = 'light', label, class: className } = Astro.props;
+const live = variant === 'live';
+const sun = sunSpot(DEFAULT_SHADOW.dir);
+const blurId = `mw-blur-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<svg
+  class:list={['mw-logo block', live ? 'h-auto w-[262px]' : 'h-[22px] w-auto', className]}
+  data-theme={theme}
+  data-mw-live={live ? '' : undefined}
+  viewBox={live ? LIVE_VIEWBOX : MARK_VIEWBOX}
+  xmlns="http://www.w3.org/2000/svg"
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  {
+    live && (
+      <>
+        <filter id={blurId} filterUnits="userSpaceOnUse" x="-200" y={GROUND - 120} width="1000" height="260">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
+        <path
+          class="mw-shadow"
+          d={shadowPath(DEFAULT_SHADOW)}
+          filter={`url(#${blurId})`}
+          fill="none"
+          stroke-width="20"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          data-mw-shadow
+        />
+        <circle
+          class="mw-sun"
+          cx={sun.x}
+          cy={sun.y}
+          r={SUN_R}
+          stroke-width="1.5"
+          stroke-opacity="0"
+          vector-effect="non-scaling-stroke"
+          data-mw-sun
+        />
+      </>
+    )
+  }
+  <g class="mw-glass" fill="none" stroke-width={STROKE} stroke-linecap="round" stroke-linejoin="round">
+    <path d={toPath(M_POINTS)} />
+    <path d={toPath(W_POINTS)} />
+  </g>
+</svg>
+
+<style>
+  .mw-logo {
+    --mw-glass: rgb(0 0 0 / 0.5);
+    --mw-sun: #111;
+    --mw-shadow: rgb(0 0 0 / 0.12);
+    overflow: visible;
+  }
+  .mw-logo[data-theme='dark'] {
+    --mw-glass: rgb(255 255 255 / 0.55);
+    --mw-sun: #fff;
+    --mw-shadow: rgb(255 255 255 / 0.1);
+  }
+  .mw-glass {
+    stroke: var(--mw-glass);
+  }
+  .mw-sun {
+    fill: var(--mw-sun);
+    stroke: var(--mw-sun);
+  }
+  .mw-shadow {
+    stroke: var(--mw-shadow);
+  }
+</style>
+
+<script>
+  import { sunPosition } from '@/lib/sun';
+  import { DEFAULT_SHADOW, shadowFromSun, shadowPath, sunSpot } from '@/lib/monogram';
+  import { CITIES } from '@/data/sunlight';
+
+  const UPDATE_EVERY = 60_000;
+  /** Share of the remaining distance covered per 60fps frame. */
+  const EASE = 0.05;
+
+  const seattle = CITIES.find((c) => c.name === 'Seattle')!;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<SVGSVGElement>('[data-mw-live]').forEach((svg) => {
+    const shadow = svg.querySelector<SVGPathElement>('[data-mw-shadow]')!;
+    const sun = svg.querySelector<SVGCircleElement>('[data-mw-sun]')!;
+
+    // `night` runs 0 → 1 so the sun can fade into the moon's ring instead of snapping.
+    const cur = { ...DEFAULT_SHADOW, night: 0 };
+    const target = { ...cur };
+    let last = 0;
+    let frame = 0;
+
+    function draw() {
+      shadow.setAttribute('d', shadowPath(cur));
+      shadow.style.opacity = String(1 - cur.night);
+      const spot = sunSpot(cur.dir);
+      sun.setAttribute('cx', spot.x.toFixed(1));
+      sun.setAttribute('cy', spot.y.toFixed(1));
+      sun.setAttribute('fill-opacity', String(1 - cur.night));
+      sun.setAttribute('stroke-opacity', String(cur.night));
+    }
+
+    function tick(now: number) {
+      const frames = last ? (now - last) / (1000 / 60) : 1;
+      last = now;
+      const t = 1 - (1 - EASE) ** frames;
+      let moving = false;
+      for (const key of ['dir', 'k', 'night'] as const) {
+        const gap = target[key] - cur[key];
+        if (Math.abs(gap) < 0.001) cur[key] = target[key];
+        else {
+          cur[key] += gap * t;
+          moving = true;
+        }
+      }
+      draw();
+      frame = moving ? requestAnimationFrame(tick) : 0;
+      if (!moving) last = 0;
+    }
+
+    function update() {
+      const s = shadowFromSun(sunPosition(new Date(), seattle.latitude, seattle.longitude));
+      Object.assign(target, { dir: s.dir, k: s.k, night: s.night ? 1 : 0 });
+      if (reduceMotion) {
+        Object.assign(cur, target);
+        draw();
+      } else if (!frame) {
+        frame = requestAnimationFrame(tick);
+      }
+    }
+
+    update();
+    setInterval(update, UPDATE_EVERY);
+  });
+</script>
