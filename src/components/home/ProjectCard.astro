@@ -2,9 +2,10 @@
 /**
  * Work grid card: a blurred grayscale cover under a frosted panel with the project
  * details. On hover / keyboard focus the panel fades and the cover turns sharp and
- * full color. Card height follows the cover's natural aspect ratio.
+ * full color. Every card is 16:9, with or without a cover.
  */
 import { Image } from 'astro:assets';
+import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
 import { workUrl, type WorkEntry } from '@/lib/work';
 
 interface Props {
@@ -27,7 +28,7 @@ const meta = [year, type, method, medium];
     cover ? (
       <Image src={cover} alt="" class="work-card-image" widths={[720, 1080, 1440, 2160]} sizes="50vw" />
     ) : (
-      <div class="work-card-placeholder" />
+      <CoverPlaceholder title={title} class="work-card-placeholder absolute inset-0" />
     )
   }
   <div class="work-card-frost" aria-hidden="true"></div>
@@ -51,6 +52,7 @@ const meta = [year, type, method, medium];
   .work-card {
     position: relative;
     display: block;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
   }
 
@@ -60,9 +62,11 @@ const meta = [year, type, method, medium];
   }
 
   .work-card-image {
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     /* The scale hides the blur's soft edges; overflow keeps it inside the card. */
     filter: grayscale(1) blur(18px);
     transform: scale(1.08);
@@ -71,9 +75,13 @@ const meta = [year, type, method, medium];
       transform 600ms ease-out;
   }
 
-  .work-card-placeholder {
-    aspect-ratio: 2 / 1;
-    background-color: #f2f2f2;
+  /* The label would ghost through the frost beside the title, so it only appears with the cover. */
+  .work-card :global(.work-card-placeholder) {
+    color: transparent;
+    transition: color 450ms ease;
+  }
+  .work-card:is(:hover, :focus-visible) :global(.work-card-placeholder) {
+    color: #8a8a8a;
   }
 
   .work-card-frost {

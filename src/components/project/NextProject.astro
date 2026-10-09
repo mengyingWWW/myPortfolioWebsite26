@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Container from '@/components/layout/Container.astro';
+import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
 import { workUrl, type WorkEntry } from '@/lib/work';
 
 interface Props {
@@ -20,8 +21,14 @@ const { title, subtitle, cover } = project.data;
       </p>
       <p class="mt-3 text-muted">{subtitle}</p>
     </div>
-    <div class="col-span-5 aspect-[16/10] overflow-hidden bg-surface">
-      {cover && <Image src={cover} alt={`${title} cover`} class="h-full w-full object-cover" />}
+    <div class="col-span-5 aspect-[16/9] overflow-hidden">
+      {
+        cover ? (
+          <Image src={cover} alt={`${title} cover`} class="h-full w-full object-cover" />
+        ) : (
+          <CoverPlaceholder title={title} class="h-full w-full" />
+        )
+      }
     </div>
   </a>
 </Container>

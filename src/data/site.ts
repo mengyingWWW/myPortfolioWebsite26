@@ -11,15 +11,16 @@ export const site = {
   github: 'https://github.com/mengyingWWW',
 };
 
+// newTab links open outside the site: they get a ↗ and target="_blank" wherever they're rendered.
 export const navLinks: { label: string; href: string; newTab?: boolean }[] = [
   { label: 'Work', href: '/#work' },
   { label: 'About', href: '/about' },
-  // newTab links get a ↗ in the nav.
   { label: 'Resume', href: site.resume, newTab: true },
 ];
 
-export const socialLinks = [
+export const footerLinks: { label: string; href: string; newTab?: boolean }[] = [
   { label: 'Email', href: `mailto:${site.email}` },
-  { label: 'LinkedIn', href: site.linkedin },
-  { label: 'GitHub', href: site.github },
+  { label: 'Resume', href: site.resume, newTab: true },
+  { label: 'LinkedIn', href: site.linkedin, newTab: true },
+  { label: 'GitHub', href: site.github, newTab: true },
 ];

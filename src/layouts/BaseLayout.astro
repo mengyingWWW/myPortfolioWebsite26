@@ -32,6 +32,7 @@ const pageTitle = title ? `${title} — ${site.name}` : site.title;
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <slot name="head" />
   </head>
   <body class="flex min-h-screen flex-col">
     <Nav overlay={overlayNav} animateIn={animateNav} />

@@ -2,9 +2,18 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/home/Hero.astro';
 import SelectedWork from '@/components/home/SelectedWork.astro';
+import { hero } from '@/data/home';
+
+// Only the glyphs of the hero's name shadow. Must match --name-shadow-font in Hero.astro.
+const nameShadowFont = `https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@300&text=${encodeURIComponent(hero.nameShadow)}&display=swap`;
 ---
 
 <BaseLayout overlayNav animateNav>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={nameShadowFont} />
+  </Fragment>
   <Hero />
   <SelectedWork />
 </BaseLayout>

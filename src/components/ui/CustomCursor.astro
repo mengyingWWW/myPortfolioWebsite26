@@ -1,15 +1,17 @@
 ---
 /**
- * Custom cursor: a 10px dot in two zones:
+ * Custom cursor: a 14px dot in two zones:
  *   hero   (over [data-cursor-zone="hero"]): a crisp dark dot plus a soft cast shadow
  *          that trails behind it, offset down-right as if lit by the same sun.
  *   normal (everywhere else): a white dot with difference blending.
- * Over clickable elements (a, button, [role="button"]) the dot just grows to 14px, so it never
+ * Over clickable elements (a, button, [role="button"]) the dot just grows to 20px, so it never
  * covers the (usually small) target. Only big targets opt into the large black circle with a
  * white label, which hides the shadow.
  *
  * Per-element overrides:
  *   data-cursor="view"         large labeled circle (big targets only, e.g. project cards)
+ *   data-cursor="invert"       44px white difference-blended circle, no label, so the text under
+ *                              it reads inverted (e.g. nav links)
  *   data-cursor-label="EMAIL"  label shown in that circle (default "VIEW")
  *   data-cursor="default"      keep the plain dot on a clickable element
  *   data-cursor="hide"         hide the custom cursor
@@ -41,7 +43,7 @@ const { label = 'VIEW' } = Astro.props;
     --cursor-morph: 350ms ease-out;
     --cursor-press: 1;
     /* Dot size as a fraction of --cursor-size. */
-    --cursor-scale: 0.125; /* 10px */
+    --cursor-scale: 0.175; /* 14px */
     --cursor-fill: #fff;
 
     position: fixed;
@@ -50,7 +52,7 @@ const { label = 'VIEW' } = Astro.props;
     z-index: 9999;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 150ms ease;
   }
 
   .cursor[data-visible] {
@@ -72,7 +74,7 @@ const { label = 'VIEW' } = Astro.props;
   }
 
   .cursor[data-state='grow'] {
-    --cursor-scale: 0.175; /* 14px */
+    --cursor-scale: 0.25; /* 20px */
   }
 
   .cursor[data-state='view'] {
@@ -80,6 +82,16 @@ const { label = 'VIEW' } = Astro.props;
     --cursor-fill: #000;
   }
 
+  /* White + difference: black on white, and the word underneath reads inverted. */
+  .cursor[data-state='invert'] {
+    --cursor-scale: 0.55; /* 44px */
+    --cursor-fill: #fff;
+    mix-blend-mode: difference;
+  }
+  .cursor[data-state='invert'],
+  .cursor[data-prev='invert'] {
+    --cursor-morph: 200ms ease;
+  }
   .cursor-pos {
     position: absolute;
     top: 0;
@@ -122,17 +134,16 @@ const { label = 'VIEW' } = Astro.props;
     opacity: 1;
     transition-delay: 100ms;
   }
-
   /* Same gray as the darkest leaf shadow (--shadow-alpha comes from SHADOW_DARKNESS);
      multiply deepens it where it overlaps a leaf shadow, like real overlapping shade.
      --cursor-shadow-peak offsets the blur thinning the center of such a small shape. */
   .cursor-shadow {
     --cursor-shadow-peak: 1.12;
-    width: 42px;
-    height: 42px;
+    width: 59px;
+    height: 59px;
     border-radius: 46% 54% 58% 42% / 52% 44% 56% 48%;
     background-color: rgb(0 0 0 / calc(var(--shadow-alpha, 0.18) * var(--cursor-shadow-peak)));
-    filter: blur(10px);
+    filter: blur(14px);
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 250ms ease-out;
@@ -185,12 +196,11 @@ const { label = 'VIEW' } = Astro.props;
   /** Shadow follow lerp (at 60fps); lower than the dot so it trails slightly behind. */
   const SHADOW_EASE = 0.28;
   /** Resting offset of the cast shadow from the pointer, in px. */
-  const SHADOW_OFFSET = { x: 10, y: 14 };
+  const SHADOW_OFFSET = { x: 14, y: 20 };
   /** Max elongation of the shadow along its direction of travel. */
   const MAX_STRETCH = 1.12;
   /** Shadow speed (px per frame) that reaches MAX_STRETCH. */
   const STRETCH_SPEED = 20;
-
   const TEXT_FIELD =
     'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])';
   const CLICKABLE = 'a[href], button, [role="button"], [data-cursor]';
@@ -232,6 +242,7 @@ const { label = 'VIEW' } = Astro.props;
       if (!el) return { state: 'default' };
       const mode = el.dataset.cursor;
       if (mode === 'default' || mode === 'hide') return { state: mode };
+      if (mode === 'invert') return { state: 'invert' };
       if (mode === 'view') return { state: 'view', label: el.closest<HTMLElement>('[data-cursor-label]')?.dataset.cursorLabel };
       return { state: 'grow' };
     }
@@ -256,6 +267,7 @@ const { label = 'VIEW' } = Astro.props;
     }
 
     function render() {
+      if (root.dataset.state !== state) root.dataset.prev = root.dataset.state;
       root.dataset.state = state;
       root.dataset.zone = zone;
       root.toggleAttribute('data-visible', inside && hasMoved && state !== 'hide');

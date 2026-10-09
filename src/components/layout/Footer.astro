@@ -1,24 +1,57 @@
 ---
+/**
+ * Centered signature footer: the live MW logo standing on a ground line (Seattle's real sun
+ * and shadow; hover to scrub the sun along its path), a mailto line and contact links.
+ */
 import Container from './Container.astro';
 import MWLogo from '@/components/ui/MWLogo.astro';
-import SocialLinks from '@/components/ui/SocialLinks.astro';
-import { site } from '@/data/site';
+import { footerLinks, site } from '@/data/site';
 
 const year = new Date().getFullYear();
 ---
 
-<footer class="mt-40 border-t border-line">
-  <Container class="grid grid-cols-[1fr_auto_1fr] items-end gap-10 py-16">
-    <div>
-      <p class="text-3xl font-medium tracking-tight">Let’s work together.</p>
-      <a href={`mailto:${site.email}`} class="mt-3 inline-block text-muted hover:text-ink">
-        {site.email}
-      </a>
-    </div>
-    <MWLogo variant="live" label={`${site.fullName} monogram`} class="self-center" />
-    <div class="flex flex-col items-end gap-6">
-      <SocialLinks />
-      <p class="text-sm text-subtle">© {year} {site.fullName}</p>
-    </div>
+<footer class="bg-white pt-24 pb-12">
+  <Container class="flex flex-col items-center text-center">
+    <MWLogo variant="live" label="Mengying Wang" class="relative z-[1]" />
+    <span class="h-px w-[720px] bg-[#e5e5e5]" aria-hidden="true"></span>
+
+    <a
+      href={`mailto:${site.email}`}
+      class="mt-7 text-[22px] font-medium text-[#111] transition-colors duration-200 hover:text-[#555]"
+    >
+      Let’s work together.
+    </a>
+
+    <nav aria-label="Contact" class="mt-5">
+      <ul class="footer-links flex items-center gap-3.5 text-[13px] tracking-[0.08em] text-[#111] uppercase">
+        {
+          footerLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="underline decoration-[#c4c4c4] decoration-1 underline-offset-[5px] transition-[text-decoration-color] duration-200 hover:decoration-[#111]"
+                target={link.newTab ? '_blank' : undefined}
+                rel={link.newTab ? 'noopener noreferrer' : undefined}
+              >
+                {link.label}
+                {link.newTab && <span aria-hidden="true"> ↗</span>}
+                {link.newTab && <span class="sr-only"> (opens in a new tab)</span>}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <p class="mt-8 font-mono text-[11px] tracking-[0.04em] text-[#b0b0b0]">
+      No shadow was harmed in the making of this site · © {year}
+    </p>
   </Container>
 </footer>
+
+<style>
+  .footer-links li + li::before {
+    content: '·' / '';
+    margin-right: 14px;
+  }
+</style>

@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import Container from '@/components/layout/Container.astro';
 import Tag from '@/components/ui/Tag.astro';
+import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
 import type { WorkEntry } from '@/lib/work';
 
 interface Props {
@@ -19,8 +20,14 @@ const { title, subtitle, type, cover, summary } = Astro.props.project.data;
   </Container>
 
   <Container>
-    <div class="aspect-[16/9] overflow-hidden bg-surface">
-      {cover && <Image src={cover} alt={`${title} hero`} class="h-full w-full object-cover" loading="eager" />}
+    <div class="aspect-[16/9] overflow-hidden">
+      {
+        cover ? (
+          <Image src={cover} alt={`${title} hero`} class="h-full w-full object-cover" loading="eager" />
+        ) : (
+          <CoverPlaceholder title={title} class="h-full w-full" />
+        )
+      }
     </div>
   </Container>
 

@@ -1,0 +1,16 @@
+---
+/** Gray stand-in for a project cover (16:9, 1600×900) until the real one is added. */
+interface Props {
+  title: string;
+  class?: string;
+}
+
+const { title, class: className } = Astro.props;
+---
+
+<div
+  class:list={['flex items-center justify-center bg-[#f2f2f2] text-[15px] text-[#8a8a8a]', className]}
+  aria-hidden="true"
+>
+  {title} — Cover 1600×900
+</div>
