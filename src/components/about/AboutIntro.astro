@@ -1,0 +1,344 @@
+---
+/**
+ * About hero as a two-act, scroll-driven sequence inside a sticky stage:
+ *   Act 1 — portrait + large headline.
+ *   Act 2 — the headline fades away and the portrait flies down into the "me" dot of the
+ *           latitude sundial, while the bio and the sundial fade in.
+ * Everything is scrubbed by scroll progress p (0 → 1 over the first 100vh of the section).
+ * The stage is 80px shorter than the viewport, so the next section peeks in once it releases.
+ * With reduced motion it's a plain static layout instead.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import Emphasis from '@/components/ui/Emphasis.astro';
+import ScrollHint from '@/components/home/ScrollHint.astro';
+import LatitudeSundial from './LatitudeSundial.astro';
+import { aboutHero } from '@/data/about';
+
+const { portrait } = aboutHero;
+const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.src));
+---
+
+<section class="about-seq relative -mt-20" data-seq data-hero>
+  <!-- Where the sequence finishes (p = 1); the first scroll hint jumps here. -->
+  <span id="about-more" class="about-seq-end" aria-hidden="true"></span>
+
+  <div class="about-stage" data-stage>
+    <div class="about-act1">
+      <div class="about-portrait" data-portrait>
+        {
+          hasPortrait ? (
+            <img src={portrait.src} alt={portrait.alt} width="140" height="140" class="size-full object-cover" />
+          ) : (
+            <div class="size-full bg-[#eee]" role="img" aria-label={portrait.alt} />
+          )
+        }
+        <span class="about-portrait-ink" aria-hidden="true" data-portrait-ink></span>
+      </div>
+      <h1
+        class="about-headline mt-8 text-[52px] leading-[1.2] font-medium tracking-[-0.02em] text-[#111]"
+        data-headline
+      >
+        {
+          aboutHero.headline.map((line, i) => (
+            <>
+              {i > 0 && <br />}
+              <Emphasis text={line} />
+            </>
+          ))
+        }
+      </h1>
+      <ScrollHint target="about-more" label={aboutHero.scrollHint} autoHide={false} />
+    </div>
+
+    <div class="about-act2" data-act2>
+      <p
+        class="about-bio mx-auto max-w-[640px] text-center text-[19px] leading-[1.6] text-balance text-[#333]"
+        data-bio
+      >
+        {aboutHero.bio}
+      </p>
+      <div class="about-sundial-block" data-sundial-block>
+        <LatitudeSundial />
+      </div>
+    </div>
+
+    <ScrollHint target="education" label={aboutHero.nextHint} autoHide={false} mono class="about-next-hint" />
+  </div>
+</section>
+
+<style>
+  .about-seq {
+    height: calc(200vh - 80px);
+  }
+
+  .about-seq-end {
+    position: absolute;
+    left: 0;
+    top: 100vh;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+
+  /* 80px shorter than the viewport: the next section peeks in under it once it releases. */
+  .about-stage {
+    position: sticky;
+    top: 0;
+    height: calc(100vh - 80px);
+    height: calc(100dvh - 80px);
+    overflow: hidden;
+  }
+
+  .about-act1 {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px 96px;
+    text-align: center;
+  }
+
+  /* Above Act 2, so once it has landed it reads as the "me" dot. */
+  .about-portrait {
+    position: relative;
+    z-index: 2;
+    width: 140px;
+    height: 140px;
+    flex: none;
+    overflow: hidden;
+    border-radius: 9999px;
+    will-change: transform;
+  }
+
+  .about-portrait-ink {
+    position: absolute;
+    inset: 0;
+    background: #111;
+    opacity: 0;
+  }
+
+  /* Above the portrait, which passes behind the text on its way down. */
+  .about-headline {
+    position: relative;
+    z-index: 3;
+    will-change: transform, opacity;
+  }
+
+  /* Centered between the nav and the bottom hint. The sundial shrinks on short screens so the stack fits. */
+  .about-act2 {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px 136px;
+    --sundial-max-width: clamp(320px, calc((100dvh - 575px) * 3), 760px);
+  }
+
+  .about-sundial-block {
+    width: 100%;
+    margin-top: 32px;
+  }
+
+  /* Act 2 starts hidden; the script scrubs it in. */
+  .about-bio,
+  .about-sundial-block {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  .about-stage :global(.about-next-hint) {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 400ms ease,
+      visibility 0s linear 400ms;
+  }
+  .about-stage :global(.about-next-hint[data-visible]) {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 400ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-seq {
+      height: auto;
+    }
+    .about-seq-end {
+      top: 100vh;
+      top: 100dvh;
+      scroll-margin-top: 80px;
+    }
+    .about-stage {
+      position: relative;
+      height: auto;
+      overflow: visible;
+    }
+    .about-act1 {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+    .about-act2 {
+      position: static;
+      padding-top: 24px;
+      padding-bottom: 140px;
+      --sundial-max-width: 760px;
+    }
+    .about-bio,
+    .about-sundial-block {
+      opacity: 1;
+      transform: none;
+    }
+    .about-stage :global(.about-next-hint) {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+</style>
+
+<script>
+  /** The portrait has landed on the "me" dot. */
+  const LAND_AT = 0.5;
+  /** The sundial is fully shown, so the real SVG dot takes over from the portrait. */
+  const SWAP_AT = 0.9;
+  const AUTOPLAY_AT = 0.8;
+  /** Scrolling this far past the end of the sequence hides the bottom hint. */
+  const NEXT_HINT_SCROLL_OFF = 40;
+
+  const seq = document.querySelector<HTMLElement>('[data-seq]');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (seq && !reduceMotion) {
+    const q = <T extends Element>(sel: string) => seq.querySelector<T>(sel)!;
+    const stage = q<HTMLElement>('[data-stage]');
+    const portrait = q<HTMLElement>('[data-portrait]');
+    const ink = q<HTMLElement>('[data-portrait-ink]');
+    const headline = q<HTMLElement>('[data-headline]');
+    const act2 = q<HTMLElement>('[data-act2]');
+    const bio = q<HTMLElement>('[data-bio]');
+    const block = q<HTMLElement>('[data-sundial-block]');
+    const sundial = q<HTMLElement>('[data-sundial]');
+    const svg = q<SVGSVGElement>('[data-sundial] svg');
+    const meDot = q<SVGCircleElement>('[data-me-dot]');
+    const [moreHint, nextHint] = [...seq.querySelectorAll<HTMLElement>('[data-scroll-hint]')].map((a) => a.parentElement!);
+    const end = q<HTMLElement>('#about-more');
+
+    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+    const range = (p: number, from: number, to: number) => clamp01((p - from) / (to - from));
+    const smooth = (t: number) => t * t * (3 - 2 * t);
+
+    const from = { x: 0, y: 0, size: 140 };
+    let p = -1;
+    let queued = false;
+    let started = false;
+
+    // The portrait's layout box (stage coordinates), unaffected by the transforms applied below.
+    function measure() {
+      from.size = portrait.offsetWidth;
+      from.x = portrait.offsetLeft + from.size / 2;
+      from.y = portrait.offsetTop + from.size / 2;
+    }
+
+    // Where the "me" dot currently is on screen, including Act 2's own transform.
+    function meDotOnStage() {
+      const m = svg.getScreenCTM();
+      if (!m) return null;
+      const pt = new DOMPoint(meDot.cx.baseVal.value, meDot.cy.baseVal.value).matrixTransform(m);
+      const s = stage.getBoundingClientRect();
+      return { x: pt.x - s.left, y: pt.y - s.top, size: meDot.r.baseVal.value * 2 * m.a };
+    }
+
+    // Done autoplaying, or the visitor has picked a stop.
+    const sundialSettled = () =>
+      !sundial.hasAttribute('data-autoplay-pending') && !sundial.hasAttribute('data-autoplaying');
+
+    function render() {
+      queued = false;
+      const total = seq!.offsetHeight - stage.offsetHeight;
+      const scrolled = -seq!.getBoundingClientRect().top;
+      p = clamp01(scrolled / total);
+
+      const fade = smooth(range(p, 0, 0.45));
+      headline.style.transform = `translateY(${-24 * fade}px) scale(${1 - 0.1 * fade})`;
+      headline.style.opacity = String(1 - fade);
+      // It's stacked above Act 2, so once gone it mustn't catch the pointer.
+      headline.style.visibility = fade === 1 ? 'hidden' : '';
+
+      const moreOpacity = 1 - range(p, 0, 0.1);
+      moreHint.style.opacity = String(moreOpacity);
+      moreHint.style.visibility = moreOpacity ? '' : 'hidden';
+
+      const bioIn = smooth(range(p, 0.4, 0.6));
+      bio.style.opacity = String(bioIn);
+      bio.style.transform = `translateY(${16 * (1 - bioIn)}px)`;
+
+      const sundialIn = smooth(range(p, 0.55, 0.9));
+      block.style.opacity = String(sundialIn);
+      block.style.transform = `translateY(${16 * (1 - sundialIn)}px)`;
+
+      // While the portrait is in flight the sundial (still hidden) rewinds to Benxi.
+      if (p < LAND_AT && (sundial.dataset.active !== '0' || sundial.hasAttribute('data-autoplaying'))) {
+        sundial.removeAttribute('data-play');
+        sundial.dispatchEvent(new CustomEvent('sundial:reset'));
+      }
+      if (p < LAND_AT) started = false;
+
+      // FLIP: the portrait keeps its Act 1 layout box and is transformed onto the "me" dot.
+      const dot = meDotOnStage();
+      if (dot && p < SWAP_AT) {
+        const fly = smooth(range(p, 0, LAND_AT));
+        const scale = 1 + (dot.size / from.size - 1) * fly;
+        portrait.style.transform = `translate(${(dot.x - from.x) * fly}px, ${(dot.y - from.y) * fly}px) scale(${scale})`;
+        portrait.style.visibility = '';
+      } else {
+        portrait.style.visibility = 'hidden';
+      }
+      ink.style.opacity = String(smooth(range(p, 0.1, 0.45)));
+      meDot.style.opacity = p < SWAP_AT ? '0' : '1';
+
+      // Act 2 only takes pointer/keyboard input once it's mostly visible.
+      const awake = sundialIn > 0.5;
+      act2.style.pointerEvents = awake ? '' : 'none';
+      sundial.toggleAttribute('data-dormant', !awake);
+
+      if (!started && p >= AUTOPLAY_AT) {
+        started = true;
+        sundial.setAttribute('data-play', '');
+        sundial.dispatchEvent(new CustomEvent('sundial:play'));
+      }
+
+      const showNext = sundialSettled() && p >= AUTOPLAY_AT && scrolled - total < NEXT_HINT_SCROLL_OFF;
+      nextHint.toggleAttribute('data-visible', showNext);
+    }
+
+    const queue = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(render);
+    };
+    const remeasure = () => {
+      measure();
+      queue();
+    };
+
+    measure();
+    render();
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', remeasure);
+    document.fonts?.ready.then(remeasure);
+    new MutationObserver(queue).observe(sundial, {
+      attributes: true,
+      attributeFilter: ['data-autoplay-pending', 'data-autoplaying'],
+    });
+
+    // Tabbing into Act 2 before it's shown jumps to where it's fully visible.
+    act2.addEventListener('focusin', () => {
+      if (p < SWAP_AT) end.scrollIntoView({ behavior: 'auto' });
+    });
+  }
+</script>

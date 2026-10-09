@@ -1,0 +1,53 @@
+---
+/** An About section: sticky mono name on the left, content on the right. */
+interface Props {
+  id: string;
+  label: string;
+}
+
+const { id, label } = Astro.props;
+---
+
+<section id={id} class="grid scroll-mt-20 grid-cols-[22%_78%]" data-reveal>
+  <!-- 40px below the sticky nav (h-20). -->
+  <h2 class="sticky top-[calc(5rem+40px)] self-start pr-6 font-mono text-[13px] leading-[1.5] text-[#8a8a8a]">
+    {label}
+  </h2>
+  <div class="max-w-[760px]">
+    <slot />
+  </div>
+</section>
+
+<style>
+  /* On the children, so the section's own box (the scroll target) never moves. */
+  [data-reveal] > * {
+    transition:
+      opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+      translate 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-reveal][data-reveal-pending] > * {
+    opacity: 0;
+    translate: 0 20px;
+  }
+</style>
+
+<script>
+  // Hidden only once JS is running, so the content is never lost without it.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const sections = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.removeAttribute('data-reveal-pending');
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '0px 0px -40px 0px' },
+    );
+    sections.forEach((section) => {
+      section.setAttribute('data-reveal-pending', '');
+      observer.observe(section);
+    });
+  }
+</script>

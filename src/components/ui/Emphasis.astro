@@ -1,0 +1,10 @@
+---
+/** Renders copy where *wrapped words* are set in the italic serif. */
+interface Props {
+  text: string;
+}
+
+const parts = Astro.props.text.split(/\*([^*]+)\*/);
+---
+
+{parts.map((part, i) => (i % 2 ? <em class="font-serif font-normal">{part}</em> : part))}

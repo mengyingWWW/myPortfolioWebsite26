@@ -1,0 +1,606 @@
+---
+/**
+ * The noon sun at the four latitudes Mengying has lived at, drawn like an architectural section:
+ * an object on a ground line, its cast shadow, the light ray, and the sun's altitude.
+ * A single "me" dot stands somewhere meaningful in each scene, like a scale figure in a section,
+ * and travels along an arc between scenes.
+ * Plays through the stops once when the page sends "sundial:play" (or sets data-play), and
+ * rewinds to the first stop on "sundial:reset"; hovering/clicking a latitude (or ← →) takes over.
+ */
+import { sundial } from '@/data/about';
+import { GROUND_Y, ME_DOT_R, sundialGeometry } from '@/lib/sundial';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const { stops } = sundial;
+const first = stops[0];
+const geo = sundialGeometry(first.altitude, first.height);
+
+const G = GROUND_Y;
+/** The sun, in screen px (its group is scaled to cancel the drawing's scale): a solid center inside two
+    faint rings, so it reads clearly larger than the cursor at any size. SUN_R is the outer ring. */
+const SUN_R = 24;
+const sunRings = [
+  { r: 15, opacity: 0.35 },
+  { r: SUN_R, opacity: 0.15 },
+];
+/** Initial sun-hint placement at the default 760px width; the script keeps it 13px / 18px on screen. */
+const hintScale = 1000 / 760;
+const ticks = Array.from({ length: 47 }, (_, i) => 40 + i * 20).map((x) => ({ x, long: (x - 40) % 100 === 0 }));
+
+const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, still }) => ({
+  altitude,
+  height,
+  caption,
+  floating: !!floating,
+  meAnchor,
+  still: !!still,
+}));
+---
+
+<div
+  class:list={['sundial flex flex-col items-center', className]}
+  data-sundial
+  data-stops={JSON.stringify(clientStops)}
+  data-autoplay-pending
+  data-active="0"
+>
+  <div class="sundial-figure">
+    <svg class="block h-auto w-full overflow-visible" viewBox="0 0 1000 400" role="img" aria-label={sundial.ariaLabel}>
+      <defs>
+        <filter id="sundial-soft" x="-20%" y="-50%" width="140%" height="200%">
+          <feGaussianBlur stdDeviation="2.2" />
+        </filter>
+        <filter id="sundial-blur" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="9" />
+        </filter>
+
+        <g id="sundial-stick">
+          <rect x="398.5" y="176" width="3" height="154" />
+        </g>
+        <g id="sundial-building">
+          <path d="M330 330 V212 L400 150 L470 212 V330 Z" />
+          <path d="M330 271 H470 M330 212 H470" fill="none" />
+          <rect x="388" y="292" width="24" height="38" />
+        </g>
+        <g id="sundial-floating">
+          <path d="M316 236 L330 194 C362 164 432 156 478 180 L488 222 C452 238 382 248 316 236 Z" />
+          <path d="M326 214 C376 206 436 202 484 200" fill="none" />
+          <path d="M346 236 L352 214 M392 242 L396 208 M440 236 L442 204" fill="none" />
+        </g>
+        <g id="sundial-monitor">
+          <rect x="306" y="168" width="188" height="128" rx="8" />
+          <path d="M306 190 H494 M326 214 H420 M326 234 H470 M326 254 H446" fill="none" />
+          <rect x="396" y="296" width="8" height="30" />
+          <rect x="366" y="326" width="68" height="4" />
+        </g>
+      </defs>
+
+      <!-- One flat tone for the whole shadow, so overlapping parts don't darken. -->
+      <g filter="url(#sundial-soft)" opacity="0.14">
+        <g transform={geo.shadowTransform} fill="#000" color="#000" stroke="none" data-shadow>
+          {
+            stops.map(
+              (stop, i) =>
+                !stop.floating && (
+                  <use
+                    href={`#sundial-${stop.object}`}
+                    class="sundial-shape"
+                    data-shape={i}
+                    data-hidden={i ? '' : undefined}
+                  />
+                ),
+            )
+          }
+        </g>
+      </g>
+
+      <!-- A floating object casts a detached shadow on the ground instead of a projected one. -->
+      <ellipse
+        class="sundial-shape"
+        cx={geo.floatShadowX}
+        cy={G + 16}
+        rx="84"
+        ry="11"
+        fill="rgba(0,0,0,0.14)"
+        filter="url(#sundial-blur)"
+        data-float-shadow
+        data-hidden={first.floating ? undefined : ''}
+      />
+
+      <line x1="40" y1={G} x2="960" y2={G} stroke="#111" stroke-width="1" />
+      <g stroke="#111" stroke-width="0.8">
+        {ticks.map(({ x, long }) => <line x1={x} x2={x} y1={G} y2={G + (long ? 8 : 4)} />)}
+      </g>
+
+      <line
+        x1={geo.ray.x1}
+        y1={geo.ray.y1}
+        x2={geo.ray.x2}
+        y2={geo.ray.y2}
+        stroke="#111"
+        stroke-width="0.8"
+        stroke-dasharray="3 5"
+        data-ray
+      />
+      <path d={geo.arc} fill="none" stroke="#111" stroke-width="0.8" data-arc />
+      <g transform={`${geo.sun} scale(${hintScale})`} data-sun>
+        {
+          sunRings.map(({ r, opacity }) => (
+            <circle class="sundial-sun-ring" r={r} fill="none" stroke="#111" stroke-width="0.6" opacity={opacity} />
+          ))
+        }
+        <circle r="8" fill="#111" />
+      </g>
+      <text
+        class="sundial-sun-hint"
+        x={geo.ray.x1 + (SUN_R + 18) * hintScale}
+        y={geo.ray.y1 + (13 / 3) * hintScale}
+        font-size={13 * hintScale}
+        fill="#8a8a8a"
+        aria-hidden="true"
+        data-sun-hint>{sundial.hint}</text
+      >
+
+      <g fill="#fff" color="#111" stroke="#111" stroke-width="1.3">
+        {
+          stops.map((stop, i) => (
+            <use href={`#sundial-${stop.object}`} class="sundial-shape" data-shape={i} data-hidden={i ? '' : undefined} />
+          ))
+        }
+      </g>
+      <circle cx={first.meAnchor.x} cy={first.meAnchor.y} r={ME_DOT_R} fill="#111" data-me-dot />
+
+      <text
+        class="sundial-mono"
+        x={geo.label.x}
+        y={geo.label.y}
+        text-anchor="start"
+        font-size="11"
+        letter-spacing="0.06em"
+        fill="#111"
+        data-angle>{geo.label.text}</text
+      >
+    </svg>
+
+    <!-- Pulled up so the row sits 36px under the ground line (which is 7% of the width above the SVG's bottom), clear of the cast shadows. -->
+    <div class="sundial-controls relative flex justify-center gap-12" role="group" aria-label={sundial.controlsLabel}>
+      {
+        stops.map((stop, i) => (
+          <button
+            type="button"
+            class="sundial-stop relative flex flex-col items-center pb-2 text-[#b0b0b0] transition-colors duration-200 hover:text-[#111] aria-pressed:text-[#111]"
+            aria-pressed={i === 0 ? 'true' : 'false'}
+            data-stop={i}
+          >
+            <span class="sundial-stop-text font-mono text-[12px] leading-[1.4] tracking-[0.12em]">{stop.lat}</span>
+            <span class="sundial-stop-text mt-1 text-[13px] leading-[1.3]">{stop.place}</span>
+            <span class="sundial-progress" aria-hidden="true" />
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Every caption sits invisibly in the same cell, so the box always has the longest one's height. -->
+  <div
+    class="mx-auto mt-[18px] grid w-full max-w-[600px] text-center font-serif text-[17px] leading-[1.5] text-balance text-[#555] italic"
+  >
+    {
+      stops.map((stop) => (
+        <p class="invisible col-start-1 row-start-1" aria-hidden="true">
+          {stop.caption}
+        </p>
+      ))
+    }
+    <p class="sundial-caption col-start-1 row-start-1" data-caption>{first.caption}</p>
+  </div>
+</div>
+
+<style>
+  .sundial-figure {
+    width: min(100%, var(--sundial-max-width, 760px));
+  }
+
+  .sundial-controls {
+    margin-top: calc(36px - 7%);
+  }
+
+  /* White halo keeps the angle legible over the tick marks and ray. */
+  .sundial-mono {
+    font-family: var(--font-mono);
+    stroke: #fff;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    paint-order: stroke;
+  }
+
+  /* The cast shadows reach below the ground line, behind the labels. */
+  .sundial-stop-text {
+    text-shadow:
+      0 0 3px #fff,
+      0 0 6px #fff,
+      0 0 10px #fff;
+  }
+
+  .sundial-sun-hint {
+    font-family: var(--font-serif);
+    font-style: italic;
+    transition: opacity 400ms ease;
+  }
+  .sundial[data-interacted] .sundial-sun-hint {
+    opacity: 0;
+  }
+
+  /* Scaled about the sun's center by the hover pulse. */
+  .sundial-sun-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .sundial-shape {
+    transition: opacity 700ms ease;
+  }
+  .sundial-shape[data-hidden] {
+    opacity: 0;
+  }
+
+  .sundial-caption {
+    transition:
+      opacity 0.45s ease,
+      transform 0.45s ease;
+  }
+  .sundial-caption[data-swapping] {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  /* Faint underline on hover, under the active stop's solid one. */
+  .sundial-stop::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: #d0d0d0;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .sundial-stop:hover::before {
+    opacity: 1;
+  }
+
+  /* Thin line under the active latitude; during autoplay it fills over the stop's duration. */
+  .sundial-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: #111;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .sundial-stop[aria-pressed='true'] .sundial-progress {
+    transform: scaleX(1);
+  }
+  .sundial[data-autoplay-pending] .sundial-stop .sundial-progress {
+    transform: scaleX(0);
+  }
+  .sundial[data-autoplaying] .sundial-stop[aria-pressed='true'] .sundial-progress {
+    animation: sundial-progress var(--sundial-stop-duration, 3s) linear both;
+  }
+
+  @keyframes sundial-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sundial-shape,
+    .sundial-sun-hint,
+    .sundial-caption,
+    .sundial-stop::before {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { sundialGeometry } from '@/lib/sundial';
+
+  type Point = { x: number; y: number };
+  type Stop = { altitude: number; height: number; caption: string; floating: boolean; meAnchor: Point; still: boolean };
+
+  /** Share of the remaining distance covered per 60fps frame. */
+  const EASE = 0.06;
+  const STOP_DURATION = 3000;
+  /** Caption fades out for this long before the text changes. */
+  const CAPTION_SWAP = 220;
+  const SETTLED = 0.01;
+  /** Outer ring radius in screen px (see the markup). */
+  const SUN_R = 24;
+  /** While a latitude is hovered the rings pulse outward, one half a cycle after the other. */
+  const PULSE_MS = 2400;
+  const PULSE_SCALE = 1.6;
+  /** After the last pulse ends, the rings fade back in at rest over this long. */
+  const PULSE_SETTLE_MS = 400;
+  /** Sun hint size and gap from the sun's edge, in screen px. */
+  const SUN_HINT_PX = 13;
+  const SUN_HINT_GAP_PX = 18;
+  /** "Me" travels between scenes over this long (matching the objects' crossfade), arcing this high. */
+  const ME_FLIGHT = 700;
+  const ME_LIFT = 60;
+  /** Idle drift of the sun's altitude (± degrees, sine period in ms) at every stop not marked still. */
+  const DRIFT_DEG = 0.6;
+  const DRIFT_PERIOD = 6000;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-sundial]').forEach((root) => {
+    const stops: Stop[] = JSON.parse(root.dataset.stops ?? '[]');
+    if (!stops.length) return;
+    const q = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
+    const svg = q<SVGSVGElement>('svg');
+    const shadow = q<SVGGElement>('[data-shadow]');
+    const ray = q<SVGLineElement>('[data-ray]');
+    const arc = q<SVGPathElement>('[data-arc]');
+    const angle = q<SVGTextElement>('[data-angle]');
+    const sun = q<SVGGElement>('[data-sun]');
+    const sunHint = q<SVGTextElement>('[data-sun-hint]');
+    const rings = [...root.querySelectorAll<SVGCircleElement>('.sundial-sun-ring')];
+    const meDot = q<SVGCircleElement>('[data-me-dot]');
+    const floatShadow = q<SVGEllipseElement>('[data-float-shadow]');
+    const caption = q<HTMLElement>('[data-caption]');
+    const shapes = [...root.querySelectorAll<SVGUseElement>('[data-shape]')];
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-stop]')];
+
+    let active = 0;
+    const cur = { altitude: stops[0].altitude, height: stops[0].height };
+    const target = { ...cur };
+    const driftFor = (stop: Stop) => (reduceMotion || stop.still ? 0 : DRIFT_DEG);
+    /** Current drift amplitude; eases toward the active stop's, so arriving at a still stop settles smoothly. */
+    let drift = driftFor(stops[0]);
+    let driftTarget = drift;
+    let inView = true;
+    let frame = 0;
+    let last = 0;
+    let swapTimer = 0;
+    let autoplay: number[] = [];
+    /** SVG units per screen px. */
+    let unit = 1000 / 760;
+
+    function draw(altitude = cur.altitude) {
+      const g = sundialGeometry(altitude, cur.height);
+      shadow.setAttribute('transform', g.shadowTransform);
+      ray.setAttribute('x1', String(g.ray.x1));
+      ray.setAttribute('y1', String(g.ray.y1));
+      ray.setAttribute('x2', String(g.ray.x2));
+      sun.setAttribute('transform', `${g.sun} scale(${unit})`);
+      sunHint.setAttribute('x', String(g.ray.x1 + (SUN_R + SUN_HINT_GAP_PX) * unit));
+      sunHint.setAttribute('y', String(g.ray.y1 + (SUN_HINT_PX / 3) * unit));
+      sunHint.setAttribute('font-size', String(SUN_HINT_PX * unit));
+      arc.setAttribute('d', g.arc);
+      angle.setAttribute('x', String(g.label.x));
+      angle.setAttribute('y', String(g.label.y));
+      angle.textContent = g.label.text;
+      floatShadow.setAttribute('cx', String(g.floatShadowX));
+    }
+
+    let me: Point = { ...stops[0].meAnchor };
+    let flight = 0;
+    function placeMe(p: Point) {
+      me = p;
+      meDot.setAttribute('cx', p.x.toFixed(2));
+      meDot.setAttribute('cy', p.y.toFixed(2));
+    }
+
+    // Along a quadratic curve from wherever "me" is now, lifted above the midpoint.
+    function flyMe(to: Point) {
+      cancelAnimationFrame(flight);
+      if (reduceMotion) return placeMe(to);
+      const from = { ...me };
+      const via = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 - ME_LIFT };
+      let start = 0;
+      const step = (now: number) => {
+        start ||= now;
+        const k = Math.min(1, (now - start) / ME_FLIGHT);
+        const e = k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2;
+        const u = 1 - e;
+        placeMe({
+          x: u * u * from.x + 2 * u * e * via.x + e * e * to.x,
+          y: u * u * from.y + 2 * u * e * via.y + e * e * to.y,
+        });
+        flight = k < 1 ? requestAnimationFrame(step) : 0;
+      };
+      flight = requestAnimationFrame(step);
+    }
+
+    function tick(now: number) {
+      const frames = last ? Math.min((now - last) / (1000 / 60), 4) : 1;
+      last = now;
+      const k = 1 - Math.pow(1 - EASE, frames);
+      cur.altitude += (target.altitude - cur.altitude) * k;
+      cur.height += (target.height - cur.height) * k;
+      drift += (driftTarget - drift) * k;
+
+      const settled =
+        Math.abs(target.altitude - cur.altitude) < SETTLED &&
+        Math.abs(target.height - cur.height) < SETTLED &&
+        Math.abs(driftTarget - drift) < SETTLED / 10;
+      if (settled) {
+        Object.assign(cur, target);
+        drift = driftTarget;
+      }
+      draw(cur.altitude + drift * Math.sin((2 * Math.PI * now) / DRIFT_PERIOD));
+      // Keeps running while drifting, but only while on screen.
+      frame = (settled && !drift) || !inView ? 0 : requestAnimationFrame(tick);
+    }
+
+    function animate() {
+      if (frame) return;
+      last = 0;
+      frame = requestAnimationFrame(tick);
+    }
+
+    function go(i: number) {
+      if (i === active) return;
+      active = i;
+      const stop = stops[i];
+
+      root.dataset.active = String(i);
+      buttons.forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
+      shapes.forEach((s) => s.toggleAttribute('data-hidden', Number(s.dataset.shape) !== i));
+      floatShadow.toggleAttribute('data-hidden', !stop.floating);
+      flyMe(stop.meAnchor);
+      target.altitude = stop.altitude;
+      target.height = stop.height;
+      driftTarget = driftFor(stop);
+
+      window.clearTimeout(swapTimer);
+      if (reduceMotion) {
+        Object.assign(cur, target);
+        draw();
+        caption.textContent = stop.caption;
+        return;
+      }
+
+      caption.setAttribute('data-swapping', '');
+      swapTimer = window.setTimeout(() => {
+        caption.textContent = stop.caption;
+        caption.removeAttribute('data-swapping');
+      }, CAPTION_SWAP);
+
+      animate();
+    }
+
+    function stopAutoplay() {
+      autoplay.forEach((t) => window.clearTimeout(t));
+      autoplay = [];
+      root.removeAttribute('data-autoplay-pending');
+      root.removeAttribute('data-autoplaying');
+    }
+
+    let interacted = false;
+    function takeOver() {
+      interacted = true;
+      root.setAttribute('data-interacted', '');
+      stopAutoplay();
+    }
+
+    // "data-autoplay-pending" means the journey hasn't played yet (or was rewound).
+    function play() {
+      if (!root.hasAttribute('data-autoplay-pending')) return;
+      root.removeAttribute('data-autoplay-pending');
+      root.setAttribute('data-autoplaying', '');
+      autoplay = stops.map((_, n) =>
+        window.setTimeout(() => {
+          if (n + 1 < stops.length) go(n + 1);
+          else root.removeAttribute('data-autoplaying');
+        }, STOP_DURATION * (n + 1)),
+      );
+    }
+
+    // Hovering a latitude "wakes" the sun: each ring scales out while fading, on a loop.
+    const pulses: (Animation | null)[] = rings.map(() => null);
+    function wakeSun() {
+      if (reduceMotion) return;
+      rings.forEach((ring, i) => {
+        const running = pulses[i];
+        // Hovered again before the last pulse ended: just keep looping.
+        if (running?.playState === 'running') return running.effect?.updateTiming({ iterations: Infinity });
+        const rest = Number(ring.getAttribute('opacity'));
+        pulses[i] = ring.animate(
+          [
+            { transform: 'scale(1)', opacity: rest },
+            { transform: `scale(${PULSE_SCALE})`, opacity: 0 },
+          ],
+          { duration: PULSE_MS, delay: (i * PULSE_MS) / 2, iterations: Infinity, easing: 'ease-out' },
+        );
+      });
+    }
+    // Let each ring finish the pulse it's in, then fade back in at rest.
+    function restSun() {
+      pulses.forEach((pulse, i) => {
+        if (!pulse) return;
+        const { currentIteration } = pulse.effect!.getComputedTiming();
+        if (currentIteration == null) {
+          pulse.cancel();
+          pulses[i] = null;
+          return;
+        }
+        pulse.effect!.updateTiming({ iterations: currentIteration + 1 });
+        pulse.finished
+          .then(() => {
+            if (pulses[i] !== pulse) return;
+            pulses[i] = null;
+            rings[i].animate([{ opacity: 0 }, { opacity: Number(rings[i].getAttribute('opacity')) }], {
+              duration: PULSE_SETTLE_MS,
+              easing: 'ease-out',
+            });
+          })
+          .catch(() => {});
+      });
+    }
+
+    buttons.forEach((button, i) => {
+      const select = () => {
+        takeOver();
+        go(i);
+      };
+      button.addEventListener('mouseenter', select);
+      button.addEventListener('pointerenter', wakeSun);
+      button.addEventListener('pointerleave', restSun);
+      button.addEventListener('click', select);
+      button.addEventListener('focus', select);
+    });
+
+    // Arrow keys only while the sundial is on screen (and not faded out), and never while typing.
+    new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView && drift) animate();
+    }).observe(root);
+    window.addEventListener('keydown', (e) => {
+      if (!inView || root.hasAttribute('data-dormant') || e.altKey || e.metaKey || e.ctrlKey) return;
+      if ((e.target as HTMLElement).closest?.('input, textarea, select, [contenteditable]')) return;
+      const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      takeOver();
+      go(Math.max(0, Math.min(stops.length - 1, active + step)));
+    });
+
+    new ResizeObserver(() => {
+      const width = svg.clientWidth;
+      if (!width) return;
+      unit = 1000 / width;
+      draw();
+    }).observe(svg);
+
+    root.style.setProperty('--sundial-stop-duration', `${STOP_DURATION}ms`);
+
+    if (reduceMotion) {
+      stopAutoplay();
+      go(stops.length - 1);
+    } else {
+      // The page decides when the journey starts: set data-play or dispatch "sundial:play".
+      root.addEventListener('sundial:play', play);
+      if (root.hasAttribute('data-play')) play();
+      // Rewind to the first stop (e.g. while it's hidden); the journey can play again
+      // unless the visitor has already taken control.
+      root.addEventListener('sundial:reset', () => {
+        stopAutoplay();
+        if (!interacted) root.setAttribute('data-autoplay-pending', '');
+        go(0);
+      });
+    }
+  });
+</script>

@@ -1,28 +1,30 @@
 ---
 /**
- * "View my work (NN)" hint at the bottom of the hero. NN is the number of project
- * cards ([data-project-card]) in the target section. Smooth-scrolls there on click
- * and fades out once the page has scrolled.
+ * "View my work" hint at the bottom of the hero. Smooth-scrolls to the target
+ * section on click and fades out once the page has scrolled.
  */
-import { getSortedWork } from '@/lib/work';
-
 interface Props {
   /** id of the section to scroll to. */
   target: string;
   label?: string;
   class?: string;
+  /** Fade out once the page has scrolled. Turn off when the page drives the fade itself. */
+  autoHide?: boolean;
+  /** Set the label in the monospace font. */
+  mono?: boolean;
 }
 
-const { target, label = 'View my work', class: className } = Astro.props;
-// Server-rendered so there's no flash; the script recounts the cards on the page.
-const count = String((await getSortedWork()).length).padStart(2, '0');
+const { target, label = 'View my work', class: className, autoHide = true, mono = false } = Astro.props;
 ---
 
 <div class:list={['absolute inset-x-0 bottom-8 z-10 flex justify-center', className]}>
-  <a href={`#${target}`} class="scroll-hint text-glow" data-scroll-hint data-cursor-label="SCROLL">
-    <span class="scroll-hint-label">
-      {label} (<span data-scroll-hint-count>{count}</span>)
-    </span>
+  <a
+    href={`#${target}`}
+    class="scroll-hint text-glow"
+    data-scroll-hint
+    data-auto-hide={autoHide ? '' : undefined}
+  >
+    <span class="scroll-hint-label" data-mono={mono ? '' : undefined}>{label}</span>
     <span class="scroll-hint-track" aria-hidden="true">
       <span class="scroll-hint-line">
         <span class="scroll-hint-dot"></span>
@@ -52,6 +54,10 @@ const count = String((await getSortedWork()).length).padStart(2, '0');
     text-transform: uppercase;
     color: #333;
     transition: letter-spacing 300ms ease-out;
+  }
+  .scroll-hint-label[data-mono] {
+    font-family: var(--font-mono);
+    font-weight: 400;
   }
 
   /* Reserves room for the extended line so hovering doesn't push the label up. */
@@ -126,17 +132,13 @@ const count = String((await getSortedWork()).length).padStart(2, '0');
   document.querySelectorAll<HTMLAnchorElement>('[data-scroll-hint]').forEach((hint) => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const target = document.querySelector(hint.hash);
-
-    const countEl = hint.querySelector('[data-scroll-hint-count]');
-    const cards = target?.querySelectorAll('[data-project-card]').length;
-    if (countEl && cards) countEl.textContent = String(cards).padStart(2, '0');
-
     hint.addEventListener('click', (e) => {
       if (!target) return;
       e.preventDefault();
       target.scrollIntoView({ behavior: reducedMotion.matches ? 'auto' : 'smooth' });
     });
 
+    if (!hint.hasAttribute('data-auto-hide')) return;
     const update = () => hint.toggleAttribute('data-hidden', window.scrollY > SCROLL_THRESHOLD);
     update();
     window.addEventListener('scroll', update, { passive: true });

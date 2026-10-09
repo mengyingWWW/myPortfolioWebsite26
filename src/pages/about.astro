@@ -1,41 +1,61 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Container from '@/components/layout/Container.astro';
-import SectionHeading from '@/components/ui/SectionHeading.astro';
-import SocialLinks from '@/components/ui/SocialLinks.astro';
-import ExperienceItem from '@/components/about/ExperienceItem.astro';
-import SkillList from '@/components/about/SkillList.astro';
-import { about, experience } from '@/data/about';
+import AboutIntro from '@/components/about/AboutIntro.astro';
+import AboutSection from '@/components/about/AboutSection.astro';
+import AboutField from '@/components/about/AboutField.astro';
+import SectionProgress from '@/components/about/SectionProgress.astro';
+import { education, experience, sectionLabels, skills } from '@/data/about';
+
 ---
 
-<BaseLayout title="About">
-  <Container as="section" class="pt-40 pb-20">
-    <h1 class="text-6xl leading-[1.1] font-medium tracking-tight">{about.heading}</h1>
-    <div class="mt-10 max-w-3xl space-y-6 text-xl leading-relaxed text-muted">
-      {about.bio.map((paragraph) => <p>{paragraph}</p>)}
-    </div>
-  </Container>
+<BaseLayout title="About" overlayNav>
+  <AboutIntro />
 
-  <Container as="section">
-    <div class="aspect-[4/5] w-5/12 overflow-hidden bg-surface">
-      <img src={about.portrait} alt={about.portraitAlt} class="h-full w-full object-cover" />
-    </div>
-  </Container>
+  <!-- Starts just under the hero, so it peeks into the bottom of the screen when the hero releases. -->
+  <div class="mx-auto max-w-[1120px] space-y-[112px] px-12">
+    <AboutSection id="education" label={sectionLabels.education}>
+      <div class="space-y-16">
+        {
+          education.map((entry) => (
+            <article>
+              <h3 class="mb-5 text-[28px] leading-[1.25] font-normal tracking-[-0.01em] text-[#111]">{entry.school}</h3>
+              <div class="space-y-5">
+                {entry.fields.map((field) => (
+                  <AboutField {...field} />
+                ))}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </AboutSection>
 
-  <Container as="section" class="pt-20">
-    <SectionHeading title="Contact" />
-    <SocialLinks />
-  </Container>
+    <AboutSection id="experience" label={sectionLabels.experience}>
+      <ul class="divide-y divide-[#e5e5e5] border-y border-[#e5e5e5]">
+        {
+          experience.map((entry) => (
+            <li class="py-6">
+              <h3 class="text-[22px] leading-[1.3] font-normal text-[#111]">{entry.org}</h3>
+              <p class="mt-1 text-[18px] leading-[1.4] text-[#777]">{entry.role}</p>
+              <p class="mt-1.5 text-[14px] leading-[1.4] text-[#8a8a8a]">{entry.year}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </AboutSection>
 
-  <Container as="section" class="pt-32">
-    <SectionHeading title="Experience" class="mb-0" />
-    <div>
-      {experience.map((item) => <ExperienceItem item={item} />)}
-    </div>
-  </Container>
+    <AboutSection id="skills" label={sectionLabels.skills}>
+      <div class="space-y-5">
+        {skills.map((group) => <AboutField label={group.label} value={group.items.join(' / ')} />)}
+      </div>
+    </AboutSection>
+  </div>
 
-  <Container as="section" class="pt-32">
-    <SectionHeading title="Skills" />
-    <SkillList />
-  </Container>
+  <SectionProgress
+    sections={[
+      { id: 'education', label: sectionLabels.education },
+      { id: 'experience', label: sectionLabels.experience },
+      { id: 'skills', label: sectionLabels.skills },
+    ]}
+  />
 </BaseLayout>

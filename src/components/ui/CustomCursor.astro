@@ -1,17 +1,18 @@
 ---
 /**
- * Custom cursor with two zones:
+ * Custom cursor: a 10px dot in two zones:
  *   hero   (over [data-cursor-zone="hero"]): a crisp dark dot plus a soft cast shadow
  *          that trails behind it, offset down-right as if lit by the same sun.
  *   normal (everywhere else): a white dot with difference blending.
- * Over clickable elements (a, button, [role="button"], [data-cursor]) the dot grows into a
- * solid black circle with a white label and the shadow fades out.
+ * Over clickable elements (a, button, [role="button"]) the dot just grows to 14px, so it never
+ * covers the (usually small) target. Only big targets opt into the large black circle with a
+ * white label, which hides the shadow.
  *
  * Per-element overrides:
- *   data-cursor-label="EMAIL"  label shown in the circle (default "VIEW")
+ *   data-cursor="view"         large labeled circle (big targets only, e.g. project cards)
+ *   data-cursor-label="EMAIL"  label shown in that circle (default "VIEW")
  *   data-cursor="default"      keep the plain dot on a clickable element
  *   data-cursor="hide"         hide the custom cursor
- *   data-cursor (any other)    show the circle, even on non-clickable elements
  */
 interface Props {
   /** Label shown when an element doesn't set data-cursor-label. */
@@ -40,7 +41,7 @@ const { label = 'VIEW' } = Astro.props;
     --cursor-morph: 350ms ease-out;
     --cursor-press: 1;
     /* Dot size as a fraction of --cursor-size. */
-    --cursor-scale: 0.225; /* 18px */
+    --cursor-scale: 0.125; /* 10px */
     --cursor-fill: #fff;
 
     position: fixed;
@@ -61,14 +62,17 @@ const { label = 'VIEW' } = Astro.props;
   }
 
   /* Blend modes only work on the outermost element (inner layers are isolated). */
-  .cursor[data-zone='normal'][data-state='default'] {
+  .cursor[data-zone='normal']:is([data-state='default'], [data-state='grow']) {
     mix-blend-mode: difference;
   }
 
-  .cursor[data-zone='hero'][data-state='default'] {
-    --cursor-scale: 0.125; /* 10px */
+  .cursor[data-zone='hero']:is([data-state='default'], [data-state='grow']) {
     --cursor-fill: #111;
     mix-blend-mode: multiply;
+  }
+
+  .cursor[data-state='grow'] {
+    --cursor-scale: 0.175; /* 14px */
   }
 
   .cursor[data-state='view'] {
@@ -135,7 +139,7 @@ const { label = 'VIEW' } = Astro.props;
     animation: cursor-dapple 4s ease-in-out infinite alternate;
   }
 
-  .cursor[data-zone='hero'][data-state='default'] .cursor-shadow {
+  .cursor[data-zone='hero']:is([data-state='default'], [data-state='grow']) .cursor-shadow {
     opacity: 1;
   }
 
@@ -228,7 +232,8 @@ const { label = 'VIEW' } = Astro.props;
       if (!el) return { state: 'default' };
       const mode = el.dataset.cursor;
       if (mode === 'default' || mode === 'hide') return { state: mode };
-      return { state: 'view', label: el.closest<HTMLElement>('[data-cursor-label]')?.dataset.cursorLabel };
+      if (mode === 'view') return { state: 'view', label: el.closest<HTMLElement>('[data-cursor-label]')?.dataset.cursorLabel };
+      return { state: 'grow' };
     }
 
     // Overlays drawn above the hero (the nav) count as hero too, hence the rect check.

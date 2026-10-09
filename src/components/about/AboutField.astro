@@ -1,0 +1,14 @@
+---
+/** Mono label over a value. */
+interface Props {
+  label: string;
+  value: string;
+}
+
+const { label, value } = Astro.props;
+---
+
+<div>
+  <p class="font-mono text-[13px] leading-[1.5] text-[#8a8a8a]">{label}</p>
+  <p class="mt-1 text-[17px] leading-[1.55] font-normal text-[#2a2a2a]">{value}</p>
+</div>
