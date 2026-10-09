@@ -404,9 +404,10 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
     }
 
     // Along a quadratic curve from wherever "me" is now, lifted above the midpoint.
-    function flyMe(to: Point) {
+    function flyMe(to: Point, instant = false) {
       cancelAnimationFrame(flight);
-      if (reduceMotion) return placeMe(to);
+      flight = 0;
+      if (reduceMotion || instant) return placeMe(to);
       const from = { ...me };
       const via = { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 - ME_LIFT };
       let start = 0;
@@ -451,7 +452,8 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
       frame = requestAnimationFrame(tick);
     }
 
-    function go(i: number) {
+    /** instant: jump "me" straight to the anchor (used while the sundial is hidden). */
+    function go(i: number, instant = false) {
       if (i === active) return;
       active = i;
       const stop = stops[i];
@@ -460,7 +462,7 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
       buttons.forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
       shapes.forEach((s) => s.toggleAttribute('data-hidden', Number(s.dataset.shape) !== i));
       floatShadow.toggleAttribute('data-hidden', !stop.floating);
-      flyMe(stop.meAnchor);
+      flyMe(stop.meAnchor, instant);
       target.altitude = stop.altitude;
       target.height = stop.height;
       driftTarget = driftFor(stop);
@@ -599,7 +601,9 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
       root.addEventListener('sundial:reset', () => {
         stopAutoplay();
         if (!interacted) root.setAttribute('data-autoplay-pending', '');
-        go(0);
+        // Hidden while rewinding, and the portrait flies onto "me": put it at Benxi right away.
+        go(0, true);
+        flyMe(stops[0].meAnchor, true);
       });
     }
   });

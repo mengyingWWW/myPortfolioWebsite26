@@ -36,7 +36,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
         <span class="about-portrait-ink" aria-hidden="true" data-portrait-ink></span>
       </div>
       <h1
-        class="about-headline mt-8 text-[52px] leading-[1.2] font-medium tracking-[-0.02em] text-[#111]"
+        class="about-headline mt-8 max-w-[920px] text-[34px] leading-[1.35] font-medium tracking-[-0.015em] text-balance text-[#111]"
         data-headline
       >
         {
@@ -56,7 +56,14 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
         class="about-bio mx-auto max-w-[640px] text-center text-[19px] leading-[1.6] text-balance text-[#333]"
         data-bio
       >
-        {aboutHero.bio}
+        {
+          aboutHero.bio.map((line, i) => (
+            <>
+              {i > 0 && <br />}
+              <Emphasis text={line} />
+            </>
+          ))
+        }
       </p>
       <div class="about-sundial-block" data-sundial-block>
         <LatitudeSundial />
@@ -112,7 +119,6 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     border-radius: 9999px;
     will-change: transform;
   }
-
   .about-portrait-ink {
     position: absolute;
     inset: 0;
@@ -124,7 +130,13 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
   .about-headline {
     position: relative;
     z-index: 3;
+    hyphens: none;
     will-change: transform, opacity;
+  }
+  /* line-height: 1 keeps the larger italic from stretching the lines it sits on. */
+  .about-headline :global(em) {
+    font-size: 1.06em;
+    line-height: 1;
   }
 
   /* Centered between the nav and the bottom hint. The sundial shrinks on short screens so the stack fits. */
@@ -193,8 +205,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     .about-sundial-block {
       opacity: 1;
       transform: none;
-    }
-    .about-stage :global(.about-next-hint) {
+    }    .about-stage :global(.about-next-hint) {
       opacity: 1;
       visibility: visible;
     }
@@ -236,6 +247,8 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     let p = -1;
     let queued = false;
     let started = false;
+    /** The real "me" dot has taken over from the portrait stand-in (until scrolled back above LAND_AT). */
+    let handedOff = false;
 
     // The portrait's layout box (stage coordinates), unaffected by the transforms applied below.
     function measure() {
@@ -288,9 +301,15 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
       }
       if (p < LAND_AT) started = false;
 
+      // The portrait stands in for the dot until the sundial is fully shown, or until the dot
+      // first leaves Benxi; from then on only the real dot can travel between scenes.
+      if (p < LAND_AT) handedOff = false;
+      else if (p >= SWAP_AT || sundial.dataset.active !== '0') handedOff = true;
+
       // FLIP: the portrait keeps its Act 1 layout box and is transformed onto the "me" dot.
       const dot = meDotOnStage();
-      if (dot && p < SWAP_AT) {
+      const standIn = !!dot && !handedOff;
+      if (standIn) {
         const fly = smooth(range(p, 0, LAND_AT));
         const scale = 1 + (dot.size / from.size - 1) * fly;
         portrait.style.transform = `translate(${(dot.x - from.x) * fly}px, ${(dot.y - from.y) * fly}px) scale(${scale})`;
@@ -299,7 +318,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
         portrait.style.visibility = 'hidden';
       }
       ink.style.opacity = String(smooth(range(p, 0.1, 0.45)));
-      meDot.style.opacity = p < SWAP_AT ? '0' : '1';
+      meDot.style.opacity = standIn ? '0' : '1';
 
       // Act 2 only takes pointer/keyboard input once it's mostly visible.
       const awake = sundialIn > 0.5;
@@ -333,7 +352,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     document.fonts?.ready.then(remeasure);
     new MutationObserver(queue).observe(sundial, {
       attributes: true,
-      attributeFilter: ['data-autoplay-pending', 'data-autoplaying'],
+      attributeFilter: ['data-active', 'data-autoplay-pending', 'data-autoplaying'],
     });
 
     // Tabbing into Act 2 before it's shown jumps to where it's fully visible.
