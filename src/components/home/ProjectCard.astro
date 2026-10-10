@@ -1,8 +1,7 @@
 ---
 /**
- * Work grid card: a blurred grayscale cover under a frosted panel with the project
- * details. On hover / keyboard focus the panel fades and the cover turns sharp and
- * full color. Every card is 16:9, with or without a cover.
+ * Work grid card: a meta row (status | domains | role | platform) above a 16:9 cover,
+ * then the title and year below it. The cover sits in grayscale and turns full color on hover / keyboard focus.
  */
 import { Image } from 'astro:assets';
 import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
@@ -13,50 +12,101 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, year, type, method, medium, cover, summary } = project.data;
-const meta = [year, type, method, medium];
+const { title, year, status, domains, role, platform, cover } = project.data;
+const { coverScale, coverFocusX, coverFocusY, coverBackground, coverBlend } = project.data;
+const meta = [status, domains.join(', '), role, platform];
+// Card width = half the container (max 1600px, 40px side padding) minus half the 40px gutter.
+// Zooming the cover changes its size on screen, so ask the browser for a proportionally sized file.
+const px = (n: number) => Math.round(n);
+const coverSizes = `(min-width: 1600px) ${px(740 * coverScale)}px, calc(${px(50 * coverScale)}vw - ${px(60 * coverScale)}px)`;
+// Scaled from the top-left corner, a focus point sits at focus × scale; shift it to the middle.
+const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
 ---
 
 <a
   href={workUrl(project)}
-  class="work-card"
-  aria-label={`${title}: view project`}
+  class="work-card block"
+  aria-label={`${title}, ${year}`}
   data-cursor="view"
   data-project-card
 >
-  {
-    cover ? (
-      <Image src={cover} alt="" class="work-card-image" widths={[720, 1080, 1440, 2160]} sizes="50vw" />
-    ) : (
-      <CoverPlaceholder title={title} class="work-card-placeholder absolute inset-0" />
-    )
-  }
-  <div class="work-card-frost" aria-hidden="true"></div>
-  <div class="work-card-text" aria-hidden="true">
-    <ul class="flex items-center text-[14px] text-[#777]">
-      {
-        meta.map((item, i) => (
-          <>
-            {i > 0 && <li class="mx-6 h-[18px] w-px bg-[#ddd]" role="presentation" />}
-            <li>{item}</li>
-          </>
-        ))
-      }
-    </ul>
-    <h3 class="mt-3 text-[32px] leading-tight font-medium text-[#111]">{title}</h3>
-    <p class="mt-4 max-w-[520px] text-[18px] leading-normal text-[#222]">{summary}</p>
+  <ul class="work-card-meta mb-3 font-mono text-[13px] text-[#8a8a8a]" aria-hidden="true">
+    {meta.map((item) => <li>{item}</li>)}
+  </ul>
+  <div
+    class="work-card-cover"
+    style={{
+      '--cover-scale': coverScale,
+      '--cover-shift-x': shift(coverFocusX),
+      '--cover-shift-y': shift(coverFocusY),
+      'background-color': coverBackground,
+    }}
+  >
+    {
+      cover ? (
+        <Image
+          src={cover}
+          alt=""
+          class="work-card-image"
+          style={coverBlend && { 'mix-blend-mode': coverBlend }}
+          widths={[800, 1200, 1600, 2400]}
+          sizes={coverSizes}
+          quality={90}
+          format="webp"
+        />
+      ) : (
+        <CoverPlaceholder title={title} class="work-card-placeholder absolute inset-0" />
+      )
+    }
+  </div>
+  <div class="mt-4 flex items-baseline justify-between gap-6" aria-hidden="true">
+    <h3 class="line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]">{title}</h3>
+    <p class="shrink-0 font-mono text-[13px] text-[#8a8a8a]">{year}</p>
   </div>
 </a>
 
 <style>
-  .work-card {
-    position: relative;
-    display: block;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
+  .work-card:focus-visible {
+    outline: none;
   }
 
-  .work-card:focus-visible {
+  /* Always one line. The row is one line tall and clipped, so a segment that doesn't fit wraps
+     out of sight; segments drop from the end (platform first) and never mid-word. */
+  .work-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    height: 20px;
+    overflow: hidden;
+    line-height: 20px;
+  }
+  .work-card-meta li {
+    position: relative;
+    white-space: nowrap;
+  }
+  .work-card-meta li + li {
+    margin-left: 17px;
+  }
+  .work-card-meta li + li::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -9px;
+    width: 1px;
+    height: 11px;
+    background: #d4d4d4;
+    transform: translateY(-50%);
+  }
+
+  .work-card-cover {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 6px;
+    /* A blended cover mixes with this box's background only, not the page behind it. */
+    isolation: isolate;
+  }
+
+  .work-card:focus-visible .work-card-cover {
     outline: 2px solid #111;
     outline-offset: -2px;
   }
@@ -67,61 +117,29 @@ const meta = [year, type, method, medium];
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* The scale hides the blur's soft edges; overflow keeps it inside the card. */
-    filter: grayscale(1) blur(18px);
-    transform: scale(1.08);
-    transition:
-      filter 600ms ease-out,
-      transform 600ms ease-out;
+    transform: translate(var(--cover-shift-x, 0%), var(--cover-shift-y, 0%)) scale(var(--cover-scale, 1));
+    transform-origin: 0 0;
+    filter: grayscale(1);
+    transition: filter 500ms ease;
   }
 
-  /* The label would ghost through the frost beside the title, so it only appears with the cover. */
+  .work-card:is(:hover, :focus-visible) .work-card-image {
+    filter: grayscale(0);
+  }
+
+  /* The label repeats the title under the cover, so it only appears on hover. */
   .work-card :global(.work-card-placeholder) {
     color: transparent;
-    transition: color 450ms ease;
+    transition: color 500ms ease;
   }
   .work-card:is(:hover, :focus-visible) :global(.work-card-placeholder) {
     color: #8a8a8a;
   }
 
-  .work-card-frost {
-    position: absolute;
-    inset: 0;
-    background-color: rgb(255 255 255 / 0.68);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: opacity 450ms ease;
-  }
-
-  .work-card-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 80px;
-    transition: opacity 450ms ease;
-  }
-
-  .work-card:is(:hover, :focus-visible) .work-card-frost,
-  .work-card:is(:hover, :focus-visible) .work-card-text {
-    opacity: 0;
-  }
-
-  .work-card:is(:hover, :focus-visible) .work-card-image {
-    filter: grayscale(0) blur(0);
-    transform: scale(1);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .work-card-image,
-    .work-card-frost,
-    .work-card-text {
+    .work-card :global(.work-card-placeholder) {
       transition: none;
-    }
-
-    .work-card-image {
-      transform: none;
     }
   }
 </style>

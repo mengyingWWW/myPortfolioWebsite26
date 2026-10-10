@@ -5,9 +5,9 @@
  * Each token becomes a Tailwind utility, e.g. --color-ink -> text-ink / bg-ink.
  */
 @theme {
-  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Newsreader Variable", ui-serif, Georgia, serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-serif: "Newsreader Variable", "Newsreader", Georgia, serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 
   --color-ink: #0a0a0a;
   --color-muted: #6b6b6b;

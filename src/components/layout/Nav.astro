@@ -27,7 +27,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
               href={link.href}
               class="nav-link decoration-1 underline-offset-[6px] hover:text-muted aria-[current=page]:underline"
               aria-current={link.href === currentPath ? 'page' : undefined}
-              data-cursor="invert"
+              data-cursor-label="VIEW"
               target={link.newTab ? '_blank' : undefined}
               rel={link.newTab ? 'noopener noreferrer' : undefined}
             >
@@ -70,7 +70,7 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
     box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0);
   }
 
-  /* The inverting cursor is the hover state; a grayed word would invert to low contrast. */
+  /* The glass lens cursor is the hover state; graying the word as well would just lower contrast. */
   :global(html.has-custom-cursor) .nav-link:hover {
     color: inherit;
   }

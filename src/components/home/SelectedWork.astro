@@ -7,12 +7,14 @@ import { getSortedWork } from '@/lib/work';
 const projects = await getSortedWork();
 ---
 
-<section id="work" class="scroll-mt-20 pt-24 pb-32">
+<section class="pt-24 pb-32">
   <Container>
-    <DisplayHeading italic="Selected" text="Work" class="mb-12" />
+    <!-- The jump target is the heading itself: it lands 32px below the 80px sticky nav. -->
+    <div id="work" class="scroll-mt-[calc(5rem+32px)]">
+      <DisplayHeading italic="Selected" text="Work" class="mb-12" />
+    </div>
+    <div class="grid grid-cols-2 items-start gap-x-10 gap-y-[88px]">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
   </Container>
-  <!-- Full bleed: each card is half the viewport wide, no gaps. -->
-  <div class="grid grid-cols-2 items-start">
-    {projects.map((project) => <ProjectCard project={project} />)}
-  </div>
 </section>
