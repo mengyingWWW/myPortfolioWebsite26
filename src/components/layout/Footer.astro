@@ -1,7 +1,7 @@
 ---
 /**
  * Centered signature footer: the live MW logo standing on a ground line (Seattle's real sun
- * and shadow; hover to scrub the sun along its path), a mailto line and contact links.
+ * and shadow; around it the pointer becomes the sun), a mailto line and contact links.
  */
 import Container from './Container.astro';
 import MWLogo from '@/components/ui/MWLogo.astro';
@@ -29,6 +29,7 @@ const year = new Date().getFullYear();
             <li>
               <a
                 href={link.href}
+                data-cursor-label="VIEW"
                 class="underline decoration-[#c4c4c4] decoration-1 underline-offset-[5px] transition-[text-decoration-color] duration-200 hover:decoration-[#111]"
                 target={link.newTab ? '_blank' : undefined}
                 rel={link.newTab ? 'noopener noreferrer' : undefined}

@@ -4,9 +4,9 @@
  *   hero   (over [data-cursor-zone="hero"]): a crisp dark dot plus a soft cast shadow
  *          that trails behind it, offset down-right as if lit by the same sun.
  *   normal (everywhere else): a white dot with difference blending.
- * Over clickable elements (a, button, [role="button"]) it becomes the lens: a 52px light glass
- * circle, no label; elements with data-cursor-label get a 64px labeled one instead. Big targets
- * opt into the larger view circle. Both hide the shadow.
+ * Over clickable elements (a, button, [role="button"]) it becomes the lens: a 52px glass circle,
+ * no label; elements with data-cursor-label (nav and footer links) get a 64px labeled one
+ * instead. Big targets opt into the 88px adaptive view circle. All hide the shadow.
  *
  * The glass states (view, lens) rely on backdrop-filter, which only sees the page if no ancestor
  * is a backdrop root (mix-blend-mode, filter, opacity < 1, isolation...). So the root stays a
@@ -19,6 +19,7 @@
  *                              the lens shows one only when this is set)
  *   data-cursor="default"      keep the plain dot on a clickable element
  *   data-cursor="hide"         hide the custom cursor
+ * Page-wide: <html data-cursor-hidden> hides it wherever it is (the footer logo's sun stands in).
  */
 interface Props {
   /** Label shown when an element doesn't set data-cursor-label. */
@@ -107,21 +108,24 @@ const { label = 'VIEW' } = Astro.props;
     left: 0;
   }
 
-  /* Glass material, all in one flat layer stack: backdrop blur + tint (the element), grain
-     (::before), a lit 1px rim (::after) and a soft drop shadow. No fill gradient or highlight
-     shapes on the face, so it reads flat rather than as a sphere; the gloss lives in the rim.
-     The shadows and layers stay declared (transparent) outside the glass states so they fade with
-     the grow/shrink instead of popping; shadow lists only interpolate when their shapes match. */
+  /* Glass material, one flat layer stack: backdrop blur + tint (the element), drop shadow, and
+     an edge: a 0.5px border plus inner highlight for the lens, a lit 1px rim (::after) for the
+     view circle. The defaults are the lens. The border is an inset shadow because Chrome rounds
+     a 0.5px border up to 1px. Shadows stay declared (transparent) outside the glass states so
+     they fade with the grow/shrink instead of popping; shadow lists only interpolate when their
+     shapes match, so every list is outer, outer, inset, inset. */
   .cursor-shape {
     --glass-blur: 4px;
-    --glass-saturate: 180%;
-    --glass-brightness: 1.05;
-    --glass-tint: rgb(255 255 255 / 0.22);
+    --glass-saturate: 160%;
+    --glass-brightness: 1;
+    --glass-tint: rgb(0 0 0 / 0.06);
     --glass-solid: rgb(255 255 255 / 0.9);
-    --glass-rim: 1;
+    --glass-rim: 0;
     --glass-shadow:
-      0 6px 20px rgb(0 0 0 / 0.1),
-      0 1px 2px rgb(0 0 0 / 0.06);
+      0 2px 10px rgb(0 0 0 / 0.08),
+      0 0 0 rgb(0 0 0 / 0),
+      inset 0 0 0 0.5px rgb(0 0 0 / 0.14),
+      inset 0 0 0 1px rgb(255 255 255 / 0.6);
 
     position: relative;
     display: flex;
@@ -133,8 +137,10 @@ const { label = 'VIEW' } = Astro.props;
     border-radius: 50%;
     background-color: var(--cursor-fill);
     box-shadow:
-      0 6px 20px rgb(0 0 0 / 0),
-      0 1px 2px rgb(0 0 0 / 0);
+      0 0 0 rgb(0 0 0 / 0),
+      0 0 0 rgb(0 0 0 / 0),
+      inset 0 0 0 0 rgb(0 0 0 / 0),
+      inset 0 0 0 0 rgb(255 255 255 / 0);
     opacity: 0;
     transition:
       width var(--cursor-morph),
@@ -150,15 +156,18 @@ const { label = 'VIEW' } = Astro.props;
     opacity: 1;
   }
 
-  /* The view circle is clearer, glossier glass: less blur and tint, no grain, a brighter rim. */
+  /* The view circle is clearer, glossier glass: a light tint and a lit rim instead of the border. */
   .cursor[data-state='view'] .cursor-shape {
     --glass-blur: 5px;
     --glass-saturate: 170%;
     --glass-brightness: 1.12;
     --glass-tint: rgb(255 255 255 / 0.1);
+    --glass-rim: 1;
     --glass-shadow:
       0 8px 24px rgb(0 0 0 / 0.12),
-      0 1px 2px rgb(0 0 0 / 0.08);
+      0 1px 2px rgb(0 0 0 / 0.08),
+      inset 0 0 0 0 rgb(0 0 0 / 0),
+      inset 0 0 0 0 rgb(255 255 255 / 0);
   }
 
   /* Dark mode (view circle over dark covers; set from the sampled luminance). */
@@ -178,7 +187,8 @@ const { label = 'VIEW' } = Astro.props;
     transition-property: width, height, background-color, box-shadow, backdrop-filter, -webkit-backdrop-filter;
   }
 
-  .cursor-shape::before,
+  /* Edge light: the mask cuts the gradient down to a 1px ring. Bright at the top, with a faint
+     second reflection along the bottom. */
   .cursor-shape::after {
     content: '';
     position: absolute;
@@ -187,22 +197,13 @@ const { label = 'VIEW' } = Astro.props;
     pointer-events: none;
     opacity: 0;
     transition: opacity 200ms ease;
-  }
-
-  .cursor-shape::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 120px;
-    mix-blend-mode: overlay;
-  }
-
-  /* The mask cuts the gradient down to the 1px padding ring. */
-  .cursor-shape::after {
     padding: 1px;
     background: linear-gradient(
       180deg,
-      rgb(255 255 255 / 0.75) 0%,
-      rgb(255 255 255 / 0.15) 45%,
-      rgb(255 255 255 / 0.05) 100%
+      rgb(255 255 255 / 0.8) 0%,
+      rgb(255 255 255 / 0.2) 35%,
+      rgb(255 255 255 / 0.05) 65%,
+      rgb(255 255 255 / 0.3) 100%
     );
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
@@ -212,25 +213,6 @@ const { label = 'VIEW' } = Astro.props;
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
     mask-composite: exclude;
-  }
-
-  /* Bright at the top, with a faint second reflection along the bottom. */
-  .cursor[data-state='view'] .cursor-shape::after {
-    background: linear-gradient(
-      180deg,
-      rgb(255 255 255 / 0.8) 0%,
-      rgb(255 255 255 / 0.2) 35%,
-      rgb(255 255 255 / 0.05) 65%,
-      rgb(255 255 255 / 0.3) 100%
-    );
-  }
-
-  .cursor-shape.cursor--glass::before {
-    opacity: 0.06;
-  }
-
-  .cursor[data-state='view'] .cursor-shape.cursor--glass::before {
-    opacity: 0;
   }
 
   .cursor-shape.cursor--glass::after {
@@ -282,6 +264,7 @@ const { label = 'VIEW' } = Astro.props;
   .cursor[data-state='lens'][data-labeled] .cursor-label {
     font-size: 10px;
     color: #1a1a1a;
+    text-shadow: 0 0 6px rgb(255 255 255 / 0.9);
     opacity: 1;
     transition:
       opacity var(--cursor-morph),
@@ -316,7 +299,6 @@ const { label = 'VIEW' } = Astro.props;
 
   @media (prefers-reduced-motion: reduce) {
     .cursor-shape,
-    .cursor-shape::before,
     .cursor-shape::after,
     .cursor-label,
     .cursor-shadow {
@@ -495,6 +477,7 @@ const { label = 'VIEW' } = Astro.props;
     document.documentElement.classList.add('has-custom-cursor');
 
     function resolveState(target: Element | null): { state: string; label?: string; el?: HTMLElement } {
+      if (document.documentElement.hasAttribute('data-cursor-hidden')) return { state: 'hide' };
       if (!target) return { state: 'default' };
       if (target.closest(TEXT_FIELD)) return { state: 'hide' };
       const el = target.closest<HTMLElement>(CLICKABLE);

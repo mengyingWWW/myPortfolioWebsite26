@@ -37,9 +37,8 @@ export type ShadowState = {
   k: number;
 };
 
-/** Longest shadow from the real sun (the hover scrub can stretch it further sideways). */
+/** Longest shadow from the real sun (the pointer sun can stretch it further sideways). */
 const MAX_K = 1.1;
-const SCRUB_MAX_K = 1.6;
 
 /** Both letters projected onto the ground, as one path so the shared stroke isn't darkened twice. */
 export function shadowPath({ dir, k }: ShadowState) {
@@ -71,27 +70,31 @@ export function shadowFromSun({ altitude, azimuth }: SunPosition): ShadowState &
   };
 }
 
-/** Where the letters stand (stroke bottoms); the sun path sits on it. */
+/** Where the letters stand (stroke bottoms): the visible ground line. */
 export const GROUND_LINE = GROUND + STROKE / 2;
 const CENTER_X = 256;
-/** 1.3 × the monogram's width. */
-export const SUN_PATH_R = 455;
+/** Lowest sun the pointer casts from; anything flatter would throw the shadow off the page. */
+const MIN_ALTITUDE = 6 * DEG;
 
-/** The hover sun path: a semicircle on the ground line, from the left horizon to the right. */
-export const SUN_PATH_D = `M${CENTER_X - SUN_PATH_R},${GROUND_LINE} A${SUN_PATH_R},${SUN_PATH_R} 0 0 1 ${CENTER_X + SUN_PATH_R},${GROUND_LINE}`;
-
-/** Sun on the hover path at angle θ (radians): 0 = left horizon, π/2 = overhead, π = right horizon. */
-export function sunOnPath(theta: number) {
-  return { x: CENTER_X - SUN_PATH_R * Math.cos(theta), y: GROUND_LINE - SUN_PATH_R * Math.sin(theta) };
+/**
+ * Sunlight from a sun at (x, y) in the drawing. The shadow falls away from the sun, and its
+ * length per unit of height is 1 / tan(altitude), the altitude being the sun's angle above the
+ * ground line seen from the base center.
+ */
+export function shadowFromPoint(x: number, y: number): ShadowState {
+  const dx = x - CENTER_X;
+  const altitude = Math.max(MIN_ALTITUDE, Math.atan2(GROUND_LINE - y, Math.abs(dx)));
+  return { dir: dx < 0 ? 1 : -1, k: 1 / Math.tan(altitude) };
 }
 
-/** Shadow for the sun at θ on the hover path: opposite the sun, longest near the horizons. */
-export function shadowFromAngle(theta: number): ShadowState {
-  const elevation = Math.max(0.01, Math.min(theta, Math.PI - theta));
-  return {
-    dir: Math.cos(theta),
-    k: Math.min(SCRUB_MAX_K, Math.max(0.2, 0.5 / Math.tan(elevation))),
-  };
+/** Longest shadow (as k) cast towards `dir` that still ends between minX and maxX. */
+export function maxShadowK(dir: number, minX: number, maxX: number) {
+  let k = Infinity;
+  for (const [x, y] of [...M_POINTS, ...W_POINTS]) {
+    const h = GROUND - y;
+    if (h > 0) k = Math.min(k, (dir > 0 ? maxX - x : x - minX) / h);
+  }
+  return Math.max(0, k);
 }
 
 /** Rendered on the server before the real sun is known: morning sun on the left. */

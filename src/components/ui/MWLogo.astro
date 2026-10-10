@@ -2,8 +2,8 @@
 /**
  * The MW monogram as two semi-transparent "glass" strokes: where they share the vertical
  * line they overlap and read denser. The live variant adds a cast shadow and a sun that
- * follow Seattle's real sun (a hollow moon at night). Hovering around it reveals a sun-path
- * semicircle and the sun follows the pointer along it, the shadow swinging opposite.
+ * follow Seattle's real sun (a hollow moon at night). Around it the pointer becomes the sun:
+ * the shadow falls away from it, and it sets below the ground line.
  */
 import {
   DEFAULT_SHADOW,
@@ -12,7 +12,6 @@ import {
   MARK_VIEWBOX,
   M_POINTS,
   STROKE,
-  SUN_PATH_D,
   SUN_R,
   W_POINTS,
   shadowPath,
@@ -34,8 +33,10 @@ const sun = sunSpot(DEFAULT_SHADOW.dir);
 const blurId = `mw-blur-${Math.random().toString(36).slice(2, 8)}`;
 
 const LIVE_WIDTH = 262;
-/** SVG units per screen pixel in the live variant, for the sun path's hairline and dashes. */
-const px = Number(LIVE_VIEWBOX.split(' ')[2]) / LIVE_WIDTH;
+const [viewX, , viewWidth] = LIVE_VIEWBOX.split(' ').map(Number);
+const [markX, , markWidth] = MARK_VIEWBOX.split(' ').map(Number);
+/** The hint starts 20px right of the letters. */
+const hintLeft = Math.round(((markX + markWidth - viewX) / viewWidth) * LIVE_WIDTH + 20);
 
 const Wrapper = live ? 'div' : Fragment;
 const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
@@ -56,14 +57,6 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
     {
       live && (
         <>
-          <path
-            class="mw-path"
-            d={SUN_PATH_D}
-            fill="none"
-            stroke-width={px}
-            stroke-dasharray={`${2 * px} ${4 * px}`}
-            data-mw-path
-          />
           <filter id={blurId} filterUnits="userSpaceOnUse" x="-500" y={GROUND - 120} width="1500" height="260">
             <feGaussianBlur stdDeviation="3" />
           </filter>
@@ -95,6 +88,18 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
       <path d={toPath(W_POINTS)} />
     </g>
   </svg>
+  {
+    live && (
+      <span
+        class="mw-hint font-mono text-[11px] tracking-[0.04em] text-[#b0b0b0]"
+        style={`left: ${hintLeft}px`}
+        aria-hidden="true"
+        data-mw-hint
+      >
+        move the sun
+      </span>
+    )
+  }
 </Wrapper>
 
 <style>
@@ -102,7 +107,7 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
     --mw-glass: rgb(0 0 0 / 0.5);
     --mw-sun: #111;
     --mw-shadow: rgb(0 0 0 / 0.12);
-    --mw-path: #d0d0d0;
+    --mw-shadow-active: rgb(0 0 0 / 0.22);
     overflow: visible;
   }
   /* The small nav mark sits over the leaf shadows, so it needs a bit more ink. */
@@ -113,7 +118,7 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
     --mw-glass: rgb(255 255 255 / 0.55);
     --mw-sun: #fff;
     --mw-shadow: rgb(255 255 255 / 0.1);
-    --mw-path: #444;
+    --mw-shadow-active: rgb(255 255 255 / 0.18);
   }
   .mw-glass {
     stroke: var(--mw-glass);
@@ -124,61 +129,104 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
   }
   .mw-shadow {
     stroke: var(--mw-shadow);
+    transition: stroke 300ms ease;
+  }
+  /* Clearer while the pointer is the sun. */
+  [data-mw-zone][data-mw-active] .mw-shadow {
+    stroke: var(--mw-shadow-active);
   }
 
-  /* Hover zone: ~60px around the logo (only 12px below, so it stays off whatever follows the
-     ground line). The negative margins keep it out of the layout. */
   [data-mw-zone] {
-    padding: 60px 60px 12px;
-    margin: -60px -60px -12px;
+    position: relative;
   }
-  .mw-path {
-    stroke: var(--mw-path);
+  /* Just above the ground line; shown by the script until the sun is first moved. */
+  .mw-hint {
+    position: absolute;
+    bottom: 4px;
+    white-space: nowrap;
+    pointer-events: none;
     opacity: 0;
-    transition: opacity 300ms ease;
+    transition: opacity 400ms ease;
   }
-  [data-mw-zone][data-scrubbing] .mw-path {
+  .mw-hint[data-show] {
     opacity: 1;
   }
 </style>
 
 <script>
-  import { DEFAULT_SHADOW, shadowFromAngle, shadowFromSun, shadowPath, sunOnPath, sunSpot } from '@/lib/monogram';
+  import {
+    DEFAULT_SHADOW,
+    GROUND_LINE,
+    MARK_VIEWBOX,
+    STROKE,
+    maxShadowK,
+    shadowFromPoint,
+    shadowFromSun,
+    shadowPath,
+    sunSpot,
+  } from '@/lib/monogram';
   import { seattleSun } from '@/lib/seattle';
 
   const UPDATE_EVERY = 60_000;
-  /** Share of the gap to the pointer's sun position closed per 60fps frame. */
-  const SCRUB_LERP = 0.2;
-  /** Easing back to the real sun, after hovering or on a minute tick. */
-  const RETURN_MS = 800;
+  /** Share of the gap to the pointer closed per 60fps frame. */
+  const FOLLOW_LERP = 0.35;
+  /** Back to the real sun after leaving, along an arc lifted by ARC_LIFT × the distance. */
+  const RETURN_MS = 900;
+  const ARC_LIFT = 0.25;
+  /** Sunset / sunrise as the pointer crosses the ground line. */
+  const SET_MS = 300;
+  /** How far the zone reaches past the letters, in screen px. */
+  const ZONE = { side: 240, above: 180, below: 40 };
+  /** Clearance between the shadow's tip and the container edge, in drawing units (stroke + blur). */
+  const SHADOW_MARGIN = STROKE * 1.5;
+  /** Links and controls inside the zone keep their own cursor. */
+  const CONTROLS = 'a[href], button, [role="button"], input, select, textarea, label, [contenteditable]';
+  const HINT_KEY = 'mw-sun-moved';
+  const [MARK_X, MARK_Y, MARK_W] = MARK_VIEWBOX.split(' ').map(Number);
 
   type State = { x: number; y: number; dir: number; k: number; night: number };
   const KEYS = ['x', 'y', 'dir', 'k', 'night'] as const;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
   const mix = (a: State, b: State, t: number) =>
     Object.fromEntries(KEYS.map((key) => [key, a[key] + (b[key] - a[key]) * t])) as State;
+  const approach = (value: number, to: number, step: number) =>
+    value < to ? Math.min(to, value + step) : Math.max(to, value - step);
 
   function realState(): State {
     const { dir, k, night } = shadowFromSun(seattleSun(Date.now()));
     return { ...sunSpot(dir), dir, k, night: night ? 1 : 0 };
   }
 
-  const scrubState = (theta: number): State => ({ ...sunOnPath(theta), ...shadowFromAngle(theta), night: 0 });
+  function hintSeen() {
+    try {
+      return sessionStorage.getItem(HINT_KEY) === '1';
+    } catch {
+      return true;
+    }
+  }
 
   document.querySelectorAll<HTMLElement>('[data-mw-zone]').forEach((zone) => {
+    const svg = zone.querySelector<SVGSVGElement>('svg')!;
     const shadow = zone.querySelector<SVGPathElement>('[data-mw-shadow]')!;
     const sun = zone.querySelector<SVGCircleElement>('[data-mw-sun]')!;
+    const hint = zone.querySelector<HTMLElement>('[data-mw-hint]');
+    const container = zone.parentElement!;
 
     // `night` runs 0 → 1 so the sun can fade into the moon's ring instead of snapping.
     let cur: State = { ...sunSpot(DEFAULT_SHADOW.dir), ...DEFAULT_SHADOW, night: 0 };
     let from = cur;
+    // Where the pointer puts the sun. While it's set, dir and k keep the last daylight shadow.
     let target = cur;
-    let mode: 'rest' | 'scrub' | 'return' = 'rest';
+    let mode: 'rest' | 'follow' | 'return' = 'rest';
     let startedAt = 0;
     let last = 0;
     let frame = 0;
+    let mouse: { x: number; y: number } | null = null;
+    let touching = false;
+
+    if (hint && !hintSeen()) hint.setAttribute('data-show', '');
 
     function draw() {
       shadow.setAttribute('d', shadowPath(cur));
@@ -190,14 +238,18 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
     }
 
     function tick(now: number) {
+      const reduced = reduceMotion.matches;
+      const elapsed = last ? now - last : 1000 / 60;
       let moving = true;
-      if (mode === 'scrub') {
-        const frames = last ? (now - last) / (1000 / 60) : 1;
-        cur = mix(cur, target, 1 - (1 - SCRUB_LERP) ** frames);
+      if (mode === 'follow') {
+        const night = reduced ? target.night : approach(cur.night, target.night, elapsed / SET_MS);
+        cur = { ...mix(cur, target, reduced ? 1 : 1 - (1 - FOLLOW_LERP) ** (elapsed / (1000 / 60))), night };
         moving = KEYS.some((key) => Math.abs(target[key] - cur[key]) > 0.01);
       } else if (mode === 'return') {
         const t = easeInOut(Math.min(1, (now - startedAt) / RETURN_MS));
-        cur = mix(from, realState(), t);
+        const to = realState();
+        cur = mix(from, to, t);
+        cur.y -= Math.hypot(to.x - from.x, to.y - from.y) * ARC_LIFT * Math.sin(Math.PI * t);
         if (t === 1) mode = 'rest';
       }
       draw();
@@ -212,7 +264,8 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
 
     /** Ease (back) to the real sun right now. */
     function settle() {
-      if (reduceMotion) {
+      if (reduceMotion.matches) {
+        mode = 'rest';
         cur = realState();
         draw();
         return;
@@ -223,22 +276,121 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
       start();
     }
 
-    if (!reduceMotion) {
-      // The sun stands in for the cursor while it follows the pointer.
-      zone.dataset.cursor = 'hide';
-      zone.addEventListener('pointermove', (e) => {
-        const r = zone.getBoundingClientRect();
-        const t = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
-        target = scrubState(t * Math.PI);
-        mode = 'scrub';
-        zone.setAttribute('data-scrubbing', '');
-        start();
-      });
-      zone.addEventListener('pointerleave', () => {
-        zone.removeAttribute('data-scrubbing');
-        if (mode === 'scrub') settle();
-      });
+    /** Around the letters, in screen px; null while the logo isn't laid out. */
+    function inZone(x: number, y: number) {
+      const m = svg.getScreenCTM();
+      if (!m || !m.a) return false;
+      const left = m.a * MARK_X + m.e - ZONE.side;
+      const right = m.a * (MARK_X + MARK_W) + m.e + ZONE.side;
+      const top = m.d * MARK_Y + m.f - ZONE.above;
+      const bottom = m.d * GROUND_LINE + m.f + ZONE.below;
+      return x >= left && x <= right && y >= top && y <= bottom;
     }
+
+    /** Puts the sun at a screen point. */
+    function follow(x: number, y: number) {
+      const m = svg.getScreenCTM();
+      if (!m || !m.a) return;
+      const sx = (x - m.e) / m.a;
+      const sy = (y - m.f) / m.d;
+      const set = sy > GROUND_LINE;
+      let { dir, k } = target;
+      if (!set) {
+        ({ dir, k } = shadowFromPoint(sx, sy));
+        const box = container.getBoundingClientRect();
+        const style = getComputedStyle(container);
+        const minX = (box.left + parseFloat(style.paddingLeft) - m.e) / m.a + SHADOW_MARGIN;
+        const maxX = (box.right - parseFloat(style.paddingRight) - m.e) / m.a - SHADOW_MARGIN;
+        k = Math.min(k, maxShadowK(dir, minX, maxX));
+      }
+      target = { x: sx, y: sy, dir, k, night: set ? 1 : 0 };
+      if (mode !== 'follow') {
+        mode = 'follow';
+        zone.setAttribute('data-mw-active', '');
+        if (hint?.hasAttribute('data-show')) {
+          hint.removeAttribute('data-show');
+          try {
+            sessionStorage.setItem(HINT_KEY, '1');
+          } catch {
+            /* private mode: the hint just comes back next visit */
+          }
+        }
+      }
+      start();
+    }
+
+    function leave() {
+      document.documentElement.removeAttribute('data-cursor-hidden');
+      if (mode !== 'follow') return;
+      zone.removeAttribute('data-mw-active');
+      target = cur;
+      settle();
+    }
+
+    // The sun stands in for the custom cursor inside the zone; links there keep the cursor.
+    function pointAt(x: number, y: number, el: Element | null) {
+      mouse = { x, y };
+      if (inZone(x, y) && !el?.closest(CONTROLS)) {
+        document.documentElement.setAttribute('data-cursor-hidden', '');
+        follow(x, y);
+      } else {
+        leave();
+      }
+    }
+
+    // Capture on window runs before the custom cursor's document listener, so it sees the flag.
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        if (e.pointerType !== 'touch') pointAt(e.clientX, e.clientY, e.target instanceof Element ? e.target : null);
+      },
+      { capture: true, passive: true },
+    );
+    // The zone moves under a still mouse while scrolling.
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (mouse && !touching) pointAt(mouse.x, mouse.y, document.elementFromPoint(mouse.x, mouse.y));
+      },
+      { passive: true },
+    );
+    const lost = () => {
+      mouse = null;
+      leave();
+    };
+    document.addEventListener('mouseout', (e) => {
+      if (!e.relatedTarget) lost();
+    });
+    window.addEventListener('blur', lost);
+
+    // Touch: a drag that starts in the zone moves the sun (and doesn't scroll) until the finger lifts.
+    document.addEventListener(
+      'touchstart',
+      (e) => {
+        const t = e.touches[0];
+        const el = e.target instanceof Element ? e.target : null;
+        if (e.touches.length !== 1 || !inZone(t.clientX, t.clientY) || el?.closest(CONTROLS)) return;
+        touching = true;
+        follow(t.clientX, t.clientY);
+      },
+      { passive: true },
+    );
+    document.addEventListener(
+      'touchmove',
+      (e) => {
+        if (!touching) return;
+        e.preventDefault();
+        follow(e.touches[0].clientX, e.touches[0].clientY);
+      },
+      { passive: false },
+    );
+    const endTouch = () => {
+      if (!touching) return;
+      touching = false;
+      leave();
+    };
+    document.addEventListener('touchend', endTouch);
+    document.addEventListener('touchcancel', endTouch);
 
     settle();
     setInterval(() => {
