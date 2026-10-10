@@ -1,17 +1,24 @@
 ---
 import Container from '@/components/layout/Container.astro';
-import DisplayHeading from '@/components/ui/DisplayHeading.astro';
 import ProjectCard from './ProjectCard.astro';
 import { getSortedWork } from '@/lib/work';
 
 const projects = await getSortedWork();
+const years = projects.map((project) => project.data.year);
+const first = Math.min(...years);
+const last = Math.max(...years);
+const yearRange = first === last ? `${first}` : `${first} — ${last}`;
 ---
 
-<section class="pt-24 pb-32">
+<section class="pt-[120px] pb-32">
   <Container>
-    <!-- The jump target is the heading itself: it lands 32px below the 80px sticky nav. -->
-    <div id="work" class="scroll-mt-[calc(5rem+32px)]">
-      <DisplayHeading italic="Selected" text="Work" class="mb-12" />
+    <!-- The jump target is the label row: it lands 32px below the 80px sticky nav. -->
+    <div
+      id="work"
+      class="mb-12 flex scroll-mt-[calc(5rem+32px)] items-baseline justify-between font-mono text-[13px] leading-5 tracking-[0.06em] uppercase"
+    >
+      <h2 class="text-[#111]">Selected Work</h2>
+      <p class="text-[#8a8a8a]">{yearRange}</p>
     </div>
     <div class="grid grid-cols-2 items-start gap-x-10 gap-y-[88px]">
       {projects.map((project) => <ProjectCard project={project} />)}
