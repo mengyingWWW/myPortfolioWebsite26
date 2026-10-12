@@ -42,7 +42,7 @@ const { target, label = 'View my work', class: className, autoHide = true, mono 
     transition: opacity 300ms ease-out;
   }
 
-  .scroll-hint[data-hidden] {
+  .scroll-hint[data-hidden]:not(:focus-visible) {
     opacity: 0;
     pointer-events: none;
   }

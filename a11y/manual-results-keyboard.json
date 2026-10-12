@@ -1,0 +1,1765 @@
+{
+  "keyboard": {
+    "/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4858,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1419,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 236,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 332,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "Mengying.",
+          "rect": [
+            746,
+            324,
+            246,
+            72
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 559,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "a",
+          "name": "View my work",
+          "rect": [
+            662,
+            782,
+            115,
+            86
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1296,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "a",
+          "name": "View IDEA AI Wiki Design case study",
+          "rect": [
+            40,
+            224,
+            660,
+            453
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1763,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "a",
+          "name": "View IDEA Mapping Design case study",
+          "rect": [
+            740,
+            224,
+            660,
+            453
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 7585,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "a",
+          "name": "View Colleague.AI Assessment Usability Study case study",
+          "rect": [
+            40,
+            447,
+            660,
+            453
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 6528,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "View City of Seattle AI Permitting System Design case study",
+          "rect": [
+            740,
+            447,
+            660,
+            453
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 5329,
+          "focusVisible": true
+        },
+        {
+          "id": "11",
+          "tag": "a",
+          "name": "View AI Smart Parking Design case study",
+          "rect": [
+            40,
+            224,
+            660,
+            453
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 7611,
+          "focusVisible": true
+        },
+        {
+          "id": "12",
+          "tag": "a",
+          "name": "View NetEase Games Planet Party Time Design case study",
+          "rect": [
+            740,
+            224,
+            660,
+            453
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 71518,
+          "focusVisible": true
+        },
+        {
+          "id": "13",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            725,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "14",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "15",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "16",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "17",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": [
+        {
+          "name": "View NetEase Games Planet Party Time Des",
+          "obscured": 0.18
+        },
+        {
+          "name": "View AI Smart Parking Design case study",
+          "obscured": 0.18
+        },
+        {
+          "name": "View IDEA Mapping Design case study",
+          "obscured": 0.18
+        },
+        {
+          "name": "View IDEA AI Wiki Design case study",
+          "obscured": 0.18
+        },
+        {
+          "name": "Mengying.",
+          "obscured": 1
+        }
+      ]
+    },
+    "/about/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4861,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1420,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 236,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 340,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "More about me",
+          "rect": [
+            657,
+            782,
+            125,
+            86
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1518,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "button",
+          "name": "41.3°NBenxi",
+          "rect": [
+            539,
+            428,
+            52,
+            46
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 675,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "button",
+          "name": "39.9°NBeijing",
+          "rect": [
+            639,
+            428,
+            52,
+            46
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 773,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "button",
+          "name": "1.3°NSingapore",
+          "rect": [
+            739,
+            428,
+            62,
+            46
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 805,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "button",
+          "name": "47.6°NSeattle",
+          "rect": [
+            849,
+            428,
+            52,
+            46
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 720,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "Education · Experience · Skills",
+          "rect": [
+            580,
+            564,
+            280,
+            86
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 2100,
+          "focusVisible": true
+        },
+        {
+          "id": "11",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            725,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "12",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "13",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "14",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "15",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": []
+    },
+    "/work/idea-mapping/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4861,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1420,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 251,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 340,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "Next projectColleague.AI Assessment Usability Study →Placeho",
+          "rect": [
+            40,
+            272,
+            1360,
+            357
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 4158,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            848,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": []
+    },
+    "/work/colleague-ai/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4861,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1420,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 279,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 340,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "Next projectCity of Seattle AI Permitting System Design →Pla",
+          "rect": [
+            40,
+            272,
+            1360,
+            357
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 4158,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            848,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": []
+    },
+    "/work/google-maps-parking/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4861,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1420,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 236,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 340,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "Next projectNetEase Games Planet Party Time Design →Placehol",
+          "rect": [
+            40,
+            272,
+            1360,
+            357
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 4158,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            848,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": []
+    },
+    "/work/idea-ai-wiki/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4861,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1420,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 236,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 340,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "Next projectIDEA Mapping Design →Placeholder subtitle.",
+          "rect": [
+            40,
+            272,
+            1360,
+            357
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 4158,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            848,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": []
+    },
+    "/work/netease-games/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4861,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1420,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 236,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 340,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "Next projectIDEA AI Wiki Design →Placeholder subtitle.",
+          "rect": [
+            40,
+            272,
+            1360,
+            357
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 4158,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            848,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": []
+    },
+    "/work/seattle-ai-permitting/": {
+      "stops": [
+        {
+          "id": "0",
+          "tag": "a",
+          "name": "Skip to content",
+          "rect": [
+            40,
+            12,
+            125,
+            37
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 1,
+          "focusDiffPx": 4861,
+          "focusVisible": true
+        },
+        {
+          "id": "1",
+          "tag": "a",
+          "name": "Mengying Wang — Home",
+          "rect": [
+            40,
+            29,
+            39,
+            22
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 1420,
+          "focusVisible": true
+        },
+        {
+          "id": "2",
+          "tag": "a",
+          "name": "Work",
+          "rect": [
+            1137,
+            32,
+            40,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 228,
+          "focusVisible": true
+        },
+        {
+          "id": "3",
+          "tag": "a",
+          "name": "About",
+          "rect": [
+            1233,
+            32,
+            45,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 256,
+          "focusVisible": true
+        },
+        {
+          "id": "4",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            1334,
+            32,
+            66,
+            15
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 340,
+          "focusVisible": true
+        },
+        {
+          "id": "5",
+          "tag": "a",
+          "name": "Next projectAI Smart Parking Design →Placeholder subtitle.",
+          "rect": [
+            40,
+            272,
+            1360,
+            357
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 4158,
+          "focusVisible": true
+        },
+        {
+          "id": "6",
+          "tag": "a",
+          "name": "Let’s work together. (email)",
+          "rect": [
+            616,
+            848,
+            208,
+            36
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 992,
+          "focusVisible": true
+        },
+        {
+          "id": "7",
+          "tag": "a",
+          "name": "Email",
+          "rect": [
+            533,
+            783,
+            45,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 305,
+          "focusVisible": true
+        },
+        {
+          "id": "8",
+          "tag": "a",
+          "name": "Resume ↗ (opens in a new tab)",
+          "rect": [
+            611,
+            783,
+            76,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 455,
+          "focusVisible": true
+        },
+        {
+          "id": "9",
+          "tag": "a",
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "rect": [
+            719,
+            783,
+            84,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 500,
+          "focusVisible": true
+        },
+        {
+          "id": "10",
+          "tag": "a",
+          "name": "GitHub ↗ (opens in a new tab)",
+          "rect": [
+            836,
+            783,
+            71,
+            16
+          ],
+          "opacity": 1,
+          "visibility": "visible",
+          "inViewport": true,
+          "obscured": 0,
+          "focusDiffPx": 435,
+          "focusVisible": true
+        }
+      ],
+      "backwardObscured": []
+    }
+  }
+}

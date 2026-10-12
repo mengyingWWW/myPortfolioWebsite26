@@ -1,0 +1,1160 @@
+{
+  "structure": {
+    "/": {
+      "title": "Mengying — UX/Product Designer & Researcher",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "Hello, I am Mengying.A product designer who resear",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Selected Work",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "IDEA AI Wiki Design",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "IDEA Mapping Design",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "Colleague.AI Assessment Usability Study",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "City of Seattle AI Permitting System Design",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "AI Smart Parking Design",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "NetEase Games Planet Party Time Design",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "cover.CVgiN-w9_Z2fhc7V.webp",
+          "alt": "A desktop monitor showing the IDEA AI Wiki in dark mode: a sidebar of facility-management tools, wiki categories such as Electrical and HVAC, and a list of maintenance guides with their sharing status.",
+          "inLink": true,
+          "hidden": false
+        },
+        {
+          "src": "cover-mockup.B6drR_Gs_Z1tNoS6.webp",
+          "alt": "Three phones showing the IDEA Mapping app: selecting assets on a building floor plan to geofence, a city map with clustered pins for people, assets and locations, and the map in Emergency mode with first-aid points and shelters.",
+          "inLink": true,
+          "hidden": false
+        },
+        {
+          "src": "cover.DEVjvux0_1DhIYD.webp",
+          "alt": "A laptop showing Colleague.AI's Create Assessment form, with assessment details, rubric and answer-key settings, next to a phone showing the assistant's \"How can I help you today?\" home screen.",
+          "inLink": true,
+          "hidden": false
+        },
+        {
+          "src": "cover.tqTI0yWw_AOpH9.webp",
+          "alt": "A desktop showing the City of Seattle permit dashboard with an AI estimate of review time (78 days) broken into review stages, and a laptop showing an AI review report flagging issues in a residential reroofing permit application.",
+          "inLink": true,
+          "hidden": false
+        },
+        {
+          "src": "",
+          "alt": "Three phones showing the smart parking concept in Google Maps: parking filters for price, type and time limit, a driving route across Seattle with parking options, and a camera view reading a street-cleaning no-parking sign.",
+          "inLink": true,
+          "hidden": false
+        },
+        {
+          "src": "",
+          "alt": "A laptop showing Planet Party Time gameplay: cartoon characters racing around a running track with hurdles and springboards, a countdown timer and an onboarding tip about using the springboard.",
+          "inLink": true,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [
+        {
+          "hidden": true
+        }
+      ],
+      "foreignText": [
+        {
+          "lang": "zh-CN",
+          "text": "梦嬴",
+          "hidden": true
+        }
+      ],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Mengying.",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "View my work",
+          "newTab": false,
+          "href": "#work"
+        },
+        {
+          "name": "View IDEA AI Wiki Design case study",
+          "newTab": false,
+          "href": "/work/idea-ai-wiki"
+        },
+        {
+          "name": "View IDEA Mapping Design case study",
+          "newTab": false,
+          "href": "/work/idea-mapping"
+        },
+        {
+          "name": "View Colleague.AI Assessment Usability Study case study",
+          "newTab": false,
+          "href": "/work/colleague-ai"
+        },
+        {
+          "name": "View City of Seattle AI Permitting System Design case study",
+          "newTab": false,
+          "href": "/work/seattle-ai-permitting"
+        },
+        {
+          "name": "View AI Smart Parking Design case study",
+          "newTab": false,
+          "href": "/work/google-maps-parking"
+        },
+        {
+          "name": "View NetEase Games Planet Party Time Design case study",
+          "newTab": false,
+          "href": "/work/netease-games"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - heading \"Hello, I am Mengying A product designer who researches.\" [level=1]:\n    - text: Hello, I am\n    - link \"Mengying\":\n      - /url: /about\n    - text: A product designer who researches.\n  - paragraph:\n    - emphasis: 2+ years of experience\n    - text: in AI, B2B and B2C products, building research-driven & human-centered design.\n  - link \"View my work\":\n    - /url: \"#work\"\n  - paragraph: \"The background follows the sun in Seattle: 10:57 local time, sun 30° above the horizon, azimuth 145°.\"\n  - heading \"Selected Work\" [level=2]\n  - paragraph: 2024 — 2026\n  - link \"View IDEA AI Wiki Design case study\":\n    - /url: /work/idea-ai-wiki\n    - 'img \"A desktop monitor showing the IDEA AI Wiki in dark mode: a sidebar of facility-management tools, wiki categories such as Electrical and HVAC, and a list of maintenance guides with their sharing status.\"'\n    - heading \"IDEA AI Wiki Design\" [level=3]\n  - link \"View IDEA Mapping Design case study\":\n    - /url: /work/idea-mapping\n    - 'img \"Three phones showing the IDEA Mapping app: selecting assets on a building floor plan to geofence, a city map with clustered pins for people, assets and locations, and the map in Emergency mode with first-aid points and shelters.\"'\n    - heading \"IDEA Mapping Design\" [level=3]\n  - link \"View Colleague.AI Assessment Usability Study case study\":\n    - /url: /work/colleague-ai\n    - img \"A laptop showing Colleague.AI's Create Assessment form, with assessment details, rubric and answer-key settings, next to a phone showing the assistant's \\\"How can I help you today?\\\" home screen.\"\n    - heading \"Colleague.AI Assessment Usability Study\" [level=3]\n  - link \"View City of Seattle AI Permitting System Design case study\":\n    - /url: /work/seattle-ai-permitting\n    - img \"A desktop showing the City of Seattle permit dashboard with an AI estimate of review time (78 days) broken into review stages, and a laptop showing an AI review report flagging issues in a residential reroofing permit application.\"\n    - heading \"City of Seattle AI Permitting System Design\" [level=3]\n  - link \"View AI Smart Parking Design case study\":\n    - /url: /work/google-maps-parking\n    - 'img \"Three phones showing the smart parking concept in Google Maps: parking filters for price, type and time limit, a driving route across Seattle with parking options, and a camera view reading a street-cleaning no-parking sign.\"'\n    - heading \"AI Smart Parking Design\" [level=3]\n  - link \"View NetEase Games Planet Party Time Design case study\":\n    - /url: /work/netease-games\n    - 'img \"A laptop showing Planet Party Time gameplay: cartoon characters racing around a running track with hurdles and springboards, a countdown timer and an onboarding tip about using the springboard.\"'\n    - heading \"NetEase Games Planet Party Time Design\" [level=3]\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/about/": {
+      "title": "About — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "A UX designer & researcherwho starts with people a",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Education",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "University of Washington",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "Tsinghua University",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Experience",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "IDEA Enterprises",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "Colleague.AI",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "City University of Hong Kong · KnowVis Lab",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "NetEase Games",
+          "hidden": false
+        },
+        {
+          "level": 3,
+          "text": "Tsinghua Future Lab",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Skills",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "avatar.jpg",
+          "alt": "Portrait of Mengying",
+          "inLink": false,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "The noon sun and the shadows it casts at the four latitudes I have lived at",
+          "hidden": false
+        },
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "More about me",
+          "newTab": false,
+          "href": "#about-more"
+        },
+        {
+          "name": "Education · Experience · Skills",
+          "newTab": false,
+          "href": "#education"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - img \"Portrait of Mengying\"\n  - heading \"A UX designer & researcher who starts with people and learns by making, an architect's habit I now bring to AI products.\" [level=1]:\n    - text: A UX designer & researcher who\n    - emphasis: starts with people\n    - text: and\n    - emphasis: learns by making\n    - text: \", an architect's habit I now bring to AI products.\"\n  - link \"More about me\":\n    - /url: \"#about-more\"\n  - paragraph:\n    - text: I used to design how people interact with\n    - emphasis: space\n    - text: . Now I design how they interact with\n    - emphasis: interfaces\n    - text: .\n  - img \"The noon sun and the shadows it casts at the four latitudes I have lived at\": 48.7°\n  - group \"Choose a latitude\":\n    - button \"41.3°N Benxi\" [pressed]\n    - button \"39.9°N Beijing\"\n    - button \"1.3°N Singapore\"\n    - button \"47.6°N Seattle\"\n  - paragraph: Home, where time seems to pause. A quiet place I carry with me, and the reason I design for people, not just products.\n  - heading \"Education\" [level=2]\n  - article:\n    - heading \"University of Washington\" [level=3]\n    - term: Degree\n    - definition: Master of Science in Human Centered Design & Engineering\n    - term: Year\n    - definition: 2025.9 – 2027.6 (Expected)\n    - term: Relevant Courses\n    - definition: User Centered Design / Usability Studies / Computational Concepts in HCDE / Experimental Research Methods / Qualitative Research Methods\n  - article:\n    - heading \"Tsinghua University\" [level=3]\n    - term: Degree\n    - definition: Bachelor of Engineering in Architecture\n    - term: Year\n    - definition: 2020.9 – 2025.6\n    - term: Relevant Courses\n    - definition: Design Studio / Media Programming / Interactive Design\n    - term: Distinctions\n    - definition: Graduated with top 10% ranking / Tsinghua Overall Excellence Scholarship\n  - heading \"Experience\" [level=2]\n  - list:\n    - listitem:\n      - heading \"IDEA Enterprises\" [level=3]\n      - paragraph: UX / Product Designer Intern\n      - paragraph: 2026.6 – 2026.9\n    - listitem:\n      - heading \"Colleague.AI\" [level=3]\n      - paragraph: UX Research Lead · Industry-Sponsored Course Project\n      - paragraph: 2026.1 – 2026.3\n    - listitem:\n      - heading \"City University of Hong Kong · KnowVis Lab\" [level=3]\n      - paragraph: UX Researcher Intern\n      - paragraph: 2025.6 – 2025.12\n    - listitem:\n      - heading \"NetEase Games\" [level=3]\n      - paragraph: UX / Product Designer Intern\n      - paragraph: 2024.6 – 2024.9\n    - listitem:\n      - heading \"Tsinghua Future Lab\" [level=3]\n      - paragraph: UX / Product Designer Intern\n      - paragraph: 2023.6 – 2023.9\n  - heading \"Skills\" [level=2]\n  - term: UX Design\n  - definition: Interaction Design / Prototyping / Responsive Design / Design Systems / Information Architecture\n  - term: UX Research\n  - definition: User Interviews / Usability Testing / Mixed Methods / Eye Tracking / A/B Testing / Data Analysis\n  - term: AI Product Design\n  - definition: Generative AI / AI Agents & Automation / Human-AI Interaction / LLM-powered Workflows\n  - term: Vibe Coding\n  - definition: Claude Code / Cursor / Figma Make / Lovable / Bolt\n  - term: Tools\n  - definition: Figma / Framer / Adobe Suite / Rhino / Blender / HTML & CSS / JavaScript / Python\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/work/idea-mapping/": {
+      "title": "IDEA Mapping Design — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "IDEA Mapping Design",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Overview",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Section heading",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "cover-mockup.B6drR_Gs_ZmJBU3.webp",
+          "alt": "Three phones showing the IDEA Mapping app: selecting assets on a building floor plan to geofence, a city map with clustered pins for people, assets and locations, and the map in Emergency mode with first-aid points and shelters.",
+          "inLink": false,
+          "hidden": false
+        },
+        {
+          "src": "cover.DEVjvux0_1gNJ9g.webp",
+          "alt": "",
+          "inLink": true,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Next projectColleague.AI Assessment Usability Study →Placeholder subti",
+          "newTab": false,
+          "href": "/work/colleague-ai"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - article:\n    - text: 0→1 UI/UX Design\n    - heading \"IDEA Mapping Design\" [level=1]\n    - paragraph: Placeholder subtitle.\n    - 'img \"Three phones showing the IDEA Mapping app: selecting assets on a building floor plan to geofence, a city map with clustered pins for people, assets and locations, and the map in Emergency mode with first-aid points and shelters.\"'\n    - heading \"Overview\" [level=2]\n    - paragraph: Placeholder summary.\n    - term: Role\n    - definition: 0→1 UI/UX Design\n    - term: Skills\n    - definition:\n      - list:\n        - listitem: Skill\n    - term: Timeline\n    - definition: Timeline\n    - term: Tools\n    - definition:\n      - list:\n        - listitem: Tool\n    - term: Team\n    - definition:\n      - list:\n        - listitem: Team\n    - heading \"Section heading\" [level=2]\n    - paragraph: Placeholder copy.\n  - link \"Next project Colleague.AI Assessment Usability Study Placeholder subtitle.\":\n    - /url: /work/colleague-ai\n    - paragraph: Next project\n    - paragraph: Colleague.AI Assessment Usability Study\n    - paragraph: Placeholder subtitle.\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/work/colleague-ai/": {
+      "title": "Colleague.AI Assessment Usability Study — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "Colleague.AI Assessment Usability Study",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Overview",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Section heading",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "cover.DEVjvux0_1gNJ9g.webp",
+          "alt": "A laptop showing Colleague.AI's Create Assessment form, with assessment details, rubric and answer-key settings, next to a phone showing the assistant's \"How can I help you today?\" home screen.",
+          "inLink": false,
+          "hidden": false
+        },
+        {
+          "src": "cover.tqTI0yWw_ZsnbOn.webp",
+          "alt": "",
+          "inLink": true,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Next projectCity of Seattle AI Permitting System Design →Placeholder s",
+          "newTab": false,
+          "href": "/work/seattle-ai-permitting"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - article:\n    - text: AI & EdTech UX Research\n    - heading \"Colleague.AI Assessment Usability Study\" [level=1]\n    - paragraph: Placeholder subtitle.\n    - img \"A laptop showing Colleague.AI's Create Assessment form, with assessment details, rubric and answer-key settings, next to a phone showing the assistant's \\\"How can I help you today?\\\" home screen.\"\n    - heading \"Overview\" [level=2]\n    - paragraph: Placeholder summary.\n    - term: Role\n    - definition: UX Research\n    - term: Skills\n    - definition:\n      - list:\n        - listitem: Skill\n    - term: Timeline\n    - definition: Timeline\n    - term: Tools\n    - definition:\n      - list:\n        - listitem: Tool\n    - term: Team\n    - definition:\n      - list:\n        - listitem: Team\n    - heading \"Section heading\" [level=2]\n    - paragraph: Placeholder copy.\n  - link \"Next project City of Seattle AI Permitting System Design Placeholder subtitle.\":\n    - /url: /work/seattle-ai-permitting\n    - paragraph: Next project\n    - paragraph: City of Seattle AI Permitting System Design\n    - paragraph: Placeholder subtitle.\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/work/google-maps-parking/": {
+      "title": "AI Smart Parking Design — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "AI Smart Parking Design",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Overview",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Section heading",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "cover.Co54DUEb_Z1O1rtN.webp",
+          "alt": "Three phones showing the smart parking concept in Google Maps: parking filters for price, type and time limit, a driving route across Seattle with parking options, and a camera view reading a street-cleaning no-parking sign.",
+          "inLink": false,
+          "hidden": false
+        },
+        {
+          "src": "cover.DBEVWl7j_rRWcn.webp",
+          "alt": "",
+          "inLink": true,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Next projectNetEase Games Planet Party Time Design →Placeholder subtit",
+          "newTab": false,
+          "href": "/work/netease-games"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - article:\n    - text: Mobile UI/UX Redesign\n    - heading \"AI Smart Parking Design\" [level=1]\n    - paragraph: Placeholder subtitle.\n    - 'img \"Three phones showing the smart parking concept in Google Maps: parking filters for price, type and time limit, a driving route across Seattle with parking options, and a camera view reading a street-cleaning no-parking sign.\"'\n    - heading \"Overview\" [level=2]\n    - paragraph: Placeholder summary.\n    - term: Role\n    - definition: UI/UX Redesign\n    - term: Skills\n    - definition:\n      - list:\n        - listitem: Skill\n    - term: Timeline\n    - definition: Timeline\n    - term: Tools\n    - definition:\n      - list:\n        - listitem: Tool\n    - term: Team\n    - definition:\n      - list:\n        - listitem: Team\n    - heading \"Section heading\" [level=2]\n    - paragraph: Placeholder copy.\n  - link \"Next project NetEase Games Planet Party Time Design Placeholder subtitle.\":\n    - /url: /work/netease-games\n    - paragraph: Next project\n    - paragraph: NetEase Games Planet Party Time Design\n    - paragraph: Placeholder subtitle.\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/work/idea-ai-wiki/": {
+      "title": "IDEA AI Wiki Design — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "IDEA AI Wiki Design",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Overview",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Section heading",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "cover.CVgiN-w9_Z2ulWR2.webp",
+          "alt": "A desktop monitor showing the IDEA AI Wiki in dark mode: a sidebar of facility-management tools, wiki categories such as Electrical and HVAC, and a list of maintenance guides with their sharing status.",
+          "inLink": false,
+          "hidden": false
+        },
+        {
+          "src": "cover-mockup.B6drR_Gs_ZmJBU3.webp",
+          "alt": "",
+          "inLink": true,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Next projectIDEA Mapping Design →Placeholder subtitle.",
+          "newTab": false,
+          "href": "/work/idea-mapping"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - article:\n    - text: AI Product Redesign\n    - heading \"IDEA AI Wiki Design\" [level=1]\n    - paragraph: Placeholder subtitle.\n    - 'img \"A desktop monitor showing the IDEA AI Wiki in dark mode: a sidebar of facility-management tools, wiki categories such as Electrical and HVAC, and a list of maintenance guides with their sharing status.\"'\n    - heading \"Overview\" [level=2]\n    - paragraph: Placeholder summary.\n    - term: Role\n    - definition: AI Product Redesign\n    - term: Skills\n    - definition:\n      - list:\n        - listitem: Skill\n    - term: Timeline\n    - definition: Timeline\n    - term: Tools\n    - definition:\n      - list:\n        - listitem: Tool\n    - term: Team\n    - definition:\n      - list:\n        - listitem: Team\n    - heading \"Section heading\" [level=2]\n    - paragraph: Placeholder copy.\n  - link \"Next project IDEA Mapping Design Placeholder subtitle.\":\n    - /url: /work/idea-mapping\n    - paragraph: Next project\n    - paragraph: IDEA Mapping Design\n    - paragraph: Placeholder subtitle.\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/work/netease-games/": {
+      "title": "NetEase Games Planet Party Time Design — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "NetEase Games Planet Party Time Design",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Overview",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Section heading",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "cover.DBEVWl7j_rRWcn.webp",
+          "alt": "A laptop showing Planet Party Time gameplay: cartoon characters racing around a running track with hurdles and springboards, a countdown timer and an onboarding tip about using the springboard.",
+          "inLink": false,
+          "hidden": false
+        },
+        {
+          "src": "cover.CVgiN-w9_Z2ulWR2.webp",
+          "alt": "",
+          "inLink": true,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Next projectIDEA AI Wiki Design →Placeholder subtitle.",
+          "newTab": false,
+          "href": "/work/idea-ai-wiki"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - article:\n    - text: Game UI/UX Design\n    - heading \"NetEase Games Planet Party Time Design\" [level=1]\n    - paragraph: Placeholder subtitle.\n    - 'img \"A laptop showing Planet Party Time gameplay: cartoon characters racing around a running track with hurdles and springboards, a countdown timer and an onboarding tip about using the springboard.\"'\n    - heading \"Overview\" [level=2]\n    - paragraph: Placeholder summary.\n    - term: Role\n    - definition: Game UI/UX Design\n    - term: Skills\n    - definition:\n      - list:\n        - listitem: Skill\n    - term: Timeline\n    - definition: Timeline\n    - term: Tools\n    - definition:\n      - list:\n        - listitem: Tool\n    - term: Team\n    - definition:\n      - list:\n        - listitem: Team\n    - heading \"Section heading\" [level=2]\n    - paragraph: Placeholder copy.\n  - link \"Next project IDEA AI Wiki Design Placeholder subtitle.\":\n    - /url: /work/idea-ai-wiki\n    - paragraph: Next project\n    - paragraph: IDEA AI Wiki Design\n    - paragraph: Placeholder subtitle.\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/work/seattle-ai-permitting/": {
+      "title": "City of Seattle AI Permitting System Design — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "City of Seattle AI Permitting System Design",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Overview",
+          "hidden": false
+        },
+        {
+          "level": 2,
+          "text": "Section heading",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [
+        {
+          "src": "cover.tqTI0yWw_ZsnbOn.webp",
+          "alt": "A desktop showing the City of Seattle permit dashboard with an AI estimate of review time (78 days) broken into review stages, and a laptop showing an AI review report flagging issues in a residential reroofing permit application.",
+          "inLink": false,
+          "hidden": false
+        },
+        {
+          "src": "cover.Co54DUEb_Z1O1rtN.webp",
+          "alt": "",
+          "inLink": true,
+          "hidden": false
+        }
+      ],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Next projectAI Smart Parking Design →Placeholder subtitle.",
+          "newTab": false,
+          "href": "/work/google-maps-parking"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - article:\n    - text: Civic AI UI/UX Design & Research\n    - heading \"City of Seattle AI Permitting System Design\" [level=1]\n    - paragraph: Placeholder subtitle.\n    - img \"A desktop showing the City of Seattle permit dashboard with an AI estimate of review time (78 days) broken into review stages, and a laptop showing an AI review report flagging issues in a residential reroofing permit application.\"\n    - heading \"Overview\" [level=2]\n    - paragraph: Placeholder summary.\n    - term: Role\n    - definition: UI/UX Design & Research\n    - term: Skills\n    - definition:\n      - list:\n        - listitem: Skill\n    - term: Timeline\n    - definition: Timeline\n    - term: Tools\n    - definition:\n      - list:\n        - listitem: Tool\n    - term: Team\n    - definition:\n      - list:\n        - listitem: Team\n    - heading \"Section heading\" [level=2]\n    - paragraph: Placeholder copy.\n  - link \"Next project AI Smart Parking Design Placeholder subtitle.\":\n    - /url: /work/google-maps-parking\n    - paragraph: Next project\n    - paragraph: AI Smart Parking Design\n    - paragraph: Placeholder subtitle.\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    },
+    "/this-page-does-not-exist": {
+      "title": "Page not found — Mengying",
+      "lang": "en",
+      "headings": [
+        {
+          "level": 1,
+          "text": "This page is in the shade.",
+          "hidden": false
+        }
+      ],
+      "landmarks": [
+        "header:1",
+        "nav:2",
+        "main:1",
+        "footer:1"
+      ],
+      "images": [],
+      "svgs": [
+        {
+          "role": null,
+          "label": null,
+          "hidden": true
+        },
+        {
+          "role": "img",
+          "label": "Mengying Wang",
+          "hidden": false
+        }
+      ],
+      "canvases": [],
+      "foreignText": [],
+      "links": [
+        {
+          "name": "Skip to content",
+          "newTab": false,
+          "href": "#main"
+        },
+        {
+          "name": "Mengying Wang — Home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "Work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "About",
+          "newTab": false,
+          "href": "/about"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "Back home",
+          "newTab": false,
+          "href": "/"
+        },
+        {
+          "name": "See the work",
+          "newTab": false,
+          "href": "/#work"
+        },
+        {
+          "name": "Let’s work together. (email)",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Email",
+          "newTab": false,
+          "href": "mailto:mengyingwww712@gmail.com"
+        },
+        {
+          "name": "Resume ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "/resume.pdf"
+        },
+        {
+          "name": "LinkedIn ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://www.linkedin.com/in/mengying-www/"
+        },
+        {
+          "name": "GitHub ↗ (opens in a new tab)",
+          "newTab": true,
+          "href": "https://github.com/mengyingWWW"
+        }
+      ],
+      "firstFocusable": "Skip to content",
+      "ariaTree": "- link \"Skip to content\":\n  - /url: \"#main\"\n- banner:\n  - navigation:\n    - link \"Mengying Wang — Home\":\n      - /url: /\n    - list:\n      - listitem:\n        - link \"Work\":\n          - /url: /#work\n      - listitem:\n        - link \"About\":\n          - /url: /about\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n- main:\n  - paragraph: \"404\"\n  - heading \"This page is in the shade.\" [level=1]\n  - paragraph: The link may be old, or the address mistyped.\n  - paragraph:\n    - link \"Back home\":\n      - /url: /\n    - link \"See the work\":\n      - /url: /#work\n- contentinfo:\n  - img \"Mengying Wang\"\n  - link \"Let’s work together. (email)\":\n    - /url: mailto:mengyingwww712@gmail.com\n  - navigation \"Contact\":\n    - list:\n      - listitem:\n        - link \"Email\":\n          - /url: mailto:mengyingwww712@gmail.com\n      - listitem:\n        - link \"Resume (opens in a new tab)\":\n          - /url: /resume.pdf\n      - listitem:\n        - link \"LinkedIn (opens in a new tab)\":\n          - /url: https://www.linkedin.com/in/mengying-www/\n      - listitem:\n        - link \"GitHub (opens in a new tab)\":\n          - /url: https://github.com/mengyingWWW\n  - paragraph: No shadow was harmed in the making of this site · © 2026"
+    }
+  }
+}

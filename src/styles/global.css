@@ -12,6 +12,8 @@
   --color-ink: #0a0a0a;
   --color-muted: #6b6b6b;
   --color-subtle: #a3a3a3;
+  /* Small secondary text (labels, dates, meta). The lightest grey that keeps 4.5:1 on white. */
+  --color-meta: #6e6e6e;
   --color-line: #e5e5e5;
   --color-surface: #f6f6f6;
   --color-paper: #ffffff;
@@ -34,6 +36,17 @@
 
   ::selection {
     @apply bg-ink text-paper;
+  }
+}
+
+/* First stop for keyboard users; off-screen until focused. */
+@layer components {
+  .skip-link {
+    @apply fixed top-3 left-10 z-50 rounded-full bg-ink px-4 py-2 text-[13px] font-medium text-paper;
+    translate: 0 -200%;
+  }
+  .skip-link:focus {
+    translate: 0;
   }
 }
 

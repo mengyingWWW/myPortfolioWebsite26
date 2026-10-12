@@ -1,6 +1,7 @@
 # build output
 dist/
 .astro/
+.a11y-build/
 
 # dependencies
 node_modules/

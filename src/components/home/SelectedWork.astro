@@ -18,7 +18,7 @@ const yearRange = first === last ? `${first}` : `${first} — ${last}`;
       class="mb-12 flex scroll-mt-[calc(5rem+32px)] items-baseline justify-between font-mono text-[13px] leading-5 tracking-[0.06em] uppercase"
     >
       <h2 class="text-[#111]">Selected Work</h2>
-      <p class="text-[#8a8a8a]">{yearRange}</p>
+      <p class="text-meta">{yearRange}</p>
     </div>
     <div class="grid grid-cols-2 items-start gap-x-10 gap-y-[88px]">
       {projects.map((project) => <ProjectCard project={project} />)}

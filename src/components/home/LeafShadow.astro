@@ -1,10 +1,10 @@
 ---
 /**
- * Full-bleed leaf-shadow photo, graded to soft grayscale and animated in WebGL
- * (breeze warp + cursor wind). Place inside a positioned section; it fills it.
- * If the section contains [data-hero-content], shadows are lightened behind it.
- * Listens for `sun-city-change` events (see LatitudeLabels.astro).
- * Tuning constants live at the top of the <script> below.
+ * Full-bleed leaf-shadow photo, animated in WebGL (breeze warp + cursor wind) and lit by
+ * Seattle's real sun: the shadows lengthen and lean with its altitude and azimuth, their edges
+ * soften near the horizon, and the wall and shadow colours follow the time of day.
+ * Place inside a positioned section; it fills it. If the section contains [data-hero-content],
+ * shadows are lightened behind it. Tuning constants live at the top of the <script> below.
  */
 interface Props {
   /** Shadow photo, relative to /public. Any size or aspect works (cover fit). */
@@ -37,14 +37,16 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
 </style>
 
 <script>
-  import { sunPosition, type SunPosition } from '@/lib/sun';
-  import { CITIES, DEFAULT_CITY, CHOSEN_DATE } from '@/data/sunlight';
+  import type { SunPosition } from '@/lib/sun';
+  import { everyMinute, seattleNow, seattleSun } from '@/lib/seattle';
   // Darkest shadow brightness; shared with the cursor's cast shadow.
   import { SHADOW_DARKNESS, SHADOW_ALPHA } from '@/data/shadow';
 
+  const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+
   // ---- Tuning -------------------------------------------------------------
   /** Steepness of the tone curve; higher = whiter lights and more defined shadows. */
-  const CONTRAST = 1.5;
+  const CONTRAST = 2.6;
   /** Breeze warp amplitude, in UV units. */
   const BREEZE_AMOUNT = 0.006;
   /** Speed of the breeze sway and shimmer. */
@@ -55,21 +57,38 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
   const WIND_STRENGTH = 0.015;
   /** Per-frame decay of each gust (at 60fps). ~0.95 flows back within 1–2s. */
   const DECAY = 0.95;
-
   /** Max push of a single gust, in fractions of the screen height. */
   const MAX_PUSH = 0.03;
-  /** How much lighter the shadows are behind the hero text (0 = none, 1 = fully clear). */
-  const TEXT_CLEARING = 0.6;
+  /** Clear zone behind the hero text: shadow density there, and its size (fractions of the viewport). */
+  const CLEAR_ZONE_DENSITY = 0.55;
+  const CLEAR_ZONE_SIZE = [0.6, 0.4];
   /** Fraction of the cover-fitted photo shown, leaving a margin for the warps. */
   const OVERSCAN = 0.92;
-  /** Duration (ms) of the transition when a city is chosen. */
-  const SUN_TRANSITION = 1500;
+  /** Duration (ms) of the ease to a new sun position. */
+  const SUN_TRANSITION = 1200;
   /** Canvas pixels per CSS pixel. */
   const RESOLUTION = 0.6;
   /** Number of recent cursor samples kept as wind sources. */
   const RING_SIZE = 12;
   /** Minimum time (ms) between new cursor samples. */
   const SAMPLE_INTERVAL = 80;
+
+  /** Wall and shadow colours, shadow strength and penumbra blur radius (CSS px) through the day. */
+  const NIGHT = { wall: rgb('#EEF1F6'), shade: rgb('#BFC8D7'), strength: 0.8, blur: 5 }; // altitude ≤ -6°
+  const GOLDEN = { wall: rgb('#FFF2E0'), shade: rgb('#C4C9D8'), strength: 1.15, blur: 4 }; // 0°–8°
+  const MIDDAY = { wall: rgb('#FFFDF8'), shade: rgb('#D6DBE4'), strength: 1.0, blur: 1.5 }; // ≥ 38°
+  /** Glow from the top-right (soft-light): warm at golden hour, cool at night. Colour and opacity. */
+  const GLOW_WARM = rgb('#FFD6A0');
+  const GLOW_WARM_MAX = 0.35;
+  const GLOW_COOL = [190 / 255, 205 / 255, 235 / 255];
+  const GLOW_COOL_MAX = 0.18;
+  /** Night geometry: the sun is below the horizon, so a fixed gentle projection. */
+  const NIGHT_LEN = 1.25;
+  const NIGHT_SKEW = 0.15;
+  /** Horizontal shear of the shadows per unit of height, with the sun due east / west. */
+  const MAX_SKEW = 0.55;
+  /** How far the composition mask turns with the sun's azimuth. */
+  const MASK_TURN = 15;
   // -------------------------------------------------------------------------
 
   const VERTEX_SHADER = `
@@ -84,6 +103,7 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
     uniform sampler2D uImage;
     uniform vec2 uResolution;
     uniform vec2 uCover;          // fraction of the photo visible on each axis
+    uniform vec2 uPx;             // photo UV size of one CSS pixel
     uniform vec2 uLevels;         // photo luminance black / white points
     uniform float uTime;
     uniform vec3 uTrail[RING];    // xy = position (screen-height units), z = strength
@@ -91,13 +111,19 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
     uniform float uRadius;
     uniform float uBreeze;
     uniform float uContrast;
-    uniform float uDarkness;
-    uniform float uStrength;      // sun: 1 = full shadows, lower at dusk / night
-    uniform float uStretch;       // sun: >1 lengthens shadows vertically
-    uniform float uPan;           // sun: horizontal shift (morning vs evening)
-    uniform vec2 uFocus;
+    uniform vec2 uFocus;          // clear zone centre and radii (screen-height units)
     uniform vec2 uFocusSize;
-    uniform float uClearing;
+    uniform float uClearing;      // shadow density inside the clear zone
+    // Sun-driven
+    uniform float uLen;           // shadow length (1 = high sun)
+    uniform float uSkew;          // horizontal shear per unit of height (morning vs evening)
+    uniform float uBlur;          // penumbra radius, CSS px
+    uniform vec3 uWall;           // lit wall colour
+    uniform vec3 uShade;          // deepest shadow colour
+    uniform float uStrength;
+    uniform vec3 uGlowColor;
+    uniform float uGlow;          // glow opacity
+    uniform float uMaskAngle;     // direction the composition mask fades towards
 
     float hash12(vec2 p) {
       vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -125,6 +151,18 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
         a *= 0.5;
       }
       return v;
+    }
+
+    // The projection can reach past the photo's edges; mirror it there instead of smearing.
+    float lum(vec2 uv) {
+      vec2 m = 1.0 - abs(mod(uv, 2.0) - 1.0);
+      return dot(texture2D(uImage, m).rgb, vec3(0.2126, 0.7152, 0.0722));
+    }
+
+    // W3C soft-light.
+    vec3 softLight(vec3 b, vec3 s) {
+      vec3 d = mix(sqrt(b), ((16.0 * b - 12.0) * b + 4.0) * b, step(b, vec3(0.25)));
+      return mix(b - (1.0 - 2.0 * s) * b * (1.0 - b), b + (2.0 * s - 1.0) * (d - b), step(0.5, s));
     }
 
     void main() {
@@ -158,30 +196,59 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
       float breath = 1.0 + 0.0075 * sin(t * 0.31416);
       vec2 drift = vec2(sin(t * 0.23), cos(t * 0.19)) * 0.004;
 
-      vec2 c = s - 0.5;
-      c.y /= uStretch;
-      vec2 uv = c * uCover / breath + 0.5 + drift + vec2(uPan, 0.0);
+      vec2 uv = (s - 0.5) * uCover / breath + 0.5 + drift;
       uv += offset * vec2(1.0 / aspect, 1.0) * uCover;
 
-      // Grayscale, normalized to the photo's own range, then a smooth S-curve.
-      vec3 rgb = texture2D(uImage, uv).rgb;
-      float lum = dot(rgb, vec3(0.2126, 0.7152, 0.0722));
-      float v = clamp((lum - uLevels.x) / (uLevels.y - uLevels.x), 0.0, 1.0);
+      // Sun projection, anchored at the top-right corner so the canopy stays rooted there:
+      // stretched along the fall of the shadow (longer at a low sun), sheared by the azimuth.
+      vec2 anchor = 0.5 + 0.5 * uCover;
+      vec2 r = uv - anchor;
+      r.y /= uLen;
+      r.x += uSkew * r.y;
+      uv = anchor + r;
+
+      // Penumbra: a crisp sample and a 9-tap blur, mixed by slow noise so some leaves read as
+      // near the wall (crisp) and others further away (diffuse).
+      vec2 k = uPx * uBlur * 0.7;
+      float sharp = lum(uv);
+      float soft = (
+        4.0 * sharp +
+        2.0 * (lum(uv + vec2(k.x, 0.0)) + lum(uv - vec2(k.x, 0.0)) + lum(uv + vec2(0.0, k.y)) + lum(uv - vec2(0.0, k.y))) +
+        lum(uv + k) + lum(uv - k) + lum(uv + vec2(k.x, -k.y)) + lum(uv + vec2(-k.x, k.y))
+      ) / 16.0;
+      float m = 0.3 + 0.5 * smoothstep(0.3, 0.7, fbm(p * 0.9 + vec2(t * 0.011, -t * 0.007)));
+      float l = mix(sharp, soft, m);
+
+      // Shadow density: the photo's own range, then a smooth S-curve (0 = lit, 1 = deepest).
+      float v = clamp((l - uLevels.x) / (uLevels.y - uLevels.x), 0.0, 1.0);
       float x = clamp((v - 0.5) * uContrast + 0.58, 0.0, 1.0);
-      v = x * x * (3.0 - 2.0 * x);
+      float density = 1.0 - x * x * (3.0 - 2.0 * x);
 
-      float shade = (1.0 - v) * uStrength;
-      vec2 fd = (p - uFocus) / uFocusSize;
-      shade *= 1.0 - uClearing * exp(-dot(fd, fd));
+      // Composition: full in the corner the light comes in from, ~35% mid-screen, 0 opposite.
+      vec2 dir = vec2(cos(uMaskAngle), sin(uMaskAngle));
+      float g = clamp(dot(s - 1.0, dir) / dot(vec2(-1.0), dir), 0.0, 1.0);
+      density *= g < 0.5 ? mix(1.0, 0.35, g * 2.0) : mix(0.35, 0.0, g * 2.0 - 1.0);
 
-      // Sub-pixel dither hides 8-bit banding across such a narrow gray range.
+      // Clear zone behind the text: an ellipse with feathered edges.
+      float e = length((p - uFocus) / uFocusSize);
+      density *= mix(uClearing, 1.0, smoothstep(0.6, 1.3, e));
+
+      vec3 col = mix(uWall, uShade, density * uStrength);
+
+      // Glow from the top-right: warm at golden hour, cool at night.
+      vec2 gc = p - vec2(aspect, 1.0);
+      col = mix(col, softLight(col, uGlowColor), uGlow * exp(-dot(gc, gc) / 0.9));
+
+      // Sub-pixel dither hides 8-bit banding across such a narrow range.
       float dither = (hash12(gl_FragCoord.xy + fract(uTime)) - 0.5) / 255.0;
-      gl_FragColor = vec4(vec3(clamp(1.0 - shade * (1.0 - uDarkness) + dither, 0.0, 1.0)), 1.0);
+      gl_FragColor = vec4(clamp(col + dither, 0.0, 1.0), 1.0);
     }
   `;
 
   const DEG = Math.PI / 180;
-  const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+  const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
+  const clamp01 = (x: number) => clamp(x, 0, 1);
+  /** Also runs backwards when a > b. */
   const smoothstep = (a: number, b: number, x: number) => {
     const t = clamp01((x - a) / (b - a));
     return t * t * (3 - 2 * t);
@@ -189,32 +256,63 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
   const mix = (a: number, b: number, t: number) => a + (b - a) * t;
   const easeInOutCubic = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 
-  type SunParams = { strength: number; stretch: number; pan: number };
+  /** Everything the sun drives, as one flat list so it can be eased as a whole. */
+  type Look = {
+    len: number;
+    skew: number;
+    blur: number;
+    strength: number;
+    glow: number;
+    maskAngle: number;
+    wall: number[];
+    shade: number[];
+    glowColor: number[];
+  };
 
-  /** Sun for the chosen city on CHOSEN_DATE at the current time of day, or today at the default city. */
-  function currentSun(chosenCity: string | null): SunPosition {
-    const now = new Date();
-    if (!chosenCity) {
-      const city = CITIES.find((c) => c.name === DEFAULT_CITY) ?? CITIES[CITIES.length - 1];
-      return sunPosition(now, city.latitude, city.longitude);
-    }
-    const city = CITIES.find((c) => c.name === chosenCity)!;
-    const date = new Date(now);
-    date.setUTCMonth(CHOSEN_DATE.month - 1, CHOSEN_DATE.day);
-    return sunPosition(date, city.latitude, city.longitude);
-  }
-
-  /** Map a sun position to how the shadows look. */
-  function shadowParams({ altitude, azimuth }: SunPosition): SunParams {
-    const daylight = smoothstep(-6, 15, altitude);
-    const highSun = smoothstep(10, 70, altitude);
+  /** How the wall looks with the sun here. */
+  function lookFor({ altitude: alt, azimuth: az }: SunPosition): Look {
+    // Night → golden hour over civil twilight, then golden hour → midday as the sun climbs.
+    const dawn = smoothstep(-6, 0, alt);
+    const day = smoothstep(8, 38, alt);
+    const blend = (pick: (k: typeof NIGHT) => number) => mix(mix(pick(NIGHT), pick(GOLDEN), dawn), pick(MIDDAY), day);
+    // Geometry follows the sun once it's up; below the horizon it settles to the night projection.
+    const lean = -Math.sin((az - 180) * DEG);
+    const sunLen = clamp(0.9 + 0.5 / Math.tan(Math.max(alt, 4) * DEG), 1, 2.6);
     return {
-      strength: mix(0.4, 1, daylight),
-      stretch: mix(1.18, 1, highSun),
-      // Morning sun (east) shifts shadows one way, evening (west) the other.
-      pan: -Math.sin(azimuth * DEG) * 0.01,
+      len: mix(NIGHT_LEN, sunLen, dawn),
+      skew: mix(NIGHT_SKEW, lean * MAX_SKEW, dawn),
+      blur: blend((k) => k.blur),
+      strength: blend((k) => k.strength),
+      glow: mix(GLOW_COOL_MAX, GLOW_WARM_MAX, dawn) * (1 - day),
+      maskAngle: (225 + dawn * lean * MASK_TURN) * DEG,
+      wall: [0, 1, 2].map((i) => blend((k) => k.wall[i])),
+      shade: [0, 1, 2].map((i) => blend((k) => k.shade[i])),
+      glowColor: [0, 1, 2].map((i) => mix(GLOW_COOL[i], GLOW_WARM[i], dawn)),
     };
   }
+
+  const flatten = (l: Look) => [
+    l.len,
+    l.skew,
+    l.blur,
+    l.strength,
+    l.glow,
+    l.maskAngle,
+    ...l.wall,
+    ...l.shade,
+    ...l.glowColor,
+  ];
+  const unflatten = (a: number[]): Look => ({
+    len: a[0],
+    skew: a[1],
+    blur: a[2],
+    strength: a[3],
+    glow: a[4],
+    maskAngle: a[5],
+    wall: a.slice(6, 9),
+    shade: a.slice(9, 12),
+    glowColor: a.slice(12, 15),
+  });
 
   /** Luminance black/white points of the photo (2nd and 98th percentile). */
   function measureLevels(img: HTMLImageElement): [number, number] {
@@ -307,23 +405,28 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
     const uniforms = {
       resolution: u('uResolution'),
       cover: u('uCover'),
+      px: u('uPx'),
       time: u('uTime'),
       trail: u('uTrail'),
       trailVel: u('uTrailVel'),
-      strength: u('uStrength'),
-      stretch: u('uStretch'),
-      pan: u('uPan'),
       focus: u('uFocus'),
       focusSize: u('uFocusSize'),
+      len: u('uLen'),
+      skew: u('uSkew'),
+      blur: u('uBlur'),
+      wall: u('uWall'),
+      shade: u('uShade'),
+      strength: u('uStrength'),
+      glow: u('uGlow'),
+      glowColor: u('uGlowColor'),
+      maskAngle: u('uMaskAngle'),
     };
     gl.uniform1i(u('uImage'), 0);
     gl.uniform2f(u('uLevels'), levels[0], levels[1]);
     gl.uniform1f(u('uRadius'), WIND_RADIUS);
     gl.uniform1f(u('uBreeze'), BREEZE_AMOUNT);
     gl.uniform1f(u('uContrast'), CONTRAST);
-    gl.uniform1f(u('uDarkness'), SHADOW_DARKNESS);
-    gl.uniform1f(u('uClearing'), TEXT_CLEARING);
-
+    gl.uniform1f(u('uClearing'), CLEAR_ZONE_DENSITY);
     const section = canvas.closest('section') ?? canvas.parentElement!;
     const content = section.querySelector<HTMLElement>('[data-hero-content]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -343,30 +446,26 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
     let lastFrame = performance.now();
     let visible = true;
 
-    let chosenCity: string | null = null;
-    let sun = shadowParams(currentSun(chosenCity));
-    let sunFrom = sun;
-    let sunTo = sun;
-    let sunTweenStart = 0;
-    let sunTweenDuration = 0;
+    // The sun eases to each new position (every minute, or a new ?hour) instead of snapping.
+    let look = flatten(lookFor(seattleSun(seattleNow())));
+    let lookFrom = look;
+    let lookTo = look;
+    let tweenStart = 0;
+    let tweening = false;
 
-    function setSunTarget(next: SunParams, duration: number) {
-      sunFrom = sun;
-      sunTo = next;
-      sunTweenStart = performance.now();
-      sunTweenDuration = reducedMotion ? 0 : duration;
-      if (sunTweenDuration === 0) sun = next;
+    function setSunTarget(next: Look) {
+      lookFrom = look;
+      lookTo = flatten(next);
+      tweenStart = performance.now();
+      tweening = true;
+      start();
     }
 
     function updateSun(now: number) {
-      if (sunTweenDuration <= 0) return;
-      const p = easeInOutCubic(clamp01((now - sunTweenStart) / sunTweenDuration));
-      sun = {
-        strength: mix(sunFrom.strength, sunTo.strength, p),
-        stretch: mix(sunFrom.stretch, sunTo.stretch, p),
-        pan: mix(sunFrom.pan, sunTo.pan, p),
-      };
-      if (p >= 1) sunTweenDuration = 0;
+      if (!tweening) return;
+      const p = easeInOutCubic(clamp01((now - tweenStart) / SUN_TRANSITION));
+      look = lookFrom.map((a, i) => mix(a, lookTo[i], p));
+      if (p >= 1) tweening = false;
     }
 
     function resize() {
@@ -380,14 +479,14 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
       const aspect = rect.width / (rect.height || 1);
       const cover = aspect > imageAspect ? [1, imageAspect / aspect] : [aspect / imageAspect, 1];
       gl!.uniform2f(uniforms.cover, cover[0] * OVERSCAN, cover[1] * OVERSCAN);
+      gl!.uniform2f(uniforms.px, (cover[0] * OVERSCAN) / (rect.width || 1), (cover[1] * OVERSCAN) / (rect.height || 1));
 
+      gl!.uniform2f(uniforms.focusSize, (CLEAR_ZONE_SIZE[0] / 2) * aspect, CLEAR_ZONE_SIZE[1] / 2);
       if (content) {
         const c = content.getBoundingClientRect();
         const h = rect.height || 1;
         gl!.uniform2f(uniforms.focus, (c.left + c.width / 2 - rect.left) / h, (rect.bottom - (c.top + c.height / 2)) / h);
-        gl!.uniform2f(uniforms.focusSize, (c.width / 2 / h) * 1.1, (c.height / 2 / h) * 1.4);
       } else {
-        gl!.uniform2f(uniforms.focusSize, 1, 1);
         gl!.uniform2f(uniforms.focus, -10, -10);
       }
       render(performance.now());
@@ -395,20 +494,27 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
 
     function render(now: number) {
       const seconds = reducedMotion ? timeOffset : timeOffset + ((now - startTime) / 1000) * BREEZE_SPEED;
+      const l = unflatten(look);
       gl!.uniform1f(uniforms.time, seconds);
-      gl!.uniform1f(uniforms.strength, sun.strength);
-      gl!.uniform1f(uniforms.stretch, sun.stretch);
-      gl!.uniform1f(uniforms.pan, sun.pan);
+      gl!.uniform1f(uniforms.len, l.len);
+      gl!.uniform1f(uniforms.skew, l.skew);
+      gl!.uniform1f(uniforms.blur, l.blur);
+      gl!.uniform1f(uniforms.strength, l.strength);
+      gl!.uniform1f(uniforms.glow, l.glow);
+      gl!.uniform1f(uniforms.maskAngle, l.maskAngle);
+      gl!.uniform3fv(uniforms.wall, l.wall);
+      gl!.uniform3fv(uniforms.shade, l.shade);
+      gl!.uniform3fv(uniforms.glowColor, l.glowColor);
       gl!.uniform3fv(uniforms.trail, trail);
       gl!.uniform2fv(uniforms.trailVel, trailVel);
       gl!.drawArrays(gl!.TRIANGLES, 0, 3);
-      syncShadowAlpha();
+      syncShadowAlpha(l.strength);
     }
 
     // Keeps the cursor's cast shadow as dark as the leaf shadows (lighter at dusk / night).
     let sharedAlpha = '';
-    function syncShadowAlpha() {
-      const alpha = (SHADOW_ALPHA * sun.strength).toFixed(3);
+    function syncShadowAlpha(strength: number) {
+      const alpha = (SHADOW_ALPHA * strength).toFixed(3);
       if (alpha === sharedAlpha) return;
       sharedAlpha = alpha;
       document.documentElement.style.setProperty('--shadow-alpha', alpha);
@@ -421,11 +527,12 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
       for (let i = 0; i < RING_SIZE; i++) trail[i * 3 + 2] *= decay;
       updateSun(now);
       render(now);
-      rafId = requestAnimationFrame(frame);
+      // Under reduced motion the loop only runs while the sun is easing.
+      rafId = visible && (!reducedMotion || tweening) ? requestAnimationFrame(frame) : 0;
     }
 
     function start() {
-      if (reducedMotion || rafId || !visible) return;
+      if (rafId || !visible || (reducedMotion && !tweening)) return;
       lastFrame = performance.now();
       rafId = requestAnimationFrame(frame);
     }
@@ -466,12 +573,6 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
       trailVel.set([px, py], head * 2);
     }
 
-    window.addEventListener('sun-city-change', (e) => {
-      chosenCity = (e as CustomEvent<string | null>).detail;
-      setSunTarget(shadowParams(currentSun(chosenCity)), SUN_TRANSITION);
-      if (reducedMotion) render(performance.now());
-    });
-
     canvas.addEventListener('webglcontextlost', (e) => {
       e.preventDefault();
       stop();
@@ -484,16 +585,14 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
     new ResizeObserver(resize).observe(section);
     if (content) new ResizeObserver(resize).observe(content);
 
-    if (!reducedMotion) {
-      window.addEventListener('pointermove', onPointerMove, { passive: true });
-      setInterval(() => setSunTarget(shadowParams(currentSun(chosenCity)), 5000), 60_000);
-      new IntersectionObserver(([entry]) => {
-        visible = entry.isIntersecting;
-        if (visible) start();
-        else stop();
-      }).observe(section);
-      start();
-    }
+    everyMinute(() => setSunTarget(lookFor(seattleSun(seattleNow()))));
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      if (visible) start();
+      else stop();
+    }).observe(section);
+    if (!reducedMotion) window.addEventListener('pointermove', onPointerMove, { passive: true });
+    start();
     return true;
   }
 </script>

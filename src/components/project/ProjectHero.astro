@@ -9,7 +9,7 @@ interface Props {
   project: WorkEntry;
 }
 
-const { title, subtitle, type, cover, summary } = Astro.props.project.data;
+const { title, subtitle, type, cover, coverAlt, summary } = Astro.props.project.data;
 ---
 
 <section>
@@ -23,7 +23,7 @@ const { title, subtitle, type, cover, summary } = Astro.props.project.data;
     <div class="aspect-[16/9] overflow-hidden">
       {
         cover ? (
-          <Image src={cover} alt={`${title} hero`} class="h-full w-full object-cover" loading="eager" />
+          <Image src={cover} alt={coverAlt ?? `${title} cover`} class="h-full w-full object-cover" loading="eager" />
         ) : (
           <CoverPlaceholder title={title} class="h-full w-full" />
         )

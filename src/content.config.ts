@@ -24,6 +24,8 @@ const work = defineCollection({
        * Optional: cards show a gray placeholder until it's added.
        */
       cover: image().optional(),
+      /** What the cover shows, for screen readers, e.g. "Three phones showing the map app…". */
+      coverAlt: z.string().optional(),
       /**
        * Card-only framing. coverScale zooms the cover (below 1 shrinks it); coverFocusX / coverFocusY
        * are the point of the image, in % from its left / top, that lands at the card's center.

@@ -140,7 +140,7 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
         x={geo.ray.x1 + (SUN_R + 18) * hintScale}
         y={geo.ray.y1 + (13 / 3) * hintScale}
         font-size={13 * hintScale}
-        fill="#8a8a8a"
+        style="fill: var(--color-meta)"
         aria-hidden="true"
         data-sun-hint>{sundial.hint}</text
       >
@@ -172,7 +172,7 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
         stops.map((stop, i) => (
           <button
             type="button"
-            class="sundial-stop relative flex flex-col items-center pb-2 text-[#b0b0b0] transition-colors duration-200 hover:text-[#111] aria-pressed:text-[#111]"
+            class="sundial-stop relative flex flex-col items-center pb-2 text-meta transition-colors duration-200 hover:text-[#111] aria-pressed:text-[#111]"
             aria-pressed={i === 0 ? 'true' : 'false'}
             data-stop={i}
           >
@@ -494,6 +494,8 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
     let interacted = false;
     function takeOver() {
       interacted = true;
+      // Announced only once the visitor picks a latitude, not during the autoplay.
+      caption.setAttribute('aria-live', 'polite');
       root.setAttribute('data-interacted', '');
       stopAutoplay();
     }
@@ -565,20 +567,20 @@ const clientStops = stops.map(({ altitude, height, caption, floating, meAnchor, 
       button.addEventListener('focus', select);
     });
 
-    // Arrow keys only while the sundial is on screen (and not faded out), and never while typing.
     new IntersectionObserver(([entry]) => {
       inView = entry.isIntersecting;
       if (inView && drift) animate();
     }).observe(root);
-    window.addEventListener('keydown', (e) => {
-      if (!inView || root.hasAttribute('data-dormant') || e.altKey || e.metaKey || e.ctrlKey) return;
-      if ((e.target as HTMLElement).closest?.('input, textarea, select, [contenteditable]')) return;
-      const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (!step) return;
-      e.preventDefault();
-      takeOver();
-      go(Math.max(0, Math.min(stops.length - 1, active + step)));
-    });
+    // Arrow keys only while a latitude button has focus, so they never take over page scrolling.
+    buttons.forEach((button) =>
+      button.addEventListener('keydown', (e) => {
+        if (root.hasAttribute('data-dormant') || e.altKey || e.metaKey || e.ctrlKey) return;
+        const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        buttons[Math.max(0, Math.min(stops.length - 1, active + step))].focus();
+      }),
+    );
 
     new ResizeObserver(() => {
       const width = svg.clientWidth;

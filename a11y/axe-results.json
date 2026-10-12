@@ -1,0 +1,1312 @@
+{
+  "date": "2026-10-10T17:52:49.671Z",
+  "tags": [
+    "wcag2a",
+    "wcag2aa",
+    "wcag21a",
+    "wcag21aa",
+    "wcag22aa"
+  ],
+  "results": [
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=0",
+      "viewport": "desktop",
+      "hour": "0",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  00:00</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -47°  AZ 339°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=7",
+      "viewport": "desktop",
+      "hour": "7",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  07:00</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -4°  AZ 95°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=13",
+      "viewport": "desktop",
+      "hour": "13",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  13:00</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT 36°  AZ 181°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=18.5",
+      "viewport": "desktop",
+      "hour": "18.5",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  18:30</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -1°  AZ 260°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=0",
+      "viewport": "reflow",
+      "hour": "0",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  00:00</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -47°  AZ 339°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=7",
+      "viewport": "reflow",
+      "hour": "7",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  07:00</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -4°  AZ 95°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=13",
+      "viewport": "reflow",
+      "hour": "13",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  13:00</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT 36°  AZ 181°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/",
+      "url": "http://localhost:4329/?hour=18.5",
+      "viewport": "reflow",
+      "hour": "18.5",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": "a[href$=\"/#work\"]",
+              "html": "<a href=\"/#work\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">Work</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"about\"]",
+              "html": "<a href=\"/about\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" data-astro-cid-vi6cectr=\"\">About</a>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".nav-link.underline-offset-\\[6px\\][href$=\"resume.pdf\"]",
+              "html": "<a href=\"/resume.pdf\" class=\"nav-link decoration-1 underline-offset-[6px] aria-[current=page]:underline\" data-cursor-label=\"VIEW\" target=\"_blank\" rel=\"noopener noreferrer\" data-astro-cid-vi6cectr=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:1\\]",
+              "html": "<span class=\"enter block [--enter:1]\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".hero-name",
+              "html": "<span class=\"hero-name font-serif font-normal italic\" data-astro-cid-i3irphx7=\"\">Mengying</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".\\[--enter\\:2\\]",
+              "html": "<span class=\"enter block [--enter:2]\" data-astro-cid-i3irphx7=\"\">A product designer who researches.</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".mt-10",
+              "html": "<p class=\"enter mt-10 text-lg leading-relaxed [--enter:3]\" data-astro-cid-i3irphx7=\"\"><em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em> in AI, B2B and B2C products,<br data-astro-cid-i3irphx7=\"\">building research-driven &amp; human-centered design.</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "em",
+              "html": "<em class=\"font-serif text-[#555]\" data-astro-cid-i3irphx7=\"\">2+ years of experience</em>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".scroll-hint-label",
+              "html": "<span class=\"scroll-hint-label\" data-astro-cid-6dmmjdd7=\"\">View my work</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "p[data-coords=\"47.6°N  122.3°W\"]",
+              "html": "<p data-coords=\"47.6°N  122.3°W\" data-sun-place=\"\" aria-hidden=\"true\">47.6°N  122.3°W  ·  18:30</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": ".-mr-\\[0\\.1em\\]",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -1°  AZ 260°</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > h3",
+              "html": "<h3 class=\"line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]\" data-astro-cid-eghfbhx4=\"\">IDEA AI Wiki Design</h3>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": "a[href$=\"idea-ai-wiki\"] > .mt-4.gap-6.items-baseline > .shrink-0",
+              "html": "<p class=\"shrink-0 font-mono text-[13px] text-meta\" aria-hidden=\"true\" data-astro-cid-eghfbhx4=\"\">2026</p>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because it is overlapped by another element"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        },
+        {
+          "id": "link-in-text-block",
+          "help": "Links must be distinguishable without relying on color",
+          "nodes": [
+            {
+              "target": ".hero-link",
+              "html": "<a href=\"/about\" class=\"hero-link\" data-astro-cid-i3irphx7=\"\">",
+              "summary": "Fix any of the following:\n  Element's contrast ratio could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 25,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/about",
+      "url": "http://localhost:4329/about",
+      "viewport": "desktop",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 27,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/about",
+      "url": "http://localhost:4329/about",
+      "viewport": "reflow",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 27,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/work/colleague-ai",
+      "url": "http://localhost:4329/work/colleague-ai",
+      "viewport": "desktop",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/work/colleague-ai",
+      "url": "http://localhost:4329/work/colleague-ai",
+      "viewport": "reflow",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/work/google-maps-parking",
+      "url": "http://localhost:4329/work/google-maps-parking",
+      "viewport": "desktop",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/work/google-maps-parking",
+      "url": "http://localhost:4329/work/google-maps-parking",
+      "viewport": "reflow",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/work/idea-ai-wiki",
+      "url": "http://localhost:4329/work/idea-ai-wiki",
+      "viewport": "desktop",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/work/idea-ai-wiki",
+      "url": "http://localhost:4329/work/idea-ai-wiki",
+      "viewport": "reflow",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/work/idea-mapping",
+      "url": "http://localhost:4329/work/idea-mapping",
+      "viewport": "desktop",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/work/idea-mapping",
+      "url": "http://localhost:4329/work/idea-mapping",
+      "viewport": "reflow",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/work/netease-games",
+      "url": "http://localhost:4329/work/netease-games",
+      "viewport": "desktop",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/work/netease-games",
+      "url": "http://localhost:4329/work/netease-games",
+      "viewport": "reflow",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/work/seattle-ai-permitting",
+      "url": "http://localhost:4329/work/seattle-ai-permitting",
+      "viewport": "desktop",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/work/seattle-ai-permitting",
+      "url": "http://localhost:4329/work/seattle-ai-permitting",
+      "viewport": "reflow",
+      "status": 200,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mt-4 > span[aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\">→</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 26,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    },
+    {
+      "route": "/this-page-does-not-exist",
+      "url": "http://localhost:4329/this-page-does-not-exist",
+      "viewport": "desktop",
+      "status": 404,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 23,
+      "reflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "horizontalScroll": false
+      }
+    },
+    {
+      "route": "/this-page-does-not-exist",
+      "url": "http://localhost:4329/this-page-does-not-exist",
+      "viewport": "reflow",
+      "status": 404,
+      "violations": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "nodes": [
+            {
+              "target": ".mw-hint",
+              "html": "<span class=\"mw-hint font-mono text-[11px] tracking-[0.04em] text-meta\" style=\"left: 210px\" aria-hidden=\"true\" data-mw-hint=\"\" data-astro-cid-wrbnryv3=\"\" data-show=\"\">move the sun</span>",
+              "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
+            }
+          ]
+        }
+      ],
+      "passes": 23,
+      "reflow": {
+        "scrollWidth": 1200,
+        "clientWidth": 320,
+        "horizontalScroll": true
+      }
+    }
+  ]
+}

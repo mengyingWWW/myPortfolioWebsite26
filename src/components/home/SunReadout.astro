@@ -1,0 +1,46 @@
+---
+/**
+ * Readout of the sun lighting the hero, split like the nav: Seattle's coordinates and local time
+ * on the left, the sun's altitude / azimuth on the right. Filled in by the script; every minute.
+ */
+import Container from '@/components/layout/Container.astro';
+import { SEATTLE } from '@/lib/seattle';
+
+const coords = `${SEATTLE.latitude.toFixed(1)}°N  ${Math.abs(SEATTLE.longitude).toFixed(1)}°W`;
+---
+
+<div class="pointer-events-none absolute inset-x-0 bottom-[30px] z-10">
+  <Container
+    class="flex items-baseline justify-between font-mono text-[11px] tracking-[0.1em] whitespace-pre text-[#5c5c5c] uppercase tabular-nums"
+  >
+    <p data-coords={coords} data-sun-place aria-hidden="true">{coords}</p>
+    <p class="-mr-[0.1em]" data-sun-position aria-hidden="true"></p>
+  </Container>
+  <p class="sr-only" data-sun-spoken></p>
+</div>
+
+<script>
+  import { everyMinute, seattleClock, seattleNow, seattleSun } from '@/lib/seattle';
+
+  const SEP = '  ·  ';
+
+  const place = document.querySelector<HTMLElement>('[data-sun-place]');
+  const position = document.querySelector<HTMLElement>('[data-sun-position]');
+  const spoken = document.querySelector<HTMLElement>('[data-sun-spoken]');
+  if (place && position) {
+    const update = () => {
+      const now = seattleNow();
+      const { altitude, azimuth } = seattleSun(now);
+      const alt = Math.round(altitude);
+      const az = Math.round(azimuth) % 360;
+      place.textContent = `${place.dataset.coords}${SEP}${seattleClock(now)}`;
+      position.textContent = `SUN ALT ${alt}°  AZ ${az}°`;
+      if (spoken) {
+        const height = alt < 0 ? `${-alt}° below the horizon` : `${alt}° above the horizon`;
+        spoken.textContent = `The background follows the sun in Seattle: ${seattleClock(now)} local time, sun ${height}, azimuth ${az}°.`;
+      }
+    };
+    update();
+    everyMinute(update);
+  }
+</script>

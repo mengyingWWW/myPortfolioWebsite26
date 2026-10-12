@@ -12,9 +12,10 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, year, status, domains, role, platform, cover } = project.data;
+const { title, year, status, domains, role, platform, cover, coverAlt } = project.data;
 const { coverScale, coverFocusX, coverFocusY, coverBackground, coverBlend } = project.data;
 const meta = [status, domains.join(', '), role, platform];
+const descriptionId = `work-card-${project.id}-description`;
 // Card width = half the container (max 1600px, 40px side padding) minus half the 40px gutter.
 // Zooming the cover changes its size on screen, so ask the browser for a proportionally sized file.
 const px = (n: number) => Math.round(n);
@@ -26,11 +27,13 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
 <a
   href={workUrl(project)}
   class="work-card block"
-  aria-label={`${title}, ${year}`}
+  aria-label={`View ${title} case study`}
+  aria-describedby={descriptionId}
   data-cursor="view"
   data-project-card
 >
-  <ul class="work-card-meta mb-3 font-mono text-[13px] text-[#8a8a8a]" aria-hidden="true">
+  <span id={descriptionId} hidden>{[year, ...meta].join(' · ')}</span>
+  <ul class="work-card-meta mb-3 font-mono text-[13px] text-meta" aria-hidden="true">
     {meta.map((item) => <li>{item}</li>)}
   </ul>
   <div
@@ -46,7 +49,7 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
       cover ? (
         <Image
           src={cover}
-          alt=""
+          alt={coverAlt ?? ''}
           class="work-card-image"
           style={coverBlend && { 'mix-blend-mode': coverBlend }}
           widths={[800, 1200, 1600, 2400]}
@@ -59,9 +62,9 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
       )
     }
   </div>
-  <div class="mt-4 flex items-baseline justify-between gap-6" aria-hidden="true">
+  <div class="mt-4 flex items-baseline justify-between gap-6">
     <h3 class="line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]">{title}</h3>
-    <p class="shrink-0 font-mono text-[13px] text-[#8a8a8a]">{year}</p>
+    <p class="shrink-0 font-mono text-[13px] text-meta" aria-hidden="true">{year}</p>
   </div>
 </a>
 
@@ -133,7 +136,7 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
     transition: color 500ms ease;
   }
   .work-card:is(:hover, :focus-visible) :global(.work-card-placeholder) {
-    color: #8a8a8a;
+    color: var(--color-meta);
   }
 
   @media (prefers-reduced-motion: reduce) {

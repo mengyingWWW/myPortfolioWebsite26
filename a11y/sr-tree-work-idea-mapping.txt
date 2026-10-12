@@ -1,0 +1,66 @@
+- link "Skip to content":
+  - /url: "#main"
+- banner:
+  - navigation:
+    - link "Mengying Wang — Home":
+      - /url: /
+    - list:
+      - listitem:
+        - link "Work":
+          - /url: /#work
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Resume (opens in a new tab)":
+          - /url: /resume.pdf
+- main:
+  - article:
+    - text: 0→1 UI/UX Design
+    - heading "IDEA Mapping Design" [level=1]
+    - paragraph: Placeholder subtitle.
+    - 'img "Three phones showing the IDEA Mapping app: selecting assets on a building floor plan to geofence, a city map with clustered pins for people, assets and locations, and the map in Emergency mode with first-aid points and shelters."'
+    - heading "Overview" [level=2]
+    - paragraph: Placeholder summary.
+    - term: Role
+    - definition: 0→1 UI/UX Design
+    - term: Skills
+    - definition:
+      - list:
+        - listitem: Skill
+    - term: Timeline
+    - definition: Timeline
+    - term: Tools
+    - definition:
+      - list:
+        - listitem: Tool
+    - term: Team
+    - definition:
+      - list:
+        - listitem: Team
+    - heading "Section heading" [level=2]
+    - paragraph: Placeholder copy.
+  - link "Next project Colleague.AI Assessment Usability Study Placeholder subtitle.":
+    - /url: /work/colleague-ai
+    - paragraph: Next project
+    - paragraph: Colleague.AI Assessment Usability Study
+    - paragraph: Placeholder subtitle.
+- contentinfo:
+  - img "Mengying Wang"
+  - link "Let’s work together. (email)":
+    - /url: mailto:mengyingwww712@gmail.com
+  - navigation "Contact":
+    - list:
+      - listitem:
+        - link "Email":
+          - /url: mailto:mengyingwww712@gmail.com
+      - listitem:
+        - link "Resume (opens in a new tab)":
+          - /url: /resume.pdf
+      - listitem:
+        - link "LinkedIn (opens in a new tab)":
+          - /url: https://www.linkedin.com/in/mengying-www/
+      - listitem:
+        - link "GitHub (opens in a new tab)":
+          - /url: https://github.com/mengyingWWW
+  - paragraph: No shadow was harmed in the making of this site · © 2026

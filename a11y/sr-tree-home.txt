@@ -1,0 +1,73 @@
+- link "Skip to content":
+  - /url: "#main"
+- banner:
+  - navigation:
+    - link "Mengying Wang — Home":
+      - /url: /
+    - list:
+      - listitem:
+        - link "Work":
+          - /url: /#work
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Resume (opens in a new tab)":
+          - /url: /resume.pdf
+- main:
+  - heading "Hello, I am Mengying A product designer who researches." [level=1]:
+    - text: Hello, I am
+    - link "Mengying":
+      - /url: /about
+    - text: A product designer who researches.
+  - paragraph:
+    - emphasis: 2+ years of experience
+    - text: in AI, B2B and B2C products, building research-driven & human-centered design.
+  - link "View my work":
+    - /url: "#work"
+  - paragraph: "The background follows the sun in Seattle: 13:00 local time, sun 36° above the horizon, azimuth 181°."
+  - heading "Selected Work" [level=2]
+  - paragraph: 2024 — 2026
+  - link "View IDEA AI Wiki Design case study":
+    - /url: /work/idea-ai-wiki
+    - 'img "A desktop monitor showing the IDEA AI Wiki in dark mode: a sidebar of facility-management tools, wiki categories such as Electrical and HVAC, and a list of maintenance guides with their sharing status."'
+    - heading "IDEA AI Wiki Design" [level=3]
+  - link "View IDEA Mapping Design case study":
+    - /url: /work/idea-mapping
+    - 'img "Three phones showing the IDEA Mapping app: selecting assets on a building floor plan to geofence, a city map with clustered pins for people, assets and locations, and the map in Emergency mode with first-aid points and shelters."'
+    - heading "IDEA Mapping Design" [level=3]
+  - link "View Colleague.AI Assessment Usability Study case study":
+    - /url: /work/colleague-ai
+    - img "A laptop showing Colleague.AI's Create Assessment form, with assessment details, rubric and answer-key settings, next to a phone showing the assistant's \"How can I help you today?\" home screen."
+    - heading "Colleague.AI Assessment Usability Study" [level=3]
+  - link "View City of Seattle AI Permitting System Design case study":
+    - /url: /work/seattle-ai-permitting
+    - img "A desktop showing the City of Seattle permit dashboard with an AI estimate of review time (78 days) broken into review stages, and a laptop showing an AI review report flagging issues in a residential reroofing permit application."
+    - heading "City of Seattle AI Permitting System Design" [level=3]
+  - link "View AI Smart Parking Design case study":
+    - /url: /work/google-maps-parking
+    - 'img "Three phones showing the smart parking concept in Google Maps: parking filters for price, type and time limit, a driving route across Seattle with parking options, and a camera view reading a street-cleaning no-parking sign."'
+    - heading "AI Smart Parking Design" [level=3]
+  - link "View NetEase Games Planet Party Time Design case study":
+    - /url: /work/netease-games
+    - 'img "A laptop showing Planet Party Time gameplay: cartoon characters racing around a running track with hurdles and springboards, a countdown timer and an onboarding tip about using the springboard."'
+    - heading "NetEase Games Planet Party Time Design" [level=3]
+- contentinfo:
+  - img "Mengying Wang"
+  - link "Let’s work together. (email)":
+    - /url: mailto:mengyingwww712@gmail.com
+  - navigation "Contact":
+    - list:
+      - listitem:
+        - link "Email":
+          - /url: mailto:mengyingwww712@gmail.com
+      - listitem:
+        - link "Resume (opens in a new tab)":
+          - /url: /resume.pdf
+      - listitem:
+        - link "LinkedIn (opens in a new tab)":
+          - /url: https://www.linkedin.com/in/mengying-www/
+      - listitem:
+        - link "GitHub (opens in a new tab)":
+          - /url: https://github.com/mengyingWWW
+  - paragraph: No shadow was harmed in the making of this site · © 2026

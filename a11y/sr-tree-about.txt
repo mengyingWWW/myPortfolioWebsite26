@@ -1,0 +1,110 @@
+- link "Skip to content":
+  - /url: "#main"
+- banner:
+  - navigation:
+    - link "Mengying Wang — Home":
+      - /url: /
+    - list:
+      - listitem:
+        - link "Work":
+          - /url: /#work
+      - listitem:
+        - link "About":
+          - /url: /about
+      - listitem:
+        - link "Resume (opens in a new tab)":
+          - /url: /resume.pdf
+- main:
+  - img "Portrait of Mengying"
+  - heading "A UX designer & researcher who starts with people and learns by making, an architect's habit I now bring to AI products." [level=1]:
+    - text: A UX designer & researcher who
+    - emphasis: starts with people
+    - text: and
+    - emphasis: learns by making
+    - text: ", an architect's habit I now bring to AI products."
+  - link "More about me":
+    - /url: "#about-more"
+  - paragraph:
+    - text: I used to design how people interact with
+    - emphasis: space
+    - text: . Now I design how they interact with
+    - emphasis: interfaces
+    - text: .
+  - img "The noon sun and the shadows it casts at the four latitudes I have lived at": 48.7°
+  - group "Choose a latitude":
+    - button "41.3°N Benxi" [pressed]
+    - button "39.9°N Beijing"
+    - button "1.3°N Singapore"
+    - button "47.6°N Seattle"
+  - paragraph: Home, where time seems to pause. A quiet place I carry with me, and the reason I design for people, not just products.
+  - heading "Education" [level=2]
+  - article:
+    - heading "University of Washington" [level=3]
+    - term: Degree
+    - definition: Master of Science in Human Centered Design & Engineering
+    - term: Year
+    - definition: 2025.9 – 2027.6 (Expected)
+    - term: Relevant Courses
+    - definition: User Centered Design / Usability Studies / Computational Concepts in HCDE / Experimental Research Methods / Qualitative Research Methods
+  - article:
+    - heading "Tsinghua University" [level=3]
+    - term: Degree
+    - definition: Bachelor of Engineering in Architecture
+    - term: Year
+    - definition: 2020.9 – 2025.6
+    - term: Relevant Courses
+    - definition: Design Studio / Media Programming / Interactive Design
+    - term: Distinctions
+    - definition: Graduated with top 10% ranking / Tsinghua Overall Excellence Scholarship
+  - heading "Experience" [level=2]
+  - list:
+    - listitem:
+      - heading "IDEA Enterprises" [level=3]
+      - paragraph: UX / Product Designer Intern
+      - paragraph: 2026.6 – 2026.9
+    - listitem:
+      - heading "Colleague.AI" [level=3]
+      - paragraph: UX Research Lead · Industry-Sponsored Course Project
+      - paragraph: 2026.1 – 2026.3
+    - listitem:
+      - heading "City University of Hong Kong · KnowVis Lab" [level=3]
+      - paragraph: UX Researcher Intern
+      - paragraph: 2025.6 – 2025.12
+    - listitem:
+      - heading "NetEase Games" [level=3]
+      - paragraph: UX / Product Designer Intern
+      - paragraph: 2024.6 – 2024.9
+    - listitem:
+      - heading "Tsinghua Future Lab" [level=3]
+      - paragraph: UX / Product Designer Intern
+      - paragraph: 2023.6 – 2023.9
+  - heading "Skills" [level=2]
+  - term: UX Design
+  - definition: Interaction Design / Prototyping / Responsive Design / Design Systems / Information Architecture
+  - term: UX Research
+  - definition: User Interviews / Usability Testing / Mixed Methods / Eye Tracking / A/B Testing / Data Analysis
+  - term: AI Product Design
+  - definition: Generative AI / AI Agents & Automation / Human-AI Interaction / LLM-powered Workflows
+  - term: Vibe Coding
+  - definition: Claude Code / Cursor / Figma Make / Lovable / Bolt
+  - term: Tools
+  - definition: Figma / Framer / Adobe Suite / Rhino / Blender / HTML & CSS / JavaScript / Python
+- contentinfo:
+  - img "Mengying Wang"
+  - link "Let’s work together. (email)":
+    - /url: mailto:mengyingwww712@gmail.com
+  - navigation "Contact":
+    - list:
+      - listitem:
+        - link "Email":
+          - /url: mailto:mengyingwww712@gmail.com
+      - listitem:
+        - link "Resume (opens in a new tab)":
+          - /url: /resume.pdf
+      - listitem:
+        - link "LinkedIn (opens in a new tab)":
+          - /url: https://www.linkedin.com/in/mengying-www/
+      - listitem:
+        - link "GitHub (opens in a new tab)":
+          - /url: https://github.com/mengyingWWW
+  - paragraph: No shadow was harmed in the making of this site · © 2026

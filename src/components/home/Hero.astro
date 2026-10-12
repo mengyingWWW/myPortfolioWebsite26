@@ -2,6 +2,7 @@
 import Container from '@/components/layout/Container.astro';
 import LeafShadow from './LeafShadow.astro';
 import ScrollHint from './ScrollHint.astro';
+import SunReadout from './SunReadout.astro';
 import { hero } from '@/data/home';
 ---
 
@@ -53,6 +54,7 @@ import { hero } from '@/data/home';
   </div>
   <div class="hero-name-shadow" lang="zh-CN" aria-hidden="true">{hero.nameShadow}</div>
   <ScrollHint target="work" class="enter [--enter:4]" />
+  <SunReadout />
 </section>
 
 <style>
@@ -74,7 +76,7 @@ import { hero } from '@/data/home';
      so the swap doesn't move anything). */
   .hero-name {
     position: relative;
-    border-bottom: 2px dotted #bdbdbd;
+    border-bottom: 2px dotted var(--color-meta);
     padding-bottom: 2px;
     transition: border-color 200ms ease;
   }
