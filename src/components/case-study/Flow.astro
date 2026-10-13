@@ -1,0 +1,149 @@
+---
+/**
+ * One redesigned flow, in reading order: header, annotated "before", key decisions, any flow-specific
+ * extras (the slot), simplified wireframes, then the "after" screen. Its h3 is a sub-item in the
+ * table of contents, linking to the block's id.
+ */
+import Block from './Block.astro';
+import Columns from './Columns.astro';
+import Placeholder from './Placeholder.astro';
+import StatusBadge from './StatusBadge.astro';
+import TextPlaceholder from './TextPlaceholder.astro';
+
+interface Props {
+  n: number;
+  /** For deep links, e.g. "flow-find". */
+  id: string;
+  name: string;
+}
+
+const { n, id, name } = Astro.props;
+const nn = String(n).padStart(2, '0');
+const pad = (i: number) => String(i).padStart(2, '0');
+---
+
+<div id={id} class="flow">
+  <Block eyebrow={`Flow ${nn}`} title={name} tocSub>
+    <TextPlaceholder short />
+  </Block>
+
+  <Columns cols="2 1">
+    <Placeholder label={`Before + issue pins — Flow ${n} (interactive)`} ratio="16/10" kind="interactive" source="need" />
+    <ol class="issues" aria-label={`Issues in flow ${n}`}>
+      {
+        [1, 2, 3, 4].map((i) => (
+          <li>
+            <span class="issue-number" aria-hidden="true">{pad(i)}</span>
+            <TextPlaceholder short class="issue-text" />
+            <span class="issue-dot" aria-hidden="true" />
+          </li>
+        ))
+      }
+    </ol>
+  </Columns>
+
+  <Block title="Key decisions" level={4}>
+    <div class="decisions">
+      {
+        [1, 2, 3].map((i) => (
+          <div class:list={['decision', i % 2 === 0 && 'is-flipped']}>
+            <div class="decision-text">
+              <p class="decision-label">Decision {pad(i)}</p>
+              <TextPlaceholder lines={3} />
+            </div>
+            <Placeholder
+              label={`Flow ${n} — key decision ${i}`}
+              ratio="4/3"
+              kind={i === 2 ? 'motion' : 'image'}
+              source="make"
+              class="decision-figure"
+            />
+          </div>
+        ))
+      }
+    </div>
+  </Block>
+
+  <slot />
+
+  <Columns cols="1 1">
+    <Placeholder label="Simplified wireframe — before" ratio="4/3" kind="diagram" source="make" caption="Simplified wireframe" />
+    <Placeholder label="Simplified wireframe — after" ratio="4/3" kind="diagram" source="make" caption="Simplified wireframe" />
+  </Columns>
+
+  <Placeholder label={`After — Flow ${n} full screen`} ratio="16/10" kind="image" source="have">
+    <StatusBadge status="Proposed" />
+  </Placeholder>
+</div>
+
+<style>
+  .flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 40px;
+    margin-top: 40px;
+    border-top: 1px solid var(--color-line);
+    padding-top: 40px;
+    scroll-margin-top: calc(5rem + 24px);
+  }
+
+  .issues {
+    display: flex;
+    flex-direction: column;
+  }
+  .issues li {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) 8px;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--color-line);
+    padding-block: 14px;
+  }
+  .issues li:first-child {
+    border-top: 1px solid var(--color-line);
+  }
+  .issue-number {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-meta);
+  }
+  .issue-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d4d4d2;
+  }
+
+  .decisions {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    margin-top: 8px;
+  }
+  .decision {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 32px;
+  }
+  .is-flipped .decision-text {
+    order: 2;
+  }
+  .decision-label {
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+
+  @media (max-width: 900px) {
+    .decision {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .is-flipped .decision-text {
+      order: 0;
+    }
+  }
+</style>

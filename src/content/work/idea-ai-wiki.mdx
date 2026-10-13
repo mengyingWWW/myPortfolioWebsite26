@@ -24,6 +24,129 @@ summary: Placeholder summary.
 order: 1
 ---
 
-## Section heading
+import CaseStudy from '@/components/case-study/CaseStudy.astro';
+import Section from '@/components/case-study/Section.astro';
+import Block from '@/components/case-study/Block.astro';
+import Columns from '@/components/case-study/Columns.astro';
+import Flow from '@/components/case-study/Flow.astro';
+import InsightRow from '@/components/case-study/InsightRow.astro';
+import Placeholder from '@/components/case-study/Placeholder.astro';
+import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
+import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
+import Stats from '@/components/case-study/Stats.astro';
+import StatusBadge from '@/components/case-study/StatusBadge.astro';
+import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 
-Placeholder copy.
+<CaseStudy>
+
+<Section id="overview" index="01" label="Overview" title="Overview">
+  <TextPlaceholder lines={4} />
+  <Block title="Goals">
+    <PlaceholderList count={3} />
+  </Block>
+  <Stats
+    items={[
+      { value: '19', caption: 'UX gaps' },
+      { value: '4', caption: 'Core flows' },
+      { value: '—', caption: 'Shipped' },
+    ]}
+  />
+</Section>
+
+<Section id="problem" index="02" label="Problem" title="Problem">
+  <TextPlaceholder lines={3} />
+  <Placeholder ratio="16/10" kind="image" source="need" label="Before — SWE team's original Wiki prototype (unannotated)" />
+</Section>
+
+<Section id="audit" index="03" label="Audit" title="Audit">
+  <Block title="Method">
+    <TextPlaceholder lines={3} />
+  </Block>
+  <Block title="Who I walked through it as">
+    <PlaceholderList grid labels={['Technician (reader)', 'Author', 'Reviewer', 'Admin']} />
+  </Block>
+  <Placeholder ratio="16/5" kind="diagram" source="make" label="Audit overview — 19 gaps across 4 flows, by severity" />
+</Section>
+
+<Section id="insights" index="04" label="Insights" title="Insights">
+  <InsightRow n={1} />
+  <InsightRow n={2} />
+  <InsightRow n={3} />
+</Section>
+
+<Section id="redesign" index="05" label="Redesign" title="Redesign">
+  <TextPlaceholder lines={2} />
+
+  <Flow n={1} id="flow-find" name="Find" />
+
+  <Flow n={2} id="flow-contribute" name="Contribute">
+    <Columns cols="1 1">
+      <Placeholder ratio="16/10" kind="motion" source="make" label="Duplicate check on publish — edit / merge / create new" />
+      <Placeholder ratio="16/10" kind="motion" source="make" label="Import Word/PDF — structure preserved" />
+    </Columns>
+  </Flow>
+
+  <Flow n={3} id="flow-use" name="Use">
+    <Columns cols="1 1">
+      <Placeholder ratio="4/3" kind="image" source="make" label="Step card with warning + verify" />
+      <Placeholder ratio="4/3" kind="image" source="make" label="Used in automation module" />
+    </Columns>
+  </Flow>
+
+  <Flow n={4} id="flow-govern" name="Govern">
+    <Placeholder ratio="16/5" kind="diagram" source="make" label="Review flow — Draft → Submitted → In review → Published" />
+    <Placeholder ratio="16/9" kind="diagram" source="make" label="Visibility tiers — Private / Team / Site" />
+  </Flow>
+</Section>
+
+<Section id="information-architecture" index="06" label="Information Architecture" title="Information Architecture">
+  <TextPlaceholder lines={2} />
+  <Columns cols="1 1">
+    <div>
+      <Placeholder ratio="1/1" kind="diagram" source="make" label="IA — before" />
+      <div class="mt-6">
+        <PlaceholderList count={3} />
+      </div>
+    </div>
+    <div>
+      <Placeholder ratio="1/1" kind="diagram" source="make" label="IA — after" />
+      <div class="mt-6">
+        <PlaceholderList count={3} />
+      </div>
+    </div>
+  </Columns>
+</Section>
+
+<Section id="details" index="07" label="Details" title="Details">
+  <TextPlaceholder lines={2} />
+  <Placeholder ratio="16/9" kind="diagram" source="make" label="Component sheet — visibility badge, step card, version grouping, review timeline" />
+</Section>
+
+<Section id="outcome" index="08" label="Outcome" title="Outcome">
+  <TextPlaceholder lines={3} />
+  <Columns cols="1 1">
+    <Placeholder ratio="16/10" kind="image" source="have" label="Proposed">
+      <StatusBadge status="Proposed" />
+    </Placeholder>
+    <Placeholder ratio="16/10" kind="image" source="need" label="Live today">
+      <StatusBadge status="Shipped" />
+    </Placeholder>
+  </Columns>
+  <Block title="What shipped">
+    <PlaceholderTable columns={['Proposal', 'Status', 'Note']} rows={5} caption="Proposals and whether they shipped" />
+  </Block>
+</Section>
+
+<Section id="takeaways" index="09" label="Takeaways" title="Takeaways">
+  <Block title="Takeaway 01">
+    <TextPlaceholder lines={2} />
+  </Block>
+  <Block title="Takeaway 02">
+    <TextPlaceholder lines={2} />
+  </Block>
+  <Block title="Takeaway 03">
+    <TextPlaceholder lines={2} />
+  </Block>
+</Section>
+
+</CaseStudy>

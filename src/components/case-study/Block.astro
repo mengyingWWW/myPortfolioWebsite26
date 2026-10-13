@@ -1,0 +1,49 @@
+---
+/** A titled sub-block inside a section (h3 by default), with its content below. */
+interface Props {
+  title: string;
+  level?: 3 | 4;
+  /** Mono line above the title, e.g. "Flow 01". */
+  eyebrow?: string;
+  id?: string;
+  /** List the heading in the table of contents under its section (it links to the nearest id). */
+  tocSub?: boolean;
+  class?: string;
+}
+
+const { title, level = 3, eyebrow, id, tocSub = false, class: className } = Astro.props;
+const Heading = `h${level}` as 'h3' | 'h4';
+---
+
+<div id={id} class:list={['cs-block', className]}>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <Heading class:list={['title', `level-${level}`]} data-toc-sub={tocSub ? '' : undefined}>{title}</Heading>
+  <div class="body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .eyebrow {
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+  .level-3 {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .level-4 {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  .body {
+    margin-top: 16px;
+  }
+</style>

@@ -1,5 +1,5 @@
 {
-  "date": "2026-10-10T17:52:49.671Z",
+  "date": "2026-10-12T23:58:56.526Z",
   "tags": [
     "wcag2a",
     "wcag2aa",
@@ -72,7 +72,7 @@
             },
             {
               "target": ".-mr-\\[0\\.1em\\]",
-              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -47°  AZ 339°</p>",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -48°  AZ 339°</p>",
               "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
             },
             {
@@ -175,7 +175,7 @@
             },
             {
               "target": ".-mr-\\[0\\.1em\\]",
-              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -4°  AZ 95°</p>",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -5°  AZ 96°</p>",
               "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
             },
             {
@@ -278,7 +278,7 @@
             },
             {
               "target": ".-mr-\\[0\\.1em\\]",
-              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT 36°  AZ 181°</p>",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT 35°  AZ 181°</p>",
               "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
             },
             {
@@ -484,7 +484,7 @@
             },
             {
               "target": ".-mr-\\[0\\.1em\\]",
-              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -47°  AZ 339°</p>",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -48°  AZ 339°</p>",
               "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
             },
             {
@@ -587,7 +587,7 @@
             },
             {
               "target": ".-mr-\\[0\\.1em\\]",
-              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -4°  AZ 95°</p>",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT -5°  AZ 96°</p>",
               "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
             },
             {
@@ -690,7 +690,7 @@
             },
             {
               "target": ".-mr-\\[0\\.1em\\]",
-              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT 36°  AZ 181°</p>",
+              "html": "<p class=\"-mr-[0.1em]\" data-sun-position=\"\" aria-hidden=\"true\">SUN ALT 35°  AZ 181°</p>",
               "summary": "Fix any of the following:\n  Element's background color could not be determined because element contains an image node"
             },
             {
@@ -896,6 +896,16 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-766ebbg4=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-766ebbg4=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -908,7 +918,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1440,
         "clientWidth": 1440,
@@ -927,6 +937,11 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -939,7 +954,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1200,
         "clientWidth": 320,
@@ -958,6 +973,16 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-766ebbg4=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-766ebbg4=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -970,7 +995,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1440,
         "clientWidth": 1440,
@@ -989,6 +1014,11 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1001,7 +1031,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1200,
         "clientWidth": 320,
@@ -1020,6 +1050,16 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-766ebbg4=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-766ebbg4=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1032,7 +1072,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 31,
       "reflow": {
         "scrollWidth": 1440,
         "clientWidth": 1440,
@@ -1051,6 +1091,11 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1063,7 +1108,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 31,
       "reflow": {
         "scrollWidth": 1200,
         "clientWidth": 320,
@@ -1082,6 +1127,16 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-766ebbg4=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-766ebbg4=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1094,7 +1149,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1440,
         "clientWidth": 1440,
@@ -1113,6 +1168,11 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1125,7 +1185,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1200,
         "clientWidth": 320,
@@ -1144,6 +1204,16 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-766ebbg4=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-766ebbg4=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1156,7 +1226,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1440,
         "clientWidth": 1440,
@@ -1175,6 +1245,11 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1187,7 +1262,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1200,
         "clientWidth": 320,
@@ -1206,6 +1281,16 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-766ebbg4=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-766ebbg4=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1218,7 +1303,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1440,
         "clientWidth": 1440,
@@ -1237,6 +1322,11 @@
           "help": "Elements must meet minimum color contrast ratio thresholds",
           "nodes": [
             {
+              "target": "span[data-astro-cid-ox6v6otr=\"\"][aria-hidden=\"true\"]",
+              "html": "<span aria-hidden=\"true\" data-astro-cid-ox6v6otr=\"\">↑</span>",
+              "summary": "Fix any of the following:\n  Element content contains only non-text characters"
+            },
+            {
               "target": ".mt-4 > span[aria-hidden=\"true\"]",
               "html": "<span aria-hidden=\"true\">→</span>",
               "summary": "Fix any of the following:\n  Element content contains only non-text characters"
@@ -1249,7 +1339,7 @@
           ]
         }
       ],
-      "passes": 26,
+      "passes": 27,
       "reflow": {
         "scrollWidth": 1200,
         "clientWidth": 320,

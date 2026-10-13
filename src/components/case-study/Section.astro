@@ -1,0 +1,59 @@
+---
+/**
+ * A numbered case-study section: a mono label above the h2, then the content, all in one column.
+ * The h2 carries the id, so the table of contents and #links land on the heading.
+ */
+interface Props {
+  id: string;
+  /** e.g. "01" */
+  index: string;
+  /** e.g. "Overview" */
+  label: string;
+  title: string;
+}
+
+const { id, index, label, title } = Astro.props;
+---
+
+<section class="cs-section" aria-labelledby={id}>
+  <header>
+    <p class="cs-label" aria-hidden="true">{index} — {label}</p>
+    <h2 id={id} class="cs-title">{title}</h2>
+  </header>
+  <slot />
+</section>
+
+<style>
+  .cs-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 40px;
+    margin-top: 128px;
+    border-top: 1px solid var(--color-line);
+    padding-top: 40px;
+  }
+  .cs-section:first-child {
+    margin-top: 96px;
+  }
+
+  .cs-label {
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+  .cs-title {
+    font-size: 30px;
+    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  @media (max-width: 900px) {
+    .cs-section {
+      row-gap: 32px;
+    }
+  }
+</style>

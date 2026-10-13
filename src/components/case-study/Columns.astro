@@ -1,0 +1,35 @@
+---
+/** A row of columns that stacks to one column at 900px and below. */
+interface Props {
+  /** Relative column widths, e.g. "1 1" or "2 1". */
+  cols?: string;
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  class?: string;
+}
+
+const { cols = '1 1', align = 'start', class: className } = Astro.props;
+const template = cols
+  .trim()
+  .split(/\s+/)
+  .map((fr) => `minmax(0, ${fr}fr)`)
+  .join(' ');
+---
+
+<div
+  class:list={['cs-columns', className]}
+  style={`grid-template-columns: ${template}; align-items: ${align}`}
+>
+  <slot />
+</div>
+
+<style>
+  .cs-columns {
+    display: grid;
+    gap: 32px;
+  }
+  @media (max-width: 900px) {
+    .cs-columns {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+  }
+</style>

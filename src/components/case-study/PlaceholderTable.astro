@@ -1,0 +1,61 @@
+---
+/** A table whose cells are still to be written. Scrolls sideways inside its own box if it ever gets too narrow. */
+import TextPlaceholder from './TextPlaceholder.astro';
+
+interface Props {
+  columns: string[];
+  rows: number;
+  caption?: string;
+}
+
+const { columns, rows, caption } = Astro.props;
+---
+
+<div class="table-scroll">
+  <table>
+    {caption && <caption class="sr-only">{caption}</caption>}
+    <thead>
+      <tr>{columns.map((column) => <th scope="col">{column}</th>)}</tr>
+    </thead>
+    <tbody>
+      {
+        Array.from({ length: rows }, () => (
+          <tr>
+            {columns.map(() => (
+              <td>
+                <TextPlaceholder short />
+              </td>
+            ))}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .table-scroll {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+  }
+  th {
+    padding: 0 16px 12px 0;
+    border-bottom: 1px solid #111;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+  td {
+    padding: 16px 16px 16px 0;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+</style>

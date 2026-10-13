@@ -1,0 +1,66 @@
+---
+/** A short list whose items are still to be written: one grey line each, optionally under a known label. */
+import TextPlaceholder from './TextPlaceholder.astro';
+
+interface Props {
+  /** Number of items when there are no labels. */
+  count?: number;
+  /** Known item names, e.g. personas; each gets a placeholder line underneath. */
+  labels?: string[];
+  /** Lay labelled items out side by side (stacks at 900px and below). */
+  grid?: boolean;
+}
+
+const { count = 3, labels, grid = false } = Astro.props;
+const items = labels ?? Array.from({ length: count }, () => undefined);
+---
+
+<ul class:list={['cs-list', grid && 'is-grid']}>
+  {
+    items.map((label) => (
+      <li>
+        {label && <p class="label">{label}</p>}
+        <TextPlaceholder short />
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cs-list li {
+    position: relative;
+    padding-left: 20px;
+  }
+  .cs-list li::before {
+    content: '';
+    position: absolute;
+    top: 0.75em;
+    left: 0;
+    width: 6px;
+    height: 1px;
+    background: var(--color-meta);
+  }
+  .label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .is-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px 32px;
+  }
+  .is-grid li {
+    padding-left: 0;
+    border-top: 1px solid var(--color-line);
+    padding-top: 12px;
+  }
+  .is-grid li::before {
+    content: none;
+  }
+</style>

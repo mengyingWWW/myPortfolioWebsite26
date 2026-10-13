@@ -1,0 +1,34 @@
+---
+/**
+ * Wraps a case-study MDX body that is built from case-study components. The project layout puts
+ * MDX inside .prose-body, whose descendant rules (h2/h3 sizes, p/ul colour, list bullets, margins)
+ * would fight these components, so this opts the wrapped content out of them.
+ */
+---
+
+<div class="case-study">
+  <slot />
+</div>
+
+<style>
+  /* In the same layer as .prose-body (and more specific), so Tailwind utilities still win. */
+  @layer components {
+    .case-study :global(*) {
+      margin: 0;
+      max-width: none;
+    }
+    .case-study :global(:is(h2, h3, h4)) {
+      font-size: inherit;
+      font-weight: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+    }
+    .case-study :global(:is(p, ul, ol)) {
+      color: inherit;
+    }
+    .case-study :global(:is(ul, ol)) {
+      list-style: none;
+      padding-left: 0;
+    }
+  }
+</style>

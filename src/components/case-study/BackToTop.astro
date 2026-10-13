@@ -1,0 +1,60 @@
+---
+/**
+ * Closes a case study: a hairline, then a pill that scrolls back to the top and hands keyboard focus
+ * to the page's h1. Sits in the content column; the layout places it.
+ */
+---
+
+<div class="back-to-top-row">
+  <button type="button" class="back-to-top" data-back-to-top data-cursor="default"><span aria-hidden="true">↑</span> Back to top</button>
+</div>
+
+<style>
+  .back-to-top-row {
+    margin-top: 96px;
+    border-top: 1px solid #e6e6e4;
+    padding-top: 48px;
+  }
+  .back-to-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border: 1px solid #111;
+    border-radius: 999px;
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #111;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+  .back-to-top:is(:hover, :focus-visible) {
+    background: #111;
+    color: #fff;
+  }
+  .back-to-top:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .back-to-top {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelector('[data-back-to-top]')?.addEventListener('click', () => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    const h1 = document.querySelector<HTMLElement>('h1');
+    if (!h1) return;
+    if (!h1.hasAttribute('tabindex')) h1.setAttribute('tabindex', '-1');
+    h1.focus({ preventScroll: true });
+  });
+</script>

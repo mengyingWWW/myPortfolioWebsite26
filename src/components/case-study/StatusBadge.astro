@@ -1,0 +1,33 @@
+---
+/** Small pill pinned to the top-left of a figure (the figure must be position: relative, as Placeholder is). */
+interface Props {
+  status: 'Proposed' | 'Shipped';
+}
+
+const { status } = Astro.props;
+---
+
+<span class:list={['status-badge', status === 'Shipped' && 'is-shipped']}>{status}</span>
+
+<style>
+  .status-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 5px 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    background: #fff;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #111;
+  }
+  .is-shipped {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+  }
+</style>

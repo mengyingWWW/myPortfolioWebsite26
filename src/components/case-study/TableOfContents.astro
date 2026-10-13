@@ -1,0 +1,256 @@
+---
+/**
+ * "On this page" list for a case study, built in the browser from the body's h2s
+ * (inside [data-case-body]). Elements marked data-toc-sub are listed under the h2 before them,
+ * and only while the reader is in that section. Hidden at 900px and below, and without JS.
+ */
+---
+
+<nav class="toc" aria-label="On this page" data-toc hidden>
+  <p class="toc-label">On this page</p>
+  <ol class="toc-list" data-toc-list></ol>
+  <button type="button" class="toc-top" data-toc-top data-cursor="default"><span aria-hidden="true">↑</span> Top</button>
+</nav>
+
+<style>
+  /* The site header is 5rem tall (Nav.astro, h-20). */
+  .toc {
+    position: sticky;
+    top: calc(5rem + 32px);
+    max-height: calc(100vh - 5rem - 64px);
+    overflow-y: auto;
+    /* Room for focus outlines inside the scroll box. */
+    padding: 4px;
+    margin: -4px;
+  }
+
+  .toc-label {
+    margin-bottom: 16px;
+    padding-left: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+
+  /* Items are created by the script below, so they carry no scope attribute. */
+  .toc :global(a),
+  .toc-top {
+    position: relative;
+    display: block;
+    padding: 5px 0 5px 20px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--color-meta);
+    text-align: left;
+    transition: color 150ms ease;
+  }
+  /* Headings should be short; this only keeps a long one from wrapping the column. */
+  .toc :global(a) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .toc :global(a:is(:hover, :focus-visible)),
+  .toc-top:is(:hover, :focus-visible),
+  .toc :global(a.is-active),
+  .toc :global(a.is-within) {
+    color: #111;
+  }
+  .toc :global(a)::before {
+    content: '';
+    position: absolute;
+    top: calc(5px + 0.7em);
+    left: 0;
+    width: 12px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  .toc :global(a:is(:hover, :focus-visible))::before {
+    opacity: 0.4;
+  }
+  .toc :global(a.is-active)::before {
+    opacity: 1;
+  }
+  .toc :global(.toc-sublist) {
+    padding-left: 12px;
+  }
+  .toc :global(a:focus-visible),
+  .toc-top:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+  }
+
+  .toc-top {
+    margin-top: 20px;
+    cursor: pointer;
+  }
+
+  @media (max-width: 900px) {
+    .toc {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toc :global(a),
+    .toc :global(a)::before,
+    .toc-top {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const HEADER = 80; // Nav.astro's h-20
+  /** A section is current once its heading passes this fraction of the viewport. */
+  const ACTIVE_LINE = 0.3;
+  /** Within this many px of the end of the page, the last item is current. */
+  const BOTTOM_SLACK = 4;
+
+  type Entry = {
+    heading: HTMLElement;
+    target: HTMLElement;
+    link: HTMLAnchorElement;
+    item: HTMLLIElement;
+    subs: Entry[];
+    subList?: HTMLOListElement;
+  };
+
+  const nav = document.querySelector<HTMLElement>('[data-toc]');
+  const body = document.querySelector<HTMLElement>('[data-case-body]');
+  if (nav && body) init(nav, body);
+
+  function init(nav: HTMLElement, body: HTMLElement) {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const list = nav.querySelector<HTMLOListElement>('[data-toc-list]')!;
+
+    const taken = new Set([...document.querySelectorAll('[id]')].map((el) => el.id));
+    const slug = (text: string) => {
+      const base =
+        text
+          .toLowerCase()
+          .normalize('NFKD')
+          .replace(/[^\w\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-') || 'section';
+      let id = base;
+      for (let n = 2; taken.has(id); n++) id = `${base}-${n}`;
+      taken.add(id);
+      return id;
+    };
+
+    function scrollToTarget(target: HTMLElement, heading: HTMLElement) {
+      const top = target.getBoundingClientRect().top + window.scrollY - HEADER - 24;
+      window.scrollTo({ top, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+      history.replaceState(null, '', `#${target.id}`);
+      // Moves the keyboard starting point to the section without a second scroll.
+      if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+      heading.focus({ preventScroll: true });
+    }
+
+    const sections: Entry[] = [];
+    for (const heading of body.querySelectorAll<HTMLElement>('h2, [data-toc-sub]')) {
+      const isSub = heading.tagName !== 'H2';
+      const parent = sections.at(-1);
+      if (isSub && !parent) continue;
+
+      if (!isSub && !heading.id) heading.id = slug(heading.textContent ?? '');
+      const target = heading.id ? heading : heading.closest<HTMLElement>('[id]');
+      if (!target || target.contains(body)) continue;
+
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = `#${target.id}`;
+      link.textContent = heading.textContent?.trim() ?? '';
+      link.dataset.cursor = 'default';
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollToTarget(target, heading);
+      });
+      item.append(link);
+      const entry: Entry = { heading, target, link, item, subs: [] };
+
+      if (isSub && parent) {
+        if (!parent.subList) {
+          parent.subList = document.createElement('ol');
+          parent.subList.className = 'toc-sublist';
+          parent.subList.hidden = true;
+          parent.item.append(parent.subList);
+        }
+        parent.subList.append(item);
+        parent.subs.push(entry);
+      } else {
+        list.append(item);
+        sections.push(entry);
+      }
+    }
+    if (!sections.length) return;
+    nav.hidden = false;
+
+    const atBottom = () =>
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - BOTTOM_SLACK;
+
+    let current: Entry | null = null;
+    function update() {
+      let section: Entry | null;
+      let sub: Entry | null;
+      if (atBottom()) {
+        // A short last section may never reach the line, so the end of the page selects the last item.
+        section = sections.at(-1)!;
+        sub = section.subs.at(-1) ?? null;
+      } else {
+        const line = window.innerHeight * ACTIVE_LINE;
+        const passed = (entry: Entry) => entry.heading.getBoundingClientRect().top <= line;
+        section = sections.filter(passed).at(-1) ?? null;
+        sub = section?.subs.filter(passed).at(-1) ?? null;
+      }
+      const active = sub ?? section;
+      if (active === current) return;
+      current = active;
+
+      for (const s of sections) {
+        if (s.subList) s.subList.hidden = s !== section;
+        for (const entry of [s, ...s.subs]) {
+          const isActive = entry === active;
+          entry.link.classList.toggle('is-active', isActive);
+          entry.link.classList.toggle('is-within', entry === section && !isActive);
+          if (isActive) entry.link.setAttribute('aria-current', 'true');
+          else entry.link.removeAttribute('aria-current');
+        }
+      }
+    }
+
+    // The root is the top 30% of the viewport, so a callback fires whenever a heading crosses that line.
+    const observer = new IntersectionObserver(update, { rootMargin: `0px 0px -${100 - ACTIVE_LINE * 100}% 0px` });
+    for (const s of sections) [s, ...s.subs].forEach((entry) => observer.observe(entry.heading));
+    // Reaching the bottom doesn't move any heading across the line, so the observer can't see it.
+    let queued = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(() => {
+          queued = false;
+          update();
+        });
+      },
+      { passive: true },
+    );
+    update();
+
+    nav.querySelector('[data-toc-top]')?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+      history.replaceState(null, '', location.pathname + location.search);
+      const h1 = document.querySelector<HTMLElement>('h1');
+      if (h1) {
+        if (!h1.hasAttribute('tabindex')) h1.setAttribute('tabindex', '-1');
+        h1.focus({ preventScroll: true });
+      }
+    });
+  }
+</script>

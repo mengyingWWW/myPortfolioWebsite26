@@ -5,6 +5,8 @@ import Container from '@/components/layout/Container.astro';
 import ProjectHero from '@/components/project/ProjectHero.astro';
 import MetaPanel from '@/components/project/MetaPanel.astro';
 import NextProject from '@/components/project/NextProject.astro';
+import TableOfContents from '@/components/case-study/TableOfContents.astro';
+import BackToTop from '@/components/case-study/BackToTop.astro';
 import { mdxComponents } from '@/components/mdx';
 import { getSortedWork, type WorkEntry } from '@/lib/work';
 
@@ -29,9 +31,24 @@ const { Content } = await render(project);
   <article>
     <ProjectHero project={project} />
     <MetaPanel project={project} />
-    <Container class="prose-body pt-8">
-      <Content components={mdxComponents} />
+    <Container class="grid grid-cols-[200px_minmax(0,1fr)] gap-x-16 pt-8 max-[900px]:grid-cols-1">
+      <aside class="max-[900px]:hidden">
+        <TableOfContents />
+      </aside>
+      <div class="prose-body case-body" data-case-body>
+        <Content components={mdxComponents} />
+      </div>
+      <div class="col-start-2 max-[900px]:col-start-1">
+        <BackToTop />
+      </div>
     </Container>
   </article>
   {next.id !== project.id && <NextProject project={next} />}
 </BaseLayout>
+
+<style>
+  /* Clear the sticky header when a section is reached by link or by the table of contents. */
+  .case-body :global(h2) {
+    scroll-margin-top: calc(5rem + 24px);
+  }
+</style>

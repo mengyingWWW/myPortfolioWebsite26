@@ -1,0 +1,41 @@
+---
+/** Grey bars standing in for copy that hasn't been written yet. */
+interface Props {
+  lines?: number;
+  /** A single short line, e.g. a list item or a table cell. */
+  short?: boolean;
+  class?: string;
+}
+
+const { lines = 1, short = false, class: className } = Astro.props;
+
+// Stable, slightly uneven widths so a block reads as a paragraph; the last line of a block runs short.
+const WIDTHS = [100, 94, 97, 91, 99, 88];
+const widths = short
+  ? [44]
+  : Array.from({ length: lines }, (_, i) => (lines > 1 && i === lines - 1 ? 62 : WIDTHS[i % WIDTHS.length]));
+---
+
+<div class:list={['text-placeholder', className]}>
+  <div class="bars" aria-hidden="true">
+    {widths.map((width) => <span style={`width: ${width}%`} />)}
+  </div>
+  <span class="sr-only">Copy to come</span>
+</div>
+
+<style>
+  .text-placeholder {
+    max-width: 65ch;
+  }
+  .bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+    padding-block: 0.4em;
+  }
+  .bars span {
+    display: block;
+    height: 0.6em;
+    background: #e6e6e4;
+  }
+</style>

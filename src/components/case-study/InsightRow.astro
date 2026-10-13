@@ -1,0 +1,52 @@
+---
+/** Insight → evidence → principle, one row per insight. Stacks at 900px and below. */
+import Block from './Block.astro';
+import Placeholder from './Placeholder.astro';
+import TextPlaceholder from './TextPlaceholder.astro';
+
+interface Props {
+  n: number;
+}
+
+const { n } = Astro.props;
+const nn = String(n).padStart(2, '0');
+---
+
+<div class="insight-row">
+  <Block title={`Insight ${nn}`}>
+    <TextPlaceholder lines={3} />
+  </Block>
+  <Placeholder label={`Crop of before screen — evidence for insight ${n}`} ratio="4/3" kind="image" source="make" />
+  <span class="arrow" aria-hidden="true">
+    <svg viewBox="0 0 24 12" width="24" height="12" fill="none" stroke="currentColor" stroke-width="1">
+      <path d="M0 6h23M18 1l5 5-5 5"></path>
+    </svg>
+  </span>
+  <Block title={`Principle ${nn}`}>
+    <TextPlaceholder lines={3} />
+  </Block>
+</div>
+
+<style>
+  .insight-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) 24px minmax(0, 1fr);
+    align-items: start;
+    gap: 32px;
+    border-top: 1px solid var(--color-line);
+    padding-top: 32px;
+  }
+  .arrow {
+    align-self: center;
+    color: var(--color-meta);
+  }
+
+  @media (max-width: 900px) {
+    .insight-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .arrow svg {
+      rotate: 90deg;
+    }
+  }
+</style>

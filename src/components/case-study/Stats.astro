@@ -1,0 +1,54 @@
+---
+/** Typographic stat row: large numbers over mono captions. */
+interface Props {
+  items: { value: string; caption: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="cs-stats">
+  {
+    items.map(({ value, caption }) => (
+      <li>
+        <span class="value">{value}</span>
+        <span class="caption">{caption}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .cs-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+  .cs-stats li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid var(--color-line);
+    padding-top: 20px;
+  }
+  .value {
+    font-size: 64px;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .caption {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+
+  @media (max-width: 900px) {
+    .cs-stats {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
