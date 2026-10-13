@@ -1,0 +1,42 @@
+---
+/** An h3 with copy beside a 4:3 figure, like the key decisions in a Flow; `flip` puts the copy on the right. */
+import Block from './Block.astro';
+import Placeholder from './Placeholder.astro';
+import TextPlaceholder from './TextPlaceholder.astro';
+
+interface Props {
+  title: string;
+  figure: string;
+  flip?: boolean;
+}
+
+const { title, figure, flip = false } = Astro.props;
+---
+
+<div class:list={['split', flip && 'is-flipped']}>
+  <Block title={title} class="split-text">
+    <TextPlaceholder lines={3} />
+  </Block>
+  <Placeholder label={figure} ratio="4/3" kind="image" source="make" />
+</div>
+
+<style>
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 32px;
+  }
+  .is-flipped > :global(.split-text) {
+    order: 2;
+  }
+
+  @media (max-width: 900px) {
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .is-flipped > :global(.split-text) {
+      order: 0;
+    }
+  }
+</style>

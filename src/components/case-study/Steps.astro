@@ -1,0 +1,60 @@
+---
+/** Numbered steps in a row (stacked at 900px and below): mono index, bold lead line, one sentence. */
+interface Props {
+  steps: { lead: string; text: string }[];
+}
+
+const { steps } = Astro.props;
+---
+
+<ol class="steps">
+  {
+    steps.map(({ lead, text }, i) => (
+      <li>
+        <span class="step-index" aria-hidden="true">
+          {String(i + 1).padStart(2, '0')}
+        </span>
+        <p class="step-lead">{lead}</p>
+        <p class="step-text">{text}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+  .steps li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .step-index {
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--color-meta);
+  }
+  .step-lead {
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+    color: #111;
+  }
+  .step-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 900px) {
+    .steps {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+  }
+</style>

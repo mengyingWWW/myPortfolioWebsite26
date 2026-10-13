@@ -1,0 +1,114 @@
+---
+// Audit overview for idea-ai-wiki "03 Audit".
+// 15 gaps from the Figma audit (#61–#75), placed by flow (columns) and root cause (rows).
+// Rows reuse the three words from the Problem statement. The AI-related row uses the accent.
+const flows = [
+  { key: "find", label: "Find", count: 4 },
+  { key: "contribute", label: "Contribute", count: 5 },
+  { key: "use", label: "Use", count: 4 },
+  { key: "govern", label: "Govern", count: 2 },
+];
+const rows = [
+  {
+    key: "unstructured",
+    label: "Unstructured",
+    note: "Hard to write, hard to follow",
+    cells: {
+      find: [],
+      contribute: ["Markdown-only editor", "No way to import a document", "Status shown inside an editable card"],
+      use: ["Pin can't mark a critical step"],
+      govern: [],
+    },
+  },
+  {
+    key: "untraceable",
+    label: "Untraceable",
+    note: "Can't tell who, which version, or what changed",
+    cells: {
+      find: ["Duplicate titles, no link between them", "Owners and visibility shown as emails", "Conflicting filter states"],
+      contribute: [],
+      use: ["Author shown as a raw email", "No version history"],
+      govern: ["Review alerts buried in a general Inbox", "All-or-nothing Accept / Decline"],
+    },
+  },
+  {
+    key: "uncategorized",
+    label: "Uncategorized",
+    note: "The AI can't route it",
+    accent: true,
+    cells: {
+      find: ["Most pages uncategorized"],
+      contribute: ["Categories, asset types and keywords left blank", "Layout and purpose mixed in one field"],
+      use: ["No sign the AI ever used a page"],
+      govern: [],
+    },
+  },
+];
+const rowTotal = (r) => Object.values(r.cells).reduce((n, c) => n + c.length, 0);
+---
+<figure class="am">
+  <div class="am-scroll">
+    <table class="am-grid">
+      <caption class="sr-only">15 UX gaps by flow and root cause</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="am-corner"><span>15 gaps</span></th>
+          {flows.map((f) => (
+            <th scope="col"><span class="am-flow">{f.label}</span><span class="am-count">{f.count}</span></th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr class={r.accent ? "is-accent" : ""}>
+            <th scope="row">
+              <span class="am-row">{r.label}</span>
+              <span class="am-note">{r.note}</span>
+              <span class="am-count">{rowTotal(r)}</span>
+            </th>
+            {flows.map((f) => (
+              <td>
+                {r.cells[f.key].length === 0 ? (
+                  <span class="am-empty"><span aria-hidden="true">—</span><span class="sr-only">None</span></span>
+                ) : (
+                  <ul>{r.cells[f.key].map((t) => <li>{t}</li>)}</ul>
+                )}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <figcaption>Every gap traces back to one of three root causes. The bottom row is the one the AI depends on.</figcaption>
+</figure>
+
+<style>
+  .am { margin: 0; }
+  .am-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .am-grid { width: 100%; min-width: 760px; border-collapse: separate; border-spacing: 8px; table-layout: fixed; }
+  .am-grid th, .am-grid td { text-align: left; vertical-align: top; }
+  .am-grid thead th { padding: 0 12px 4px; font-weight: 400; }
+  .am-corner { width: 22%; }
+  .am-corner span, .am-count, .am-note {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; color: #6E6E6E; letter-spacing: 0.04em;
+  }
+  .am-flow { display: block; font-size: 15px; font-weight: 600; color: #111111; }
+  .am-count { display: block; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  tbody th { padding: 14px 12px; border-top: 1px solid #111111; }
+  .am-row { display: block; font-size: 15px; font-weight: 600; color: #111111; }
+  .am-note { display: block; margin-top: 4px; text-transform: none; letter-spacing: 0; line-height: 1.4; }
+  tbody th .am-count { margin-top: 8px; }
+  tbody td { padding: 12px; background: #F6F6F4; border-radius: 6px; }
+  tbody ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  tbody li { font-size: 14px; line-height: 1.35; color: #111111; padding-left: 14px; position: relative; }
+  tbody li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: #111111; }
+  .am-empty { color: #B5B5B2; }
+  tr.is-accent th { border-top-color: #C2410C; }
+  tr.is-accent .am-row { color: #9A3412; }
+  tr.is-accent td { background: #FFF4EE; }
+  tr.is-accent li::before { background: #C2410C; }
+  .am figcaption { margin-top: 12px; font-size: 14px; color: #6E6E6E; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>

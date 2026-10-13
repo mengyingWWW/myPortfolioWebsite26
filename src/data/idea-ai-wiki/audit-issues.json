@@ -1,0 +1,177 @@
+{
+  "find": {
+    "title": "Find",
+    "image": "/work/idea-ai-wiki/audit-find.webp",
+    "width": 2400,
+    "height": 1313,
+    "alt": "Engineering prototype Wiki list: scope tabs, a Browse panel with three categories, and procedure rows with visibility badges",
+    "fix": "#fix-find",
+    "issues": [
+      {
+        "id": "F1",
+        "x": 45.4,
+        "y": 31.3,
+        "cause": "Untraceable",
+        "figma": 61,
+        "title": "Duplicate titles",
+        "body": "Four copies of \"Test Procedure 002\" sit in the list with nothing linking them or saying which is current."
+      },
+      {
+        "id": "F2",
+        "x": 26.0,
+        "y": 24.6,
+        "cause": "Uncategorized",
+        "figma": 62,
+        "title": "Most pages uncategorized",
+        "body": "A fixed category list that almost nobody fills in: 18 pages, 3 of them categorized."
+      },
+      {
+        "id": "F3",
+        "x": 74.4,
+        "y": 26.5,
+        "cause": "Untraceable",
+        "figma": 63,
+        "title": "Visibility shown as an email",
+        "body": "\"Private to buildingadmin@\u2026\" names an address, not who can actually see the page."
+      },
+      {
+        "id": "F4",
+        "x": 63.1,
+        "y": 14.4,
+        "cause": "Untraceable",
+        "figma": 64,
+        "title": "Conflicting filter states",
+        "body": "Two different \"selected\" styles. The orange Drafts tab looks active even when it isn't."
+      }
+    ]
+  },
+  "contribute": {
+    "title": "Contribute",
+    "image": "/work/idea-ai-wiki/audit-contribute.webp",
+    "width": 2400,
+    "height": 1313,
+    "alt": "Engineering prototype New procedure editor: a Markdown hint, an empty steps list, blank Applies-to fields and a Page type card",
+    "fix": "#fix-contribute",
+    "issues": [
+      {
+        "id": "C1",
+        "x": 52.8,
+        "y": 24.0,
+        "cause": "Unstructured",
+        "figma": 65,
+        "title": "Markdown-only editor",
+        "body": "\"Use ## for a heading\" asks frontline staff to learn syntax before they can write."
+      },
+      {
+        "id": "C2",
+        "x": 65.0,
+        "y": 17.8,
+        "cause": "Unstructured",
+        "figma": 66,
+        "title": "No way to import a document",
+        "body": "Legacy procedures have to be retyped by hand. The brief asked for copy-paste and whole-document import."
+      },
+      {
+        "id": "C3",
+        "x": 48.0,
+        "y": 53.4,
+        "cause": "Uncategorized",
+        "figma": 67,
+        "title": "Routing fields left blank",
+        "body": "Categories, asset types and keywords are free text, so they stay empty and the agent has nothing to match on."
+      },
+      {
+        "id": "C4",
+        "x": 97.5,
+        "y": 16.4,
+        "cause": "Uncategorized",
+        "figma": 68,
+        "title": "Layout and purpose mixed",
+        "body": "Page type only covers layout. There's no way to say whether a page is a help guide or a policy."
+      },
+      {
+        "id": "C5",
+        "x": 86.1,
+        "y": 74.3,
+        "cause": "Unstructured",
+        "figma": 69,
+        "title": "Status in the wrong place",
+        "body": "\"Draft \u00b7 Not yet saved\" sits inside the editable settings card, where it reads like an option."
+      }
+    ]
+  },
+  "use": {
+    "title": "Use",
+    "image": "/work/idea-ai-wiki/audit-use.webp",
+    "width": 2400,
+    "height": 1313,
+    "alt": "Engineering prototype procedure detail page: author email, update and review dates, Pin for team buttons and numbered steps",
+    "fix": "#fix-use",
+    "issues": [
+      {
+        "id": "U1",
+        "x": 48.0,
+        "y": 17.0,
+        "cause": "Untraceable",
+        "figma": 70,
+        "title": "Author shown as a raw email",
+        "body": "No name, role or team, so readers can't tell whose knowledge this is or who to ask."
+      },
+      {
+        "id": "U2",
+        "x": 59.1,
+        "y": 20.0,
+        "cause": "Unstructured",
+        "figma": 71,
+        "title": "Pin means three things",
+        "body": "Personal pin re-lists a title you already have open, team pin is a flat list of every team, and there's no way to flag a critical step."
+      },
+      {
+        "id": "U3",
+        "x": 71.0,
+        "y": 24.8,
+        "cause": "Uncategorized",
+        "figma": 72,
+        "title": "No sign the AI used it",
+        "body": "Nothing shows whether the agent has ever answered a work order with this page."
+      },
+      {
+        "id": "U4",
+        "x": 66.2,
+        "y": 13.8,
+        "cause": "Untraceable",
+        "figma": 73,
+        "title": "No version history",
+        "body": "\"Updated 3d ago\" leads nowhere: no record of what changed or who changed it."
+      }
+    ]
+  },
+  "govern": {
+    "title": "Govern",
+    "image": "/work/idea-ai-wiki/audit-govern.webp",
+    "width": 2400,
+    "height": 1313,
+    "alt": "Engineering prototype Wiki inbox: a suggested edit with one struck-through step and Accept and Decline buttons",
+    "fix": "#fix-govern",
+    "issues": [
+      {
+        "id": "G1",
+        "x": 16.5,
+        "y": 41.1,
+        "cause": "Untraceable",
+        "figma": 74,
+        "title": "Review alerts buried",
+        "body": "Wiki reviews land in the general Inbox, next to every other kind of notification."
+      },
+      {
+        "id": "G2",
+        "x": 32.4,
+        "y": 67.6,
+        "cause": "Untraceable",
+        "figma": 75,
+        "title": "All-or-nothing review",
+        "body": "One Accept / Decline for the whole page, no inline comments, and only step 1 shows what changed."
+      }
+    ]
+  }
+}

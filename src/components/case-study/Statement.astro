@@ -1,0 +1,35 @@
+---
+/** A section's one-sentence claim, in large type; an <em> inside is set in the accent serif italic. */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<p class:list={['statement', className]}><slot /></p>
+
+<style>
+  .statement {
+    max-width: 60%;
+    font-size: 32px;
+    line-height: 1.3;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    color: #111;
+  }
+  .statement :global(em) {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--accent, #c2410c);
+  }
+
+  @media (max-width: 900px) {
+    .statement {
+      max-width: none;
+      font-size: 24px;
+    }
+  }
+</style>

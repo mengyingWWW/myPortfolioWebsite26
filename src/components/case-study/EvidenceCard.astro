@@ -1,0 +1,226 @@
+---
+/**
+ * A screenshot crop with its problem areas outlined. The first outline carries an accent dot on
+ * its edge facing the callout, and a line runs from that dot to the callout beside the image; the
+ * callout's first line sits level with the dot.
+ *
+ * Positions come from container query units (the row is the container), so the outlines, dot, line
+ * and callout stay aligned at any card width without measuring in JS.
+ */
+import Placeholder from './Placeholder.astro';
+
+type Box = { x: number; y: number; w: number; h: number };
+
+interface Props {
+  label: string;
+  /** Path under public/, e.g. "/work/idea-ai-wiki/problem-editor.png"; null shows a placeholder. */
+  image: string | null;
+  /** The image file's pixel size; also sets the box ratio. */
+  width?: number;
+  height?: number;
+  alt: string;
+  callout: string;
+  /** Problem areas, in % of the image. The dot and line attach to the first. */
+  boxes?: Box[];
+  /** Which side of the image the callout sits on. */
+  side?: 'left' | 'right';
+  /** Put the callout under the image (no line), e.g. for a wide, short crop. */
+  calloutBelow?: boolean;
+  /** Placeholder ratio when there's no image. */
+  ratio?: string;
+  class?: string;
+}
+
+const {
+  label,
+  image,
+  width,
+  height,
+  alt,
+  callout,
+  boxes = [],
+  side = 'right',
+  calloutBelow = false,
+  ratio = '4/3',
+  class: className,
+} = Astro.props;
+
+const [rw, rh] = image && width && height ? [width, height] : ratio.split('/').map(Number);
+const pin = boxes[0];
+const dot = pin && { x: side === 'left' ? pin.x : pin.x + pin.w, y: pin.y + pin.h / 2 };
+const vars = [`--ratio-inv: ${rh / rw}`, dot && `--dot-x: ${dot.x}; --dot-y: ${dot.y}`].filter(Boolean).join('; ');
+---
+
+<div class:list={['evidence', className]}>
+  <p class="evidence-label">{label}</p>
+  <div
+    class:list={['evidence-row', `callout-${side}`, { 'is-stacked': calloutBelow, 'has-pin': dot }]}
+    style={vars}
+  >
+    <div class="media">
+      {
+        image ? (
+          <img src={image} alt={alt} width={width} height={height} loading="lazy" />
+        ) : (
+          <Placeholder label={alt} ratio={ratio} kind="image" source="make" />
+        )
+      }
+      {
+        boxes.map((b) => (
+          <span class="outline" aria-hidden="true" style={`--x: ${b.x}; --y: ${b.y}; --w: ${b.w}; --h: ${b.h}`} />
+        ))
+      }
+      {dot && <span class="dot" aria-hidden="true" />}
+    </div>
+    <p class="callout">{callout}</p>
+    {dot && <span class="line" aria-hidden="true" />}
+  </div>
+</div>
+
+<style>
+  .evidence {
+    background: #f6f6f4;
+    padding: 24px;
+  }
+  .evidence-label {
+    margin-bottom: 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-meta);
+  }
+
+  .evidence-row {
+    --gap: 32px;
+    --media-share: 0.6;
+    /* Outlines sit this far outside their area; the dot sits on the outline. */
+    --outset: 3px;
+    container-type: inline-size;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    align-items: start;
+    column-gap: var(--gap);
+  }
+  .callout-left {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+  .callout-left .media {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .callout-left .callout {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* Children of the row resolve cqw against it. */
+  .media,
+  .callout,
+  .line {
+    --media-w: calc((100cqw - var(--gap)) * var(--media-share));
+    --callout-w: calc(100cqw - var(--gap) - var(--media-w));
+    --dot-top: calc(var(--media-w) * var(--ratio-inv) * var(--dot-y) / 100);
+  }
+
+  .media {
+    position: relative;
+  }
+  .media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  /* The line assumes the exact ratio, so a placeholder's label mustn't stretch its box. */
+  .media :global(.box) {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .outline {
+    position: absolute;
+    top: calc(var(--y) * 1% - var(--outset));
+    left: calc(var(--x) * 1% - var(--outset));
+    width: calc(var(--w) * 1% + 2 * var(--outset));
+    height: calc(var(--h) * 1% + 2 * var(--outset));
+    border: 2px solid var(--accent, #c2410c);
+    border-radius: 6px;
+    pointer-events: none;
+  }
+  .dot {
+    position: absolute;
+    top: calc(var(--dot-y) * 1%);
+    left: calc(var(--dot-x) * 1% + var(--outset));
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent, #c2410c);
+    transform: translate(-50%, -50%);
+  }
+  .callout-left .dot {
+    left: calc(var(--dot-x) * 1% - var(--outset));
+  }
+
+  .callout {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 20px;
+    color: #111;
+  }
+  .has-pin .callout {
+    padding-top: max(0px, calc(var(--dot-top) - 10px));
+  }
+
+  /* Runs level with the dot, from it to 8px short of the callout. */
+  .line {
+    position: absolute;
+    top: var(--dot-top);
+    height: 1px;
+    background: var(--accent, #c2410c);
+    pointer-events: none;
+  }
+  .callout-right .line {
+    left: calc(var(--media-w) * var(--dot-x) / 100 + var(--outset));
+    width: calc(var(--media-w) * (100 - var(--dot-x)) / 100 - var(--outset) + var(--gap) - 8px);
+  }
+  .callout-left .line {
+    left: calc(var(--callout-w) + 8px);
+    width: calc(var(--gap) - 8px + var(--media-w) * var(--dot-x) / 100 - var(--outset));
+  }
+
+  .is-stacked {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 16px;
+  }
+  .is-stacked .media,
+  .is-stacked .callout {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .is-stacked .callout {
+    max-width: 65ch;
+    padding-top: 0;
+  }
+  .is-stacked .line {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .evidence-row,
+    .callout-left {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 16px;
+    }
+    .callout-left .media,
+    .callout-left .callout {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .has-pin .callout {
+      padding-top: 0;
+    }
+    .line {
+      display: none;
+    }
+  }
+</style>

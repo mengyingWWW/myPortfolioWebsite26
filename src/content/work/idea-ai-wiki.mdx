@@ -26,71 +26,156 @@ tools:
 team:
   - 1 CEO
   - 1 Engineer
-summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its latest feature is an AI Wiki where technicians store step-by-step procedures; in a later phase, AI agents would use those procedures to answer work-order help requests. The prototype worked, but it was built for people who write like engineers. As the only designer, I audited it across four core flows, found 19 UX gaps, and redesigned each flow around two users: a technician writing at a GED reading level, and an AI that needs structure to answer from. Six of my redesigns have shipped."
+summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its latest feature is an AI Wiki where technicians store step-by-step procedures; in a later phase, AI agents would use those procedures to answer work-order help requests. The prototype worked, but it was built for people who write like engineers. As the only designer, I audited it across four core flows, found 15 UX gaps, and redesigned each flow around two users: a technician writing at a GED reading level, and an AI that needs structure to answer from. Six of my redesigns have shipped."
 order: 1
 ---
 
+import data from '@/data/idea-ai-wiki/audit-issues.json';
+import AnnotatedShot from '@/components/case-study/AnnotatedShot.astro';
+import AuditMatrix from '@/components/case-study/AuditMatrix.astro';
 import CaseStudy from '@/components/case-study/CaseStudy.astro';
 import Section from '@/components/case-study/Section.astro';
 import Block from '@/components/case-study/Block.astro';
 import Columns from '@/components/case-study/Columns.astro';
+import EvidenceCard from '@/components/case-study/EvidenceCard.astro';
 import Flow from '@/components/case-study/Flow.astro';
 import InsightRow from '@/components/case-study/InsightRow.astro';
+import KnowledgeFlow from '@/components/case-study/KnowledgeFlow.astro';
 import Placeholder from '@/components/case-study/Placeholder.astro';
 import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
 import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
+import RoleCards from '@/components/case-study/RoleCards.astro';
+import SplitBlock from '@/components/case-study/SplitBlock.astro';
+import Statement from '@/components/case-study/Statement.astro';
 import StatusBadge from '@/components/case-study/StatusBadge.astro';
+import Steps from '@/components/case-study/Steps.astro';
 import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 
 <CaseStudy>
 
 <Section id="problem" index="01" label="Problem" title="Problem">
-  <Block title="The brief">
-    <PlaceholderList count={3} />
-  </Block>
-  <TextPlaceholder lines={3} />
-  <Placeholder ratio="16/10" kind="image" source="need" label="Before — SWE team's original Wiki prototype (unannotated)" />
+  <div>
+    <p class="max-w-[60ch] text-base leading-relaxed text-meta">Facilities know-how lives in technicians’ heads, old PDFs and shared drives. IDEA asked for an AI Wiki that captures it in a form frontline staff can write, and AI agents can later answer from.</p>
+    <Statement class="mt-8">The challenge wasn’t storing knowledge, but getting it written in a shape both people and AI can use. In engineering’s prototype, most pages ended up <em>unstructured, untraceable and uncategorized.</em></Statement>
+  </div>
+  <div class="grid grid-cols-2 gap-8 max-[900px]:grid-cols-1">
+    <EvidenceCard
+      label="Editor · How do I write this?"
+      image="/work/idea-ai-wiki/problem-editor.png"
+      width={960}
+      height={790}
+      alt="Engineering prototype editor with an empty Markdown box and blank Categories, Asset types and Keywords fields"
+      callout="A blank Markdown box and empty Categories, Asset types and Keywords fields. Hard to start, easy to skip."
+      boxes={[
+        { x: 2.1, y: 20.9, w: 58.3, h: 7.6 },
+        { x: 2.1, y: 74.1, w: 52.1, h: 24.4 },
+      ]}
+      side="right"
+      calloutBelow
+    />
+    <EvidenceCard
+      label="Wiki list · Which version should I trust?"
+      image="/work/idea-ai-wiki/problem-duplicates.png"
+      width={780}
+      height={953}
+      alt="Wiki list where four near-identical 'Test Procedure 002' pages appear as separate rows"
+      callout="Four copies of “Test Procedure 002”, scattered through the list, with nothing linking them or saying which is current."
+      boxes={[
+        { x: 2.1, y: 21.3, w: 34.5, h: 4.3 },
+        { x: 2.1, y: 61.7, w: 34.5, h: 4.3 },
+        { x: 2.1, y: 81.8, w: 30.0, h: 3.9 },
+        { x: 2.1, y: 91.7, w: 34.5, h: 4.2 },
+      ]}
+      side="right"
+      calloutBelow
+    />
+    <EvidenceCard
+      label="Detail page · Who wrote this, and what changed?"
+      image="/work/idea-ai-wiki/problem-detail.png"
+      width={1460}
+      height={270}
+      alt="Procedure detail header showing the author as a raw email address and 'Updated 3d ago' with no link"
+      callout="The author is a raw email address, and “Updated 3d ago” leads nowhere. No way to see who changed what."
+      boxes={[{ x: 48.3, y: 44.4, w: 49.3, h: 18.5 }]}
+      side="right"
+      calloutBelow
+      class="col-span-2 max-[900px]:col-span-1"
+    />
+  </div>
 </Section>
 
-<Section id="audit" index="02" label="Audit" title="Audit">
+<Section id="users" index="02" label="Users" title="Users">
+  <div class="grid max-w-[65ch] gap-4 text-lg leading-relaxed text-muted">
+    <p>Everyone in this chain uses the wiki: the technician who writes a procedure, the lead who reviews it, the admin who decides who sees it, the requester who needs help. Many of them have a GED-level education and spend most of their day on site, not at a computer.</p>
+    <p>That was the barrier this project set out to remove. If any step feels like paperwork, knowledge stops moving, and in phase 2 the AI agent has nothing reliable to answer from.</p>
+  </div>
+  <KnowledgeFlow />
+  <RoleCards
+    roles={[
+      {
+        name: 'Technician',
+        tag: 'Writes · Reads',
+        text: 'Knows the fix by heart. Needs to get a procedure down in plain words, and follow one mid-job without hunting for the warning.',
+      },
+      {
+        name: 'Reviewer',
+        tag: 'Approves',
+        text: 'A lead who checks drafts between other work. Needs to see what changed at a glance, and say why without writing an essay.',
+      },
+      {
+        name: 'Admin',
+        tag: 'Sets rules',
+        text: 'Decides who can see each page, and how much of it the AI may show. Needs the choice spelled out in plain words, not settings jargon.',
+      },
+      {
+        name: 'Requester',
+        tag: 'Asks for help',
+        text: 'Files a work-order help request. May never open the wiki; needs an answer short and clear enough to act on.',
+      },
+      {
+        name: 'AI agent',
+        tag: 'Answers from the wiki',
+        text: 'Answers requests with what people wrote. It can’t fix a vague or untagged page, so the writing tools add that structure quietly, without asking more of the people writing.',
+        accent: true,
+      },
+    ]}
+  />
+</Section>
+
+<Section id="audit" index="03" label="Audit" title="Audit">
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I audited the prototype the way its users would meet it: four flows, each walked as the person who does that job. On every screen I logged what got in the way, which line of the brief it missed, and a direction for the fix. Fifteen gaps came out of it.</p>
   <Block title="Method">
-    <TextPlaceholder lines={3} />
+    <Steps
+      steps={[
+        {
+          lead: 'Walk each flow as its user.',
+          text: 'Find and Use as a technician, Contribute as an author, Govern as a reviewer.',
+        },
+        {
+          lead: 'Annotate in place.',
+          text: 'Each gap is pinned to the screen in Figma, with what breaks and the part of the brief it misses.',
+        },
+        {
+          lead: 'Group by root cause.',
+          text: 'The 15 gaps fell into three patterns: unstructured, untraceable and uncategorized.',
+        },
+      ]}
+    />
   </Block>
-  <Block title="Who I walked through it as">
-    <PlaceholderList grid labels={['Technician (reader)', 'Author', 'Reviewer', 'Admin']} />
-  </Block>
-  <Placeholder ratio="16/5" kind="diagram" source="make" label="Audit overview — 19 gaps across 4 flows, by severity" />
+  <AuditMatrix />
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Here is where each gap sits in the prototype. Pins match the list beside each screen; every gap links to its fix.</p>
+  <div class="grid gap-24">
+    <AnnotatedShot flow={data.find} index="01" />
+    <AnnotatedShot flow={data.contribute} index="02" />
+    <AnnotatedShot flow={data.use} index="03" />
+    <AnnotatedShot flow={data.govern} index="04" />
+  </div>
 </Section>
 
-<Section id="insights" index="03" label="Insights" title="Insights">
+<Section id="insights" index="04" label="Insights" title="Insights">
   <InsightRow n={1} />
   <InsightRow n={2} />
   <InsightRow n={3} />
-</Section>
-
-<Section id="redesign" index="04" label="Redesign" title="Redesign">
-  <TextPlaceholder lines={2} />
-
-  <Flow n={1} id="flow-find" name="Find" />
-
-  <Flow n={2} id="flow-contribute" name="Contribute">
-    <Columns cols="1 1">
-      <Placeholder ratio="16/10" kind="motion" source="make" label="Duplicate check on publish — edit / merge / create new" />
-      <Placeholder ratio="16/10" kind="motion" source="make" label="Import Word/PDF — structure preserved" />
-    </Columns>
-  </Flow>
-
-  <Flow n={3} id="flow-use" name="Use">
-    <Columns cols="1 1">
-      <Placeholder ratio="4/3" kind="image" source="make" label="Step card with warning + verify" />
-      <Placeholder ratio="4/3" kind="image" source="make" label="Used in automation module" />
-    </Columns>
-  </Flow>
-
-  <Flow n={4} id="flow-govern" name="Govern">
-    <Placeholder ratio="16/5" kind="diagram" source="make" label="Review flow — Draft → Submitted → In review → Published" />
-    <Placeholder ratio="16/9" kind="diagram" source="make" label="Visibility tiers — Private / Team / Site" />
-  </Flow>
 </Section>
 
 <Section id="information-architecture" index="05" label="Information Architecture" title="Information Architecture">
@@ -111,12 +196,40 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
   </Columns>
 </Section>
 
-<Section id="details" index="06" label="Details" title="Details">
+<Section id="redesign" index="06" label="Redesign" title="Redesign">
   <TextPlaceholder lines={2} />
-  <Placeholder ratio="16/9" kind="diagram" source="make" label="Component sheet — visibility badge, step card, version grouping, review timeline" />
+
+  <Flow n={1} id="fix-find" name="Find" />
+
+  <Flow n={2} id="fix-contribute" name="Contribute">
+    <Columns cols="1 1">
+      <Placeholder ratio="16/10" kind="motion" source="make" label="Duplicate check on publish — edit / merge / create new" />
+      <Placeholder ratio="16/10" kind="motion" source="make" label="Import Word/PDF — structure preserved" />
+    </Columns>
+  </Flow>
+
+  <Flow n={3} id="fix-use" name="Use">
+    <Columns cols="1 1">
+      <Placeholder ratio="4/3" kind="image" source="make" label="Step card with warning + verify" />
+      <Placeholder ratio="4/3" kind="image" source="make" label="Used in automation module" />
+    </Columns>
+  </Flow>
+
+  <Flow n={4} id="fix-govern" name="Govern">
+    <Placeholder ratio="16/5" kind="diagram" source="make" label="Review flow — Draft → Submitted → In review → Published" />
+    <Placeholder ratio="16/9" kind="diagram" source="make" label="Visibility tiers — Private / Team / Site" />
+  </Flow>
 </Section>
 
-<Section id="outcome" index="07" label="Outcome" title="Outcome">
+<Section id="ai-readiness" index="07" label="AI Readiness" title="AI Readiness">
+  <TextPlaceholder lines={2} />
+  <Placeholder ratio="16/9" kind="diagram" source="make" label="Field → AI use map — what each authoring field lets the AI do" />
+  <SplitBlock title="Routing" figure="Applies to: asset types + keywords" />
+  <SplitBlock title="Answering" figure="Admin surface policy: full text vs AI summary, by visibility tier and team" flip />
+  <SplitBlock title="Feedback" figure="Used in automation · Test in automation" />
+</Section>
+
+<Section id="outcome" index="08" label="Outcome" title="Outcome">
   <TextPlaceholder lines={3} />
   <Columns cols="1 1">
     <Placeholder ratio="16/10" kind="image" source="have" label="Proposed">
@@ -131,7 +244,7 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
   </Block>
 </Section>
 
-<Section id="takeaways" index="08" label="Takeaways" title="Takeaways">
+<Section id="takeaways" index="09" label="Takeaways" title="Takeaways">
   <Block title="Takeaway 01">
     <TextPlaceholder lines={2} />
   </Block>

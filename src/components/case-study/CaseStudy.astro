@@ -11,6 +11,11 @@
 </div>
 
 <style>
+  /* Case-study only: emphasis in statements, issue pins in evidence cards. */
+  .case-study {
+    --accent: #c2410c;
+  }
+
   /* In the same layer as .prose-body (and more specific), so Tailwind utilities still win. */
   @layer components {
     .case-study :global(*) {

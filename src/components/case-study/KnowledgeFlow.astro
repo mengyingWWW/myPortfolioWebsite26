@@ -1,0 +1,108 @@
+---
+// Knowledge-flow diagram for idea-ai-wiki "02 Users".
+// Inline SVG so it inherits the site's fonts. Solid arrows = knowledge moving,
+// dashed = rules set by the admin, accent = the AI agent.
+---
+<figure class="kf">
+  <div class="kf-scroll">
+    <svg viewBox="0 0 1300 470" role="img" aria-labelledby="kf-title kf-desc">
+      <title id="kf-title">How knowledge moves through the AI Wiki</title>
+      <desc id="kf-desc">A technician writes a draft, which is private to them. They submit it to a reviewer, who approves it into a published page with a visibility of private, team or site. Technicians read published pages on the job. In phase 2 an AI agent retrieves published pages and answers a requester's work-order help request. An admin sets the rules: who can see each page, and what the AI may show a requester.</desc>
+      <defs>
+        <marker id="kf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111" /></marker>
+        <marker id="kf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6E6E6E" /></marker>
+        <marker id="kf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2410C" /></marker>
+      </defs>
+
+      <path d="M741 172 C 720 62, 120 62, 96 166" fill="none" stroke="#6E6E6E" stroke-width="1.5" marker-end="url(#kf-arrow-muted)" />
+      <text x="420" y="76" class="kf-edge" text-anchor="middle" fill="#6E6E6E">reads on the job</text>
+
+      <g stroke="#111111" stroke-width="1.5" fill="none">
+        <line x1="165" y1="200" x2="233" y2="200" marker-end="url(#kf-arrow)" />
+        <line x1="367" y1="200" x2="435" y2="200" marker-end="url(#kf-arrow)" />
+        <line x1="579" y1="200" x2="647" y2="200" marker-end="url(#kf-arrow)" />
+      </g>
+      <g stroke="#C2410C" stroke-width="1.5" fill="none">
+        <line x1="831" y1="200" x2="899" y2="200" marker-end="url(#kf-arrow-accent)" />
+        <line x1="1063" y1="200" x2="1131" y2="200" marker-end="url(#kf-arrow-accent)" />
+      </g>
+      <g class="kf-edge" text-anchor="middle">
+        <text x="199" y="188" fill="#111111">writes</text>
+        <text x="401" y="188" fill="#111111">submits</text>
+        <text x="613" y="188" fill="#111111">approves</text>
+        <text x="865" y="188" fill="#C2410C">retrieves</text>
+        <text x="1097" y="188" fill="#C2410C">answers</text>
+      </g>
+
+      <g stroke="#6E6E6E" stroke-width="1.5" stroke-dasharray="5 5" fill="none">
+        <path d="M825 370 L 752 236" marker-end="url(#kf-arrow-muted)" />
+        <path d="M900 370 L 972 266" marker-end="url(#kf-arrow-muted)" />
+      </g>
+      <g class="kf-edge" fill="#6E6E6E">
+        <text x="772" y="318" text-anchor="end">who can see it</text>
+        <text x="952" y="318">what the AI may show</text>
+      </g>
+
+      <g>
+        <rect x="15" y="172" width="150" height="56" rx="28" fill="#FFFFFF" stroke="#111111" stroke-width="1.5" />
+        <text x="90" y="205" text-anchor="middle" class="kf-name">Technician</text>
+        <text x="90" y="252" text-anchor="middle" class="kf-tag">WRITES · READS</text>
+
+        <rect x="439" y="172" width="140" height="56" rx="28" fill="#FFFFFF" stroke="#111111" stroke-width="1.5" />
+        <text x="509" y="205" text-anchor="middle" class="kf-name">Reviewer</text>
+        <text x="509" y="252" text-anchor="middle" class="kf-tag">APPROVES</text>
+
+        <rect x="1135" y="172" width="150" height="56" rx="28" fill="#FFFFFF" stroke="#111111" stroke-width="1.5" />
+        <text x="1210" y="205" text-anchor="middle" class="kf-name">Requester</text>
+        <text x="1210" y="252" text-anchor="middle" class="kf-tag">ASKS FOR HELP</text>
+
+        <rect x="787" y="374" width="150" height="56" rx="28" fill="#FFFFFF" stroke="#111111" stroke-width="1.5" />
+        <text x="862" y="407" text-anchor="middle" class="kf-name">Admin</text>
+        <text x="862" y="454" text-anchor="middle" class="kf-tag">SETS RULES</text>
+      </g>
+
+      <g>
+        <rect x="903" y="172" width="160" height="56" rx="28" fill="#FFF4EE" stroke="#C2410C" stroke-width="1.5" />
+        <text x="983" y="205" text-anchor="middle" class="kf-name" style="fill:#9A3412">AI agent</text>
+        <text x="983" y="252" text-anchor="middle" class="kf-tag" style="fill:#9A3412">ANSWERS FROM THE WIKI</text>
+      </g>
+
+      <g>
+        <rect x="237" y="172" width="130" height="56" rx="6" fill="#F2F2F0" stroke="#D9D9D6" />
+        <text x="302" y="197" text-anchor="middle" class="kf-name">Draft</text>
+        <text x="302" y="216" text-anchor="middle" class="kf-sub">private to author</text>
+
+        <rect x="651" y="172" width="180" height="56" rx="6" fill="#F2F2F0" stroke="#D9D9D6" />
+        <text x="741" y="197" text-anchor="middle" class="kf-name">Published page</text>
+        <text x="741" y="216" text-anchor="middle" class="kf-sub">private · team · site</text>
+      </g>
+
+      <g class="kf-legend" transform="translate(15 440)">
+        <line x1="0" y1="0" x2="28" y2="0" stroke="#111111" stroke-width="1.5" />
+        <text x="36" y="4">knowledge moves</text>
+        <line x1="170" y1="0" x2="198" y2="0" stroke="#6E6E6E" stroke-width="1.5" stroke-dasharray="5 5" />
+        <text x="206" y="4">rules</text>
+        <rect x="262" y="-8" width="28" height="16" rx="8" fill="#FFF4EE" stroke="#C2410C" stroke-width="1.5" />
+        <text x="298" y="4">AI (phase 2)</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption>Four people and one AI agent share each page. Every person in the chain is a user, and any step that feels like paperwork stops the knowledge moving.</figcaption>
+</figure>
+
+<style>
+  .kf { margin: 0; }
+  .kf-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .kf svg { display: block; width: 100%; min-width: 760px; height: auto; }
+  .kf text { font-family: inherit; }
+  .kf-name { font-size: 15px; font-weight: 600; fill: #111111; }
+  .kf-sub { font-size: 12px; fill: #6E6E6E; }
+  /* Prefixed with .kf to outrank `.kf text` above. */
+  .kf .kf-tag, .kf .kf-edge, .kf .kf-legend text {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 11px;
+  }
+  .kf-tag { fill: #6E6E6E; letter-spacing: 0.04em; }
+  .kf-legend text { fill: #6E6E6E; }
+  .kf figcaption { margin-top: 12px; font-size: 14px; color: #6E6E6E; }
+</style>
