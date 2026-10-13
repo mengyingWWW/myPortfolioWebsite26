@@ -1,6 +1,6 @@
 ---
 title: IDEA AI Wiki Design
-subtitle: Placeholder subtitle.
+subtitle: "Redesigning an AI wiki for every technician and future automation"
 year: 2026
 type: "AI Product Redesign"
 method: Method
@@ -12,15 +12,21 @@ coverAlt: "A desktop monitor showing the IDEA AI Wiki in dark mode: a sidebar of
 coverScale: 1.1
 coverFocusY: 36
 coverBackground: "#f4f4f5"
-role: "AI Product Redesign"
+role: "Product Designer (Sole designer)"
 skills:
-  - Skill
-timeline: Timeline
+  - Product design
+  - Concept development
+  - Interactive prototyping
+  - Front-end development
+timeline: "Aug 2026 – Sep 2026"
 tools:
-  - Tool
+  - Figma (Figma Make)
+  - Cursor
+  - Claude
 team:
-  - Team
-summary: Placeholder summary.
+  - 1 CEO
+  - 1 Engineer
+summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its latest feature is an AI Wiki where technicians store step-by-step procedures; in a later phase, AI agents would use those procedures to answer work-order help requests. The prototype worked, but it was built for people who write like engineers. As the only designer, I audited it across four core flows, found 19 UX gaps, and redesigned each flow around two users: a technician writing at a GED reading level, and an AI that needs structure to answer from. Six of my redesigns have shipped."
 order: 1
 ---
 
@@ -33,32 +39,20 @@ import InsightRow from '@/components/case-study/InsightRow.astro';
 import Placeholder from '@/components/case-study/Placeholder.astro';
 import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
 import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
-import Stats from '@/components/case-study/Stats.astro';
 import StatusBadge from '@/components/case-study/StatusBadge.astro';
 import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 
 <CaseStudy>
 
-<Section id="overview" index="01" label="Overview" title="Overview">
-  <TextPlaceholder lines={4} />
-  <Block title="Goals">
+<Section id="problem" index="01" label="Problem" title="Problem">
+  <Block title="The brief">
     <PlaceholderList count={3} />
   </Block>
-  <Stats
-    items={[
-      { value: '19', caption: 'UX gaps' },
-      { value: '4', caption: 'Core flows' },
-      { value: '—', caption: 'Shipped' },
-    ]}
-  />
-</Section>
-
-<Section id="problem" index="02" label="Problem" title="Problem">
   <TextPlaceholder lines={3} />
   <Placeholder ratio="16/10" kind="image" source="need" label="Before — SWE team's original Wiki prototype (unannotated)" />
 </Section>
 
-<Section id="audit" index="03" label="Audit" title="Audit">
+<Section id="audit" index="02" label="Audit" title="Audit">
   <Block title="Method">
     <TextPlaceholder lines={3} />
   </Block>
@@ -68,13 +62,13 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
   <Placeholder ratio="16/5" kind="diagram" source="make" label="Audit overview — 19 gaps across 4 flows, by severity" />
 </Section>
 
-<Section id="insights" index="04" label="Insights" title="Insights">
+<Section id="insights" index="03" label="Insights" title="Insights">
   <InsightRow n={1} />
   <InsightRow n={2} />
   <InsightRow n={3} />
 </Section>
 
-<Section id="redesign" index="05" label="Redesign" title="Redesign">
+<Section id="redesign" index="04" label="Redesign" title="Redesign">
   <TextPlaceholder lines={2} />
 
   <Flow n={1} id="flow-find" name="Find" />
@@ -99,7 +93,7 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
   </Flow>
 </Section>
 
-<Section id="information-architecture" index="06" label="Information Architecture" title="Information Architecture">
+<Section id="information-architecture" index="05" label="Information Architecture" title="Information Architecture">
   <TextPlaceholder lines={2} />
   <Columns cols="1 1">
     <div>
@@ -117,12 +111,12 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
   </Columns>
 </Section>
 
-<Section id="details" index="07" label="Details" title="Details">
+<Section id="details" index="06" label="Details" title="Details">
   <TextPlaceholder lines={2} />
   <Placeholder ratio="16/9" kind="diagram" source="make" label="Component sheet — visibility badge, step card, version grouping, review timeline" />
 </Section>
 
-<Section id="outcome" index="08" label="Outcome" title="Outcome">
+<Section id="outcome" index="07" label="Outcome" title="Outcome">
   <TextPlaceholder lines={3} />
   <Columns cols="1 1">
     <Placeholder ratio="16/10" kind="image" source="have" label="Proposed">
@@ -137,7 +131,7 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
   </Block>
 </Section>
 
-<Section id="takeaways" index="09" label="Takeaways" title="Takeaways">
+<Section id="takeaways" index="08" label="Takeaways" title="Takeaways">
   <Block title="Takeaway 01">
     <TextPlaceholder lines={2} />
   </Block>

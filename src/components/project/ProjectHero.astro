@@ -9,7 +9,7 @@ interface Props {
   project: WorkEntry;
 }
 
-const { title, subtitle, type, cover, coverAlt, summary } = Astro.props.project.data;
+const { title, subtitle, type, cover, coverAlt } = Astro.props.project.data;
 ---
 
 <section>
@@ -29,10 +29,5 @@ const { title, subtitle, type, cover, coverAlt, summary } = Astro.props.project.
         )
       }
     </div>
-  </Container>
-
-  <Container class="grid grid-cols-12 gap-8 pt-20">
-    <h2 class="col-span-3 text-sm font-medium tracking-wide text-muted uppercase">Overview</h2>
-    <p class="col-span-9 max-w-3xl text-xl leading-relaxed">{summary}</p>
   </Container>
 </section>
