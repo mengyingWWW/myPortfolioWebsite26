@@ -1,0 +1,187 @@
+{
+  "list": {
+    "title": "Wiki list",
+    "image": "/work/idea-ai-wiki/live-list.webp",
+    "width": 2400,
+    "height": 1147,
+    "alt": "Live Wiki list with category counts, visibility labels and one active tab style",
+    "items": [
+      {
+        "id": "F2",
+        "status": "Shipped",
+        "shipped": "Categories show how many pages each holds, and an Uncategorized bucket shows what still needs a tag.",
+        "box": {
+          "x": 18.6,
+          "y": 28.45,
+          "w": 14.15,
+          "h": 57.95
+        },
+        "pin": {
+          "x": 32.75,
+          "y": 28.45
+        },
+        "gapTitle": "Most pages uncategorized",
+        "gapBody": "A fixed category list that almost nobody fills in: 18 pages, 3 of them categorized."
+      },
+      {
+        "id": "F3",
+        "status": "Shipped",
+        "shipped": "Each row shows who can see it with an icon and a name: a building for everyone, a team icon, a lock for private.",
+        "box": {
+          "x": 81.0,
+          "y": 21.97,
+          "w": 11.1,
+          "h": 30.86
+        },
+        "pin": {
+          "x": 92.1,
+          "y": 21.97
+        },
+        "gapTitle": "Visibility shown as an email",
+        "gapBody": "\"Private to buildingadmin@…\" names an address, not who can actually see the page."
+      },
+      {
+        "id": "F4",
+        "status": "Shipped",
+        "shipped": "Tabs share one underline style. Unpublished and clearable counts sit on their own and stay visible on every tab.",
+        "box": {
+          "x": 34.0,
+          "y": 14.23,
+          "w": 64.7,
+          "h": 4.81
+        },
+        "pin": {
+          "x": 98.7,
+          "y": 14.23
+        },
+        "gapTitle": "Conflicting filter states",
+        "gapBody": "Two different \"selected\" styles. The orange Drafts tab looks active even when it isn't."
+      }
+    ]
+  },
+  "editor": {
+    "title": "Editor",
+    "image": "/work/idea-ai-wiki/live-editor.webp",
+    "width": 2400,
+    "height": 1212,
+    "alt": "Live editor with structured steps and a separate Published status",
+    "items": [
+      {
+        "id": "C1",
+        "status": "Partly shipped",
+        "shipped": "Steps carry time, Warning, Verify, Note and Key labels from my step editor. The Markdown body above them is still there.",
+        "box": {
+          "x": 35.9,
+          "y": 38.61,
+          "w": 42.35,
+          "h": 42.08
+        },
+        "pin": {
+          "x": 78.25,
+          "y": 38.61
+        },
+        "gapTitle": "Markdown-only editor",
+        "gapBody": "\"Use ## for a heading\" asks frontline staff to learn syntax before they can write."
+      },
+      {
+        "id": "C5",
+        "status": "Shipped",
+        "shipped": "Draft or Published sits under the visibility panel, apart from the settings authors edit.",
+        "box": {
+          "x": 80.9,
+          "y": 64.36,
+          "w": 16.5,
+          "h": 4.36
+        },
+        "pin": {
+          "x": 97.4,
+          "y": 64.36
+        },
+        "gapTitle": "Status in the wrong place",
+        "gapBody": "\"Draft · Not yet saved\" sits inside the editable settings card, where it reads like an option."
+      }
+    ]
+  },
+  "applies": {
+    "title": "Applies to",
+    "image": "/work/idea-ai-wiki/live-applies.webp",
+    "width": 2400,
+    "height": 1212,
+    "alt": "Live editor Applies to section with picked categories, asset types, tags, keywords, job roles and related wikis",
+    "items": [
+      {
+        "id": "C3",
+        "status": "Shipped",
+        "shipped": "Categories, asset types and asset tags are picked from the platform’s own lists, so spelling stays consistent for search and the AI.",
+        "box": {
+          "x": 33.5,
+          "y": 25.94,
+          "w": 44.75,
+          "h": 12.48
+        },
+        "pin": {
+          "x": 78.25,
+          "y": 25.94
+        },
+        "gapTitle": "Routing fields left blank",
+        "gapBody": "Categories, asset types and keywords are free text, so they stay empty and the agent has nothing to match on."
+      },
+      {
+        "id": "JR",
+        "status": "Added",
+        "shipped": "My addition beyond the audit: pages are tagged with the job roles that use them, one more signal for routing.",
+        "box": {
+          "x": 33.5,
+          "y": 46.93,
+          "w": 33.25,
+          "h": 4.16
+        },
+        "pin": {
+          "x": 66.75,
+          "y": 46.93
+        }
+      },
+      {
+        "id": "RW",
+        "status": "Added",
+        "shipped": "Also my addition: authors link pages a reader should see together, so one procedure leads to the next.",
+        "box": {
+          "x": 33.5,
+          "y": 78.42,
+          "w": 44.75,
+          "h": 14.85
+        },
+        "pin": {
+          "x": 78.25,
+          "y": 78.42
+        }
+      }
+    ]
+  },
+  "review": {
+    "title": "Review",
+    "image": "/work/idea-ai-wiki/live-review.webp",
+    "width": 2400,
+    "height": 1313,
+    "alt": "Live review page with struck-through replaced steps, a step comment and three decision buttons",
+    "items": [
+      {
+        "id": "G2",
+        "status": "Shipped",
+        "shipped": "Every changed step shows the old text struck through and the new text beside it. Reviewers comment on a step and choose Approve, Request changes or Reject.",
+        "box": {
+          "x": 18.9,
+          "y": 45.52,
+          "w": 57.2,
+          "h": 38.39
+        },
+        "pin": {
+          "x": 76.1,
+          "y": 45.52
+        },
+        "gapTitle": "All-or-nothing review",
+        "gapBody": "One Accept / Decline for the whole page, no inline comments, and only step 1 shows what changed."
+      }
+    ]
+  }
+}

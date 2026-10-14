@@ -1,0 +1,516 @@
+---
+/**
+ * A live screenshot with a pin per shipped change. A pin highlights its area, dims the rest and opens
+ * a card with the original audit gap and what shipped. The list under the image says the same in text,
+ * and is all that shows at 900px and below.
+ * Data: src/data/idea-ai-wiki/outcome-shipped.json (one entry per screen).
+ */
+type Status = 'Shipped' | 'Partly shipped' | 'Added';
+interface Item {
+  id: string;
+  status: Status;
+  shipped: string;
+  box: { x: number; y: number; w: number; h: number };
+  pin: { x: number; y: number };
+  gapTitle?: string;
+  gapBody?: string;
+}
+interface Props {
+  /** Unique per page; prefixes the popover ids. */
+  name: string;
+  shot: { title: string; image: string; width: number; height: number; alt: string; items: Item[] };
+  /** One line above the heading, e.g. how to use the pins; hidden with the pins at 900px and below. */
+  hint?: string;
+}
+
+const { name, shot, hint } = Astro.props;
+const tone: Record<Status, string> = { Shipped: 'is-shipped', 'Partly shipped': 'is-partly', Added: 'is-added' };
+// Near an edge the bubble hangs to one side of its tail, so it stays inside the image.
+const align = (x: number) => (x > 93 ? 'is-r' : x < 7 ? 'is-l' : '');
+const popId = (id: string) => `ss-${name}-${id}`;
+---
+
+<section class="ss" aria-labelledby={`ss-${name}`} data-shipped-shot>
+  {hint && <p class="ss-hint">{hint}</p>}
+  <div class="ss-head">
+    <h3 class="ss-title" id={`ss-${name}`}>{shot.title}</h3>
+    <span class="ss-live">Live</span>
+  </div>
+
+  <div class="ss-stage">
+    <div class="ss-frame">
+      <img src={shot.image} width={shot.width} height={shot.height} alt={shot.alt} loading="lazy" decoding="async" />
+      <div class="ss-hl" aria-hidden="true"></div>
+    </div>
+    {
+      shot.items.map((item) => (
+        <>
+          <button
+            type="button"
+            class:list={['ss-pin', tone[item.status], align(item.pin.x)]}
+            style={`left:${item.pin.x}%;top:${item.pin.y}%`}
+            data-box={`${item.box.x},${item.box.y},${item.box.w},${item.box.h}`}
+            data-cursor="default"
+            aria-expanded="false"
+            aria-controls={popId(item.id)}
+            aria-label={`${item.id}: ${item.gapTitle ?? 'Added beyond the audit'}, ${item.status.toLowerCase()}`}
+          >
+            {item.id}
+          </button>
+          <div class="ss-pop" id={popId(item.id)} role="group" aria-label={`${item.id} details`}>
+            {item.gapTitle ? (
+              <>
+                <p class="ss-pop-label">Original gap</p>
+                <p class="ss-pop-title">
+                  {item.id} · {item.gapTitle}
+                </p>
+                <p class="ss-pop-body">{item.gapBody}</p>
+              </>
+            ) : (
+              <p class="ss-pop-label">Added beyond the audit</p>
+            )}
+            <div class="ss-pop-ship">
+              <span class:list={['ss-status', tone[item.status]]}>{item.status}</span>
+              <p>{item.shipped}</p>
+            </div>
+            {item.gapTitle && (
+              <a class="ss-pop-link" href={`#issue-${item.id}`}>
+                See it in the audit →
+              </a>
+            )}
+          </div>
+        </>
+      ))
+    }
+  </div>
+
+  <ol class="ss-list">
+    {
+      shot.items.map((item) => (
+        <li>
+          {item.gapTitle ? (
+            <a class:list={['ss-id', tone[item.status]]} href={`#issue-${item.id}`}>
+              <span class="sr-only">issue </span>
+              {item.id}
+            </a>
+          ) : (
+            <span class:list={['ss-id', tone[item.status]]}>{item.id}</span>
+          )}
+          <span class="ss-list-status">{item.status}</span>
+          <p class="ss-list-text">
+            {item.gapTitle && (
+              <>
+                <span class="ss-list-gap">{item.gapTitle}</span>{' '}
+                <span aria-hidden="true">→</span>{' '}
+              </>
+            )}
+            {item.shipped}
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script>
+  let closeOpen: ((refocus: boolean) => void) | null = null;
+  let openPin: HTMLButtonElement | null = null;
+  let openPop: HTMLElement | null = null;
+
+  const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), Math.max(min, max));
+
+  type Rect = { left: number; top: number; right: number; bottom: number };
+  const overlap = (a: Rect, b: Rect) =>
+    Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
+  // Right, left, below or above the box, kept inside the stage. Beside the box the card narrows to the
+  // free space (down to 240px). Where nothing fits cleanly, the spot that covers the least of the box
+  // wins, and covering another pin counts heavily against a spot.
+  function place(stage: HTMLElement, pop: HTMLElement, box: number[], pin: HTMLElement) {
+    const sw = stage.clientWidth;
+    const sh = stage.clientHeight;
+    const [x, y, w, h] = [(box[0] * sw) / 100, (box[1] * sh) / 100, (box[2] * sw) / 100, (box[3] * sh) / 100];
+    const gap = 12;
+    const maxW = Math.min(340, sw - 32);
+    const fit = (space: number) => (space >= 240 ? Math.min(maxW, space) : maxW);
+    const boxRect = { left: x, top: y, right: x + w, bottom: y + h };
+    const origin = stage.getBoundingClientRect();
+    const pins = [...stage.querySelectorAll<HTMLElement>('.ss-pin')]
+      .filter((p) => p !== pin)
+      .map((p) => {
+        const r = p.getBoundingClientRect();
+        return { left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top };
+      });
+    const heights = new Map<number, number>();
+    const heightAt = (pw: number) => {
+      if (!heights.has(pw)) {
+        pop.style.width = `${pw}px`;
+        heights.set(pw, pop.offsetHeight);
+      }
+      return heights.get(pw)!;
+    };
+    const rightW = fit(sw - (x + w + gap));
+    const leftW = fit(x - gap);
+    const spots: [number, (ph: number) => [number, number]][] = [
+      [rightW, () => [x + w + gap, y]],
+      [rightW, (ph) => [x + w + gap, y + h - ph]],
+      [leftW, () => [x - gap - leftW, y]],
+      [leftW, (ph) => [x - gap - leftW, y + h - ph]],
+      [maxW, () => [x, y + h + gap]],
+      [maxW, () => [x + w - maxW, y + h + gap]],
+      [maxW, (ph) => [x, y - gap - ph]],
+      [maxW, (ph) => [x + w - maxW, y - gap - ph]],
+    ];
+    const candidates = spots.map(([pw, at]) => {
+      const ph = heightAt(pw);
+      const [l, t] = at(ph);
+      const left = clamp(l, 0, sw - pw);
+      const top = clamp(t, 0, sh - ph);
+      const rect = { left, top, right: left + pw, bottom: top + ph };
+      const score = overlap(rect, boxRect) + 50 * pins.reduce((sum, p) => sum + overlap(rect, p), 0);
+      return { pw, left, top, score };
+    });
+    const best = candidates.reduce((a, b) => (b.score < a.score ? b : a));
+    pop.style.width = `${best.pw}px`;
+    pop.style.left = `${best.left}px`;
+    pop.style.top = `${best.top}px`;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-shipped-shot]').forEach((shot) => {
+    const stage = shot.querySelector<HTMLElement>('.ss-stage')!;
+    const hl = shot.querySelector<HTMLElement>('.ss-hl')!;
+
+    shot.querySelectorAll<HTMLButtonElement>('.ss-pin').forEach((pin) => {
+      const pop = document.getElementById(pin.getAttribute('aria-controls')!)!;
+      const box = pin.dataset.box!.split(',').map(Number);
+
+      pin.addEventListener('click', () => {
+        const wasOpen = openPin === pin;
+        closeOpen?.(false);
+        if (wasOpen) return;
+
+        hl.style.left = `${box[0]}%`;
+        hl.style.top = `${box[1]}%`;
+        hl.style.width = `${box[2]}%`;
+        hl.style.height = `${box[3]}%`;
+        place(stage, pop, box, pin);
+        pin.setAttribute('aria-expanded', 'true');
+        hl.classList.add('is-on');
+        pop.classList.add('is-on');
+        openPin = pin;
+        openPop = pop;
+        closeOpen = (refocus) => {
+          pin.setAttribute('aria-expanded', 'false');
+          hl.classList.remove('is-on');
+          pop.classList.remove('is-on');
+          openPin = openPop = closeOpen = null;
+          if (refocus) pin.focus({ preventScroll: true });
+        };
+      });
+
+      pop.querySelector('a')?.addEventListener('click', () => closeOpen?.(false));
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && closeOpen) closeOpen(true);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!closeOpen) return;
+    const target = e.target as Element;
+    if (openPin?.contains(target) || openPop?.contains(target)) return;
+    // A click on another control keeps its focus; anywhere else, focus goes back to the pin.
+    closeOpen(!target.closest('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'));
+  });
+
+  window.addEventListener('resize', () => {
+    if (openPin && openPop) {
+      const stage = openPin.closest<HTMLElement>('.ss-stage')!;
+      place(stage, openPop, openPin.dataset.box!.split(',').map(Number), openPin);
+    }
+  });
+</script>
+
+<style>
+  .ss {
+    display: grid;
+    gap: 16px;
+  }
+  .ss-hint {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-meta);
+  }
+  .ss-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ss-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #111;
+  }
+  .ss-live {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #ecfdf3;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #067647;
+  }
+
+  .ss-stage {
+    position: relative;
+  }
+  .ss-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #1c1c1c;
+  }
+  .ss-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* The spread shadow dims everything outside the box; the frame clips it to the image. */
+  .ss-hl {
+    position: absolute;
+    border: 2px solid #d92d20;
+    border-radius: 6px;
+    box-shadow:
+      0 0 12px 4px rgba(217, 45, 32, 0.25),
+      0 0 0 200vmax rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+  .ss-hl.is-on {
+    opacity: 1;
+  }
+
+  /* The tail's tip sits on the pin point. */
+  .ss-pin {
+    position: absolute;
+    z-index: 1;
+    min-width: 30px;
+    height: 24px;
+    padding: 0 7px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 20px;
+    color: #fff;
+    cursor: pointer;
+    transform: translate(-50%, calc(-100% - 6px));
+  }
+  .ss-pin::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    border-right-style: inherit;
+    border-bottom-style: inherit;
+    background: inherit;
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .ss-pin.is-r {
+    transform: translate(calc(-100% + 11px), calc(-100% - 6px));
+  }
+  .ss-pin.is-r::after {
+    left: auto;
+    right: 11px;
+    transform: translateX(50%) rotate(45deg);
+  }
+  .ss-pin.is-l {
+    transform: translate(-13px, calc(-100% - 6px));
+  }
+  .ss-pin.is-l::after {
+    left: 13px;
+  }
+  .ss-pin:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+  }
+  .ss-pin[aria-expanded='true'] {
+    z-index: 3;
+  }
+
+  .is-shipped {
+    --tone: #067647;
+  }
+  .is-partly {
+    --tone: #b54708;
+  }
+  .is-added {
+    --tone: #067647;
+  }
+  .ss-pin.is-shipped,
+  .ss-pin.is-partly,
+  .ss-pin.is-added {
+    background: var(--tone);
+  }
+  .ss-pin.is-added {
+    border-style: dashed;
+  }
+
+  .ss-pop {
+    position: absolute;
+    z-index: 2;
+    width: min(340px, calc(100% - 32px));
+    padding: 16px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.22),
+      0 2px 6px rgba(0, 0, 0, 0.12);
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity 150ms ease,
+      visibility 0s linear 150ms;
+  }
+  .ss-pop.is-on {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 150ms ease;
+  }
+  .ss-pop-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+  .ss-pop-title {
+    margin-top: 6px;
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 600;
+    color: #111;
+  }
+  .ss-pop-body {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #6e6e6e;
+  }
+  .ss-pop-ship {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e6e6e4;
+  }
+  .ss-pop-label + .ss-pop-ship {
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: 0;
+  }
+  .ss-pop-ship p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #111;
+  }
+  .ss-pop-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #111;
+  }
+
+  .ss-status {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 500;
+  }
+  .ss-status.is-shipped,
+  .ss-status.is-added {
+    background: #ecfdf3;
+    color: #067647;
+  }
+  .ss-status.is-partly {
+    background: #fef6e7;
+    color: #93370d;
+  }
+
+  .ss-list {
+    border-top: 1px solid #e6e6e4;
+  }
+  .ss-list li {
+    display: grid;
+    grid-template-columns: 44px 112px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e6e6e4;
+  }
+  .ss-id {
+    justify-self: start;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--tone);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #fff;
+    text-decoration: none;
+  }
+  .ss-id.is-added {
+    outline: 1px dashed var(--tone);
+    outline-offset: 1px;
+  }
+  a.ss-id:hover {
+    text-decoration: underline;
+  }
+  .ss-list-status {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-meta);
+  }
+  .ss-list-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #3a3a3a;
+  }
+  .ss-list-gap {
+    font-weight: 600;
+    color: #111;
+  }
+
+  @media (max-width: 900px) {
+    .ss-hl,
+    .ss-pin,
+    .ss-pop,
+    .ss-hint {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ss-hl,
+    .ss-pop,
+    .ss-pop.is-on {
+      transition: none;
+    }
+  }
+</style>

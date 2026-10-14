@@ -4,7 +4,7 @@ subtitle: "Redesigning an AI wiki for every technician and future automation"
 year: 2026
 type: "AI Product Redesign"
 method: Method
-status: "Shipped"
+status: "Partially shipped"
 domains: ["B2B SaaS", "AI Startup"]
 platform: "Web"
 cover: ../../assets/work/idea-ai-wiki/cover.png
@@ -28,11 +28,12 @@ tools:
 team:
   - 1 CEO
   - 1 Engineer
-summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its latest feature is an AI Wiki where technicians store step-by-step procedures; in a later phase, AI agents would use those procedures to answer work-order help requests. The prototype worked, but it was built for people who write like engineers. As the only designer, I audited it across four core flows, found 15 UX gaps, and redesigned each flow around two users: a technician writing at a GED reading level, and an AI that needs structure to answer from. Six of my redesigns have shipped."
+summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its latest feature is an AI Wiki where technicians store step-by-step procedures; in a later phase, AI agents would use those procedures to answer work-order help requests. The prototype worked, but it was built for people who write like engineers. As the only designer, I audited it across four core flows, found 15 UX gaps, and redesigned each flow around two users: a technician writing at a GED reading level, and an AI that needs structure to answer from. Six of the 15 fixes shipped in full, and four more in part."
 order: 1
 ---
 
 import data from '@/data/idea-ai-wiki/audit-issues.json';
+import shipped from '@/data/idea-ai-wiki/outcome-shipped.json';
 import AIFieldMap from '@/components/case-study/AIFieldMap.astro';
 import AnnotatedShot from '@/components/case-study/AnnotatedShot.astro';
 import AuditMatrix from '@/components/case-study/AuditMatrix.astro';
@@ -49,11 +50,14 @@ import FlowChapter from '@/components/case-study/FlowChapter.astro';
 import IAComparison from '@/components/case-study/IAComparison.astro';
 import InsightRow from '@/components/case-study/InsightRow.astro';
 import KnowledgeFlow from '@/components/case-study/KnowledgeFlow.astro';
+import OutcomeTable from '@/components/case-study/OutcomeTable.astro';
 import Placeholder from '@/components/case-study/Placeholder.astro';
 import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
 import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
 import RoleCards from '@/components/case-study/RoleCards.astro';
+import ShippedShot from '@/components/case-study/ShippedShot.astro';
 import Statement from '@/components/case-study/Statement.astro';
+import Stats from '@/components/case-study/Stats.astro';
 import StatusBadge from '@/components/case-study/StatusBadge.astro';
 import Steps from '@/components/case-study/Steps.astro';
 import Takeaway from '@/components/case-study/Takeaway.astro';
@@ -499,18 +503,41 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 </Section>
 
 <Section id="outcome" index="08" label="Outcome" title="Outcome">
-  <TextPlaceholder lines={3} />
-  <Columns cols="1 1">
-    <Placeholder ratio="16/10" kind="image" source="have" label="Proposed">
-      <StatusBadge status="Proposed" />
-    </Placeholder>
-    <Placeholder ratio="16/10" kind="image" source="need" label="Live today">
-      <StatusBadge status="Shipped" />
-    </Placeholder>
-  </Columns>
-  <Block title="What shipped">
-    <PlaceholderTable columns={['Proposal', 'Status', 'Note']} rows={5} caption="Proposals and whether they shipped" />
-  </Block>
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I handed off a working Figma Make prototype, and the engineer built the live version from it. By the end of my internship, 6 of the 15 fixes had shipped in full and 4 in part. Two additions I proposed beyond the audit, job roles and related wikis, shipped too.</p>
+  <Stats
+    items={[
+      { value: '6', caption: 'Shipped' },
+      { value: '4', caption: 'Partly shipped' },
+      { value: '5', caption: 'Next phase' },
+    ]}
+  />
+  <div class="grid gap-16">
+    <ShippedShot name="list" shot={shipped.list} hint="Click a marker to see the original gap and how it shipped." />
+    <ShippedShot name="editor" shot={shipped.editor} />
+    <ShippedShot name="applies" shot={shipped.applies} />
+    <ShippedShot name="review" shot={shipped.review} />
+  </div>
+  <OutcomeTable
+    caption="What happened to each audit gap"
+    rows={[
+      { status: 'Shipped', gap: 'F2', change: 'Tag list with counts and an Uncategorized bucket' },
+      { status: 'Shipped', gap: 'F3', change: 'Visibility shown with icons and names' },
+      { status: 'Shipped', gap: 'F4', change: 'One active tab style; unpublished count shown separately' },
+      { status: 'Shipped', gap: 'C3', change: 'Categories, asset types and tags picked from platform lists' },
+      { status: 'Shipped', gap: 'C5', change: 'Draft and published status shown apart from the settings' },
+      { status: 'Shipped', gap: 'G2', change: 'Full change view, step comments, three-way decision' },
+      { status: 'Partly', gap: 'C1', change: 'Structured steps shipped; the Markdown body remains' },
+      { status: 'Partly', gap: 'U1', change: 'Name and role in the inbox and review; not yet on the page' },
+      { status: 'Partly', gap: 'U2', change: 'Key steps shipped; team pin still a flat list' },
+      { status: 'Partly', gap: 'G1', change: 'A dedicated Wiki inbox with a Needs review tab; nav label unchanged' },
+      { status: 'Next phase', gap: 'F1', change: 'Grouping duplicate versions' },
+      { status: 'Next phase', gap: 'C2', change: 'Word and PDF import' },
+      { status: 'Next phase', gap: 'C4', change: 'Content type (Help guide, Policy, Reference)' },
+      { status: 'Next phase', gap: 'U3', change: 'Automation usage on each page' },
+      { status: 'Next phase', gap: 'U4', change: 'Version history' },
+    ]}
+  />
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">This quarter focused on the problems people hit every day. Features tied to the AI agent and automation are planned for the next phase, and the fields that shipped, from categories to job roles, already give that work a structure to build on.</p>
 </Section>
 
 <Section id="takeaways" index="09" label="Takeaways" title="Takeaways">

@@ -1,0 +1,99 @@
+---
+/** What happened to each audit gap: a status pill, the gap id (linked to its #issue-<id> item) and what changed. */
+interface Props {
+  rows: { status: 'Shipped' | 'Partly' | 'Next phase'; gap: string; change: string }[];
+  caption?: string;
+}
+
+const { rows, caption } = Astro.props;
+const tone = { Shipped: 'is-shipped', Partly: 'is-partly', 'Next phase': 'is-next' };
+---
+
+<div class="table-scroll">
+  <table>
+    {caption && <caption class="sr-only">{caption}</caption>}
+    <thead>
+      <tr>
+        <th scope="col">Status</th>
+        <th scope="col">Gap</th>
+        <th scope="col">What changed</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map(({ status, gap, change }) => (
+          <tr>
+            <td>
+              <span class:list={['pill', tone[status]]}>{status}</span>
+            </td>
+            <td class="gap">
+              <a href={`#issue-${gap}`}><span class="sr-only">issue </span>{gap}</a>
+            </td>
+            <td>{change}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .table-scroll {
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+  }
+  th {
+    padding: 0 16px 12px 0;
+    border-bottom: 1px solid #111;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+  td {
+    padding: 14px 16px 14px 0;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #111;
+  }
+  td:first-child {
+    width: 140px;
+  }
+  .gap {
+    width: 72px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 22px;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .is-shipped {
+    background: #ecfdf3;
+    color: #067647;
+  }
+  .is-partly {
+    background: #fef6e7;
+    color: #93370d;
+  }
+  .is-next {
+    background: #f2f2f0;
+    color: #6e6e6e;
+  }
+</style>
