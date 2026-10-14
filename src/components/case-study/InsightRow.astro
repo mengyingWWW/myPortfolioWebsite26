@@ -1,49 +1,111 @@
 ---
-/** Insight → evidence → principle, one row per insight. Stacks at 900px and below. */
-import Block from './Block.astro';
-import Placeholder from './Placeholder.astro';
-import TextPlaceholder from './TextPlaceholder.astro';
-
+/**
+ * One root cause → what it taught → the design principle that answers it. Renders an <li>, so wrap
+ * the rows in an <ol>. Stacks at 900px and below.
+ */
 interface Props {
-  n: number;
+  cause: string;
+  count: number;
+  insight: string;
+  principle: string;
+  text: string;
+  /** The AI-related cause, in the accent like its row in the audit matrix. */
+  accent?: boolean;
 }
 
-const { n } = Astro.props;
-const nn = String(n).padStart(2, '0');
+const { cause, count, insight, principle, text, accent = false } = Astro.props;
 ---
 
-<div class="insight-row">
-  <Block title={`Insight ${nn}`}>
-    <TextPlaceholder lines={3} />
-  </Block>
-  <Placeholder label={`Crop of before screen — evidence for insight ${n}`} ratio="4/3" kind="image" source="make" />
+<li class="insight-row">
+  <p class="cause">
+    <span class:list={['cause-name', { 'is-accent': accent }]}>{cause}</span>{' '}
+    <span class="cause-count"><span aria-hidden="true">· </span>{count}<span class="sr-only"> gaps</span></span>
+  </p>
+  <p class="insight">{insight}</p>
   <span class="arrow" aria-hidden="true">
     <svg viewBox="0 0 24 12" width="24" height="12" fill="none" stroke="currentColor" stroke-width="1">
       <path d="M0 6h23M18 1l5 5-5 5"></path>
     </svg>
   </span>
-  <Block title={`Principle ${nn}`}>
-    <TextPlaceholder lines={3} />
-  </Block>
-</div>
+  <div class="principle">
+    <h3 class="principle-name">{principle}</h3>
+    <p class="principle-text">{text}</p>
+  </div>
+</li>
 
 <style>
   .insight-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) 24px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.2fr) 24px minmax(0, 1fr);
     align-items: start;
     gap: 32px;
-    border-top: 1px solid var(--color-line);
-    padding-top: 32px;
+    padding-block: 32px;
   }
-  .arrow {
-    align-self: center;
+  .insight-row + .insight-row {
+    border-top: 1px solid #e6e6e4;
+  }
+  .insight-row:first-child {
+    padding-top: 0;
+  }
+  .insight-row:last-child {
+    padding-bottom: 0;
+  }
+
+  .cause {
+    padding-top: 4px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .cause-name {
+    color: #111;
+  }
+  .cause-name.is-accent {
+    color: var(--accent, #c2410c);
+  }
+  .cause-count {
     color: var(--color-meta);
+  }
+
+  .insight {
+    max-width: 32ch;
+    font-size: 18px;
+    line-height: 1.45;
+    color: #111;
+  }
+
+  /* Level with the insight's first line. */
+  .arrow {
+    padding-top: 7px;
+    color: var(--color-meta);
+  }
+  .arrow svg {
+    display: block;
+  }
+
+  .principle-name {
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #111;
+  }
+  .principle-text {
+    margin-top: 6px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #3a3a3a;
   }
 
   @media (max-width: 900px) {
     .insight-row {
       grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+    .arrow {
+      padding-top: 0;
     }
     .arrow svg {
       rotate: 90deg;

@@ -1,0 +1,101 @@
+---
+/**
+ * A short looping screen recording. It loads and plays only near the viewport, pauses when it
+ * leaves, and has a pause/play button. With reduced motion it waits on its poster until played.
+ */
+interface Props {
+  /** Path without extension; expects <src>.mp4 and a <src>.jpg poster. */
+  src: string;
+  /** What the clip shows. */
+  label: string;
+  width?: number;
+  height?: number;
+}
+
+const { src, label, width = 1440, height = 900 } = Astro.props;
+---
+
+<div class="clip" data-clip data-cursor="default" style={`max-width:${width}px`}>
+  <video muted loop playsinline preload="none" poster={`${src}.jpg`} width={width} height={height} aria-label={label}>
+    <source src={`${src}.mp4`} type="video/mp4" />
+  </video>
+  <button type="button" class="clip-toggle" aria-label="Play video" data-cursor="default">
+    <svg class="icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor"></path></svg>
+    <svg class="icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"></path></svg>
+  </button>
+</div>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLElement>('[data-clip]').forEach((clip) => {
+    const video = clip.querySelector('video')!;
+    const button = clip.querySelector<HTMLButtonElement>('.clip-toggle')!;
+    let pausedByUser = reduceMotion.matches;
+    let near = false;
+
+    const render = () => {
+      const playing = !video.paused;
+      clip.classList.toggle('is-playing', playing);
+      button.setAttribute('aria-label', playing ? 'Pause video' : 'Play video');
+    };
+    const sync = () => {
+      if (near && !pausedByUser) video.play().catch(render);
+      else if (!video.paused) video.pause();
+    };
+
+    video.addEventListener('play', render);
+    video.addEventListener('pause', render);
+    button.addEventListener('click', () => {
+      pausedByUser = !video.paused;
+      if (pausedByUser) video.pause();
+      else video.play().catch(render);
+    });
+    new IntersectionObserver(
+      ([entry]) => {
+        near = entry.isIntersecting;
+        sync();
+      },
+      { rootMargin: '200px 0px' },
+    ).observe(clip);
+    render();
+  });
+</script>
+
+<style>
+  .clip {
+    position: relative;
+    width: 100%;
+  }
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background: #1c1c1c;
+  }
+  .clip-toggle {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgb(17 17 17 / 0.72);
+    color: #fff;
+  }
+  .clip-toggle:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px #111;
+  }
+  .icon-pause,
+  .is-playing .icon-play {
+    display: none;
+  }
+  .is-playing .icon-pause {
+    display: block;
+  }
+</style>

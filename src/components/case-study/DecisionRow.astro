@@ -1,0 +1,124 @@
+---
+/**
+ * A design decision in a flow chapter: principle and the Audit issues it answers, a title and one
+ * sentence, beside an image (props) or other media (the slot, e.g. ClipPlayer).
+ * Place rows as siblings in one wrapper: even rows put the text on the right.
+ */
+interface Props {
+  principle: string;
+  /** Audit issue ids, e.g. ["C4", "C5"]; each links to its #issue-<id> item. */
+  issues: string[];
+  verb?: 'Fixes' | 'Prevents';
+  title: string;
+  text: string;
+  image?: string;
+  width?: number;
+  height?: number;
+  alt?: string;
+  /** Caps a tall image's height in px (it is never shown larger than its natural size). */
+  maxHeight?: number;
+}
+
+const { principle, issues, verb = 'Fixes', title, text, image, width, height, alt = '', maxHeight } = Astro.props;
+const capped = image && width && height && maxHeight && height > maxHeight;
+const style = capped ? `width:${Math.round((width * maxHeight) / height)}px` : undefined;
+---
+
+<div class="dr">
+  <div class="dr-text">
+    <p class="dr-tag">
+      {principle} · {verb}{' '}
+      {issues.map((id, i) => (
+        <>
+          {i > 0 && ', '}
+          <a href={`#issue-${id}`}><span class="sr-only">issue </span>{id}</a>
+        </>
+      ))}
+    </p>
+    <h4 class="dr-title">{title}</h4>
+    <p class="dr-body">{text}</p>
+  </div>
+  <div class="dr-media">
+    {
+      image ? (
+        <img class="dr-img" src={image} width={width} height={height} alt={alt} style={style} loading="lazy" decoding="async" />
+      ) : (
+        <slot />
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .dr {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+    gap: 56px;
+  }
+  .dr + .dr {
+    margin-top: 80px;
+  }
+  .dr:nth-child(even) {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+  .dr:nth-child(even) .dr-text {
+    order: 2;
+  }
+
+  .dr-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--color-meta);
+  }
+  .dr-tag a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .dr-tag a:hover {
+    color: #111;
+  }
+  .dr-title {
+    margin-top: 12px;
+    font-size: 20px;
+    line-height: 1.3;
+    font-weight: 600;
+    color: #111;
+  }
+  .dr-body {
+    max-width: 48ch;
+    margin-top: 8px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #3a3a3a;
+  }
+
+  .dr-media {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
+  /* The width attribute is the natural width, so images only ever scale down. */
+  .dr-img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .dr,
+    .dr:nth-child(even) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+    .dr + .dr {
+      margin-top: 48px;
+    }
+    .dr:nth-child(even) .dr-text {
+      order: 0;
+    }
+  }
+</style>

@@ -1,5 +1,5 @@
 ---
-title: IDEA AI Wiki Design
+title: IDEA Wiki Redesign
 subtitle: "Redesigning an AI wiki for every technician and future automation"
 year: 2026
 type: "AI Product Redesign"
@@ -35,10 +35,15 @@ import AnnotatedShot from '@/components/case-study/AnnotatedShot.astro';
 import AuditMatrix from '@/components/case-study/AuditMatrix.astro';
 import CaseStudy from '@/components/case-study/CaseStudy.astro';
 import Section from '@/components/case-study/Section.astro';
+import BeforeAfterSlider from '@/components/case-study/BeforeAfterSlider.astro';
 import Block from '@/components/case-study/Block.astro';
+import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
 import Columns from '@/components/case-study/Columns.astro';
+import DecisionRow from '@/components/case-study/DecisionRow.astro';
 import EvidenceCard from '@/components/case-study/EvidenceCard.astro';
 import Flow from '@/components/case-study/Flow.astro';
+import FlowChapter from '@/components/case-study/FlowChapter.astro';
+import IAComparison from '@/components/case-study/IAComparison.astro';
 import InsightRow from '@/components/case-study/InsightRow.astro';
 import KnowledgeFlow from '@/components/case-study/KnowledgeFlow.astro';
 import Placeholder from '@/components/case-study/Placeholder.astro';
@@ -56,7 +61,7 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 <Section id="problem" index="01" label="Problem" title="Problem">
   <div>
     <p class="max-w-[60ch] text-base leading-relaxed text-meta">Facilities know-how lives in technicians’ heads, old PDFs and shared drives. IDEA asked for an AI Wiki that captures it in a form frontline staff can write, and AI agents can later answer from.</p>
-    <Statement class="mt-8">The challenge wasn’t storing knowledge, but getting it written in a shape both people and AI can use. In engineering’s prototype, most pages ended up <em>unstructured, untraceable and uncategorized.</em></Statement>
+    <Statement class="mt-8">The core challenge was getting knowledge written in a shape both people and AI can use. In engineering’s prototype, most pages ended up <em>unstructured, untraceable and uncategorized.</em></Statement>
   </div>
   <div class="grid grid-cols-2 gap-8 max-[900px]:grid-cols-1">
     <EvidenceCard
@@ -173,52 +178,286 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 </Section>
 
 <Section id="insights" index="04" label="Insights" title="Insights">
-  <InsightRow n={1} />
-  <InsightRow n={2} />
-  <InsightRow n={3} />
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">The 15 gaps came from three causes.</p>
+  <ol>
+    <InsightRow
+      cause="Unstructured"
+      count={4}
+      insight="People know the fix. The editor gave them nowhere to put it."
+      principle="Shape first."
+      text="Steps, warnings and fields are there before anyone types."
+    />
+    <InsightRow
+      cause="Untraceable"
+      count={7}
+      insight="You couldn’t tell who wrote a page, who could see it, or what had changed."
+      principle="Owned at a glance."
+      text="Author, audience and history show on every page."
+    />
+    <InsightRow
+      cause="Uncategorized"
+      count={4}
+      insight="Tags were optional, so nobody filled them in. The AI routes on tags."
+      principle="Suggest, then confirm."
+      text="The tool proposes tags. People accept them with a click."
+      accent
+    />
+  </ol>
+  <p class="text-base leading-relaxed text-meta">I started with the structure, then went flow by flow.</p>
 </Section>
 
 <Section id="information-architecture" index="05" label="Information Architecture" title="Information Architecture">
-  <TextPlaceholder lines={2} />
-  <Columns cols="1 1">
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">The new structure gives each job its own place.</p>
+  <IAComparison />
+  <div class="grid grid-cols-2 gap-10 max-[900px]:grid-cols-1">
     <div>
-      <Placeholder ratio="1/1" kind="diagram" source="make" label="IA — before" />
-      <div class="mt-6">
-        <PlaceholderList count={3} />
-      </div>
+      <h3 class="font-mono text-xs tracking-wide text-meta uppercase">Before</h3>
+      <ul class="mt-3 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-[#111]">
+        <li>Wiki reviews sat in a general Inbox with every other notification.</li>
+        <li>One flat list. Fixed categories, and duplicates side by side.</li>
+        <li>A page was a Markdown box with optional fields.</li>
+      </ul>
     </div>
     <div>
-      <Placeholder ratio="1/1" kind="diagram" source="make" label="IA — after" />
-      <div class="mt-6">
-        <PlaceholderList count={3} />
-      </div>
+      <h3 class="font-mono text-xs tracking-wide text-meta uppercase">After</h3>
+      <ul class="mt-3 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-[#111]">
+        <li>Reviews have their own home: Needs Review.</li>
+        <li>The list groups versions and filters by who can see what.</li>
+        <li>Every page has the same parts: steps, owner, audience, history.</li>
+      </ul>
     </div>
-  </Columns>
+  </div>
 </Section>
 
 <Section id="redesign" index="06" label="Redesign" title="Redesign">
-  <TextPlaceholder lines={2} />
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Each flow below opens with a side-by-side comparison, then walks through the key decisions. Tags link back to the gaps they fix.</p>
 
-  <Flow n={1} id="fix-find" name="Find" />
+  <FlowChapter n={1} id="fix-find" name="Find" goal="Help technicians find the right procedure quickly and trust that it’s the latest version.">
+    <BeforeAfterSlider
+      before="/work/idea-ai-wiki/ba-find-before.webp"
+      after="/work/idea-ai-wiki/ba-find-after.webp"
+      width={2400}
+      height={1313}
+      status="Proposed"
+      beforeAlt="Original Wiki list: a fixed category list, four filter tabs, and duplicate titles as separate rows"
+      afterAlt="Redesigned Wiki list: a tag cloud with counts, scope tabs, visibility badges, and versions grouped under one title"
+      caption="Drag to compare the original list with the redesign."
+    />
+    <div>
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['F1']}
+        title="Grouped versions"
+        text="Duplicate procedures are grouped under one title. Users open a single row to see every version and which one is newest."
+      >
+        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-1-find" label="Filtering the list by the HVAC tag, then expanding a procedure to show its four versions" />
+      </DecisionRow>
+      <DecisionRow
+        principle="Suggest, then confirm"
+        issues={['F2']}
+        title="Tags built from real content"
+        text="The tag list is generated from existing pages and shows a count for each tag. An Uncategorized filter makes untagged pages easy to spot."
+        image="/work/idea-ai-wiki/find-tags.webp"
+        width={425}
+        height={331}
+        alt="Browse tags with counts: Facilities 9, Safety 4, HVAC 3, Plumbing 2, IT 1, Uncategorized 4"
+      />
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['F3']}
+        title="Readable visibility labels"
+        text="Each page shows who can see it through a simple icon system: a lock for private, a team name for team pages, a building for site-wide. A new Team tab sits next to Mine and Site-wide."
+        image="/work/idea-ai-wiki/find-visibility.webp"
+        width={2016}
+        height={626}
+        alt="List rows with visibility badges: a lock with an owner’s name, a team name, and Everyone at this site"
+      />
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['F4']}
+        title="Consistent filter states"
+        text="All tabs share one active style. Pending drafts have their own counter, which stays visible on every tab."
+        image="/work/idea-ai-wiki/find-tabs.webp"
+        width={2016}
+        height={219}
+        alt="Scope tabs with one underlined active tab and a separate ‘4 drafts pending’ counter"
+      />
+    </div>
+  </FlowChapter>
 
-  <Flow n={2} id="fix-contribute" name="Contribute">
-    <Columns cols="1 1">
-      <Placeholder ratio="16/10" kind="motion" source="make" label="Duplicate check on publish — edit / merge / create new" />
-      <Placeholder ratio="16/10" kind="motion" source="make" label="Import Word/PDF — structure preserved" />
-    </Columns>
-  </Flow>
+  <FlowChapter
+    n={2}
+    id="fix-contribute"
+    name="Contribute"
+    goal="Make it easy for anyone to write a procedure or bring in an existing document."
+  >
+    <BeforeAfterSlider
+      before="/work/idea-ai-wiki/ba-contribute-before.webp"
+      after="/work/idea-ai-wiki/ba-contribute-after.webp"
+      width={2400}
+      height={1313}
+      status="Proposed"
+      beforeAlt="Original editor: a Markdown hint, an empty step, and blank free-text Categories, Asset types and Keywords fields"
+      afterAlt="Redesigned editor: category chips, an Import Word / PDF bar, numbered steps, a Before you start list, and a settings panel for content type, page type and visibility"
+      caption="Drag to compare the original editor with the redesign."
+    />
+    <div>
+      <DecisionRow
+        principle="Shape first"
+        issues={['C1']}
+        title="Guided step editor"
+        text="Authors fill in numbered steps, with optional Warning and Verify lines, plus a short “Before you start” list for tools, PPE and hazards."
+        image="/work/idea-ai-wiki/contribute-steps.webp"
+        width={1397}
+        height={792}
+        alt="Editor with three numbered step fields and a Before you start list: Tools, PPE, Access needed, Hazards"
+      />
+      <DecisionRow
+        principle="Shape first"
+        issues={['C2']}
+        title="Document import"
+        text="Authors upload a Word file or PDF, or paste from Google Docs. The content becomes a draft they can review and trim."
+      >
+        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-2b-import" label="Importing a Word document, which converts into a draft procedure" />
+      </DecisionRow>
+      <DecisionRow
+        principle="Suggest, then confirm"
+        issues={['C3']}
+        title="AI-suggested categories"
+        text="Matching categories are highlighted as the author types a title. One click keeps or removes each suggestion."
+      >
+        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-2a-ai-tags" label="Typing a procedure title while AI-suggested categories Facilities and HVAC highlight" />
+      </DecisionRow>
+      <DecisionRow
+        principle="Suggest, then confirm"
+        issues={['C4', 'C5']}
+        title="Separate content type"
+        text="Content type (Help guide, Policy, Reference) is its own choice, separate from page layout. Draft status now sits on its own, below the editable settings."
+        image="/work/idea-ai-wiki/contribute-settings.webp"
+        width={497}
+        height={1029}
+        maxHeight={480}
+        alt="Settings panel: Content type (Help guide, Policy, Reference), Page type (Procedure, Informational), Who can see this (Private, Team, Site), and a separate Draft status"
+      />
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['F1']}
+        verb="Prevents"
+        title="Duplicate check on publish"
+        text="When a similar procedure already exists, the author can edit it, merge their changes into it as a suggestion, or publish a new page."
+      >
+        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-3-duplicate" label="Publishing a procedure with a similar title opens a dialog: edit the existing one, merge into it, or continue creating new" />
+      </DecisionRow>
+    </div>
+  </FlowChapter>
 
-  <Flow n={3} id="fix-use" name="Use">
-    <Columns cols="1 1">
-      <Placeholder ratio="4/3" kind="image" source="make" label="Step card with warning + verify" />
-      <Placeholder ratio="4/3" kind="image" source="make" label="Used in automation module" />
-    </Columns>
-  </Flow>
+  <FlowChapter n={3} id="fix-use" name="Use" goal="Help technicians follow a procedure on the job and know who stands behind it.">
+    <BeforeAfterSlider
+      before="/work/idea-ai-wiki/ba-use-before.webp"
+      after="/work/idea-ai-wiki/ba-use-after.webp"
+      width={2400}
+      height={1313}
+      status="Proposed"
+      beforeAlt="Original procedure page: an author email, update and review dates, a flat row of Pin for team buttons, and plain numbered steps"
+      afterAlt="Redesigned procedure page: tags, a visibility badge, the author's name and role, a Version history link, a Used in automation module, an AI summary, and starred key steps"
+      caption="Drag to compare the original procedure page with the redesign."
+    />
+    <div>
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['U1']}
+        title="Author name and role"
+        text="Each page shows the author's name, role and team, with a badge for who can see it. Readers know whose knowledge it is and who to ask."
+        image="/work/idea-ai-wiki/use-author.webp"
+        width={1051}
+        height={119}
+        alt="Page header with an Everyone at this site badge, the author Rachel Garcia, Facilities Lead, Facilities Crew, and a Version history link"
+      />
+      <DecisionRow
+        principle="Shape first"
+        issues={['U2']}
+        title="Key steps and safety callouts"
+        text="Authors can star a critical step so it stands out in the reading view. Warning and Verify lines get their own colours, so they are easy to find mid-job."
+        image="/work/idea-ai-wiki/use-key-steps.webp"
+        width={1504}
+        height={504}
+        alt="A starred step highlighted in amber with a Warning callout, followed by a step with a blue Verify callout"
+      />
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['U2']}
+        title="Pin to team"
+        text="Pinning a page for a team uses a searchable list. It works the same with five teams or fifty."
+        image="/work/idea-ai-wiki/use-pin.webp"
+        width={468}
+        height={514}
+        alt="Pin to team dropdown with a search field and checkboxes for Facilities Crew, Test Admin Group, Team A, IT Support and Building Maintenance"
+      />
+      <DecisionRow
+        principle="Suggest, then confirm"
+        issues={['U3']}
+        title="Automation usage"
+        text="A small module shows how often the AI agent has used the page and the last work order it answered. Authors can also test how the agent would match a question to it."
+        image="/work/idea-ai-wiki/use-automation.webp"
+        width={1504}
+        height={519}
+        alt="Used in automation module: 12 times used, last work order #4521, a Test in automation button, and an AI summary of the procedure"
+      />
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['U4']}
+        title="Version history"
+        text="Every edit is listed with its author, date and a short summary of the change. Reviewer notes from the review flow will appear here too."
+        image="/work/idea-ai-wiki/use-history.webp"
+        width={1504}
+        height={569}
+        alt="Version history panel listing three edits with author, role, date and a one-line summary"
+      />
+    </div>
+  </FlowChapter>
 
-  <Flow n={4} id="fix-govern" name="Govern">
-    <Placeholder ratio="16/5" kind="diagram" source="make" label="Review flow — Draft → Submitted → In review → Published" />
-    <Placeholder ratio="16/9" kind="diagram" source="make" label="Visibility tiers — Private / Team / Site" />
-  </Flow>
+  <FlowChapter n={4} id="fix-govern" name="Govern" goal="Give reviewers a clear place to check changes and a simple way to say what needs fixing.">
+    <BeforeAfterSlider
+      before="/work/idea-ai-wiki/ba-govern-before.webp"
+      after="/work/idea-ai-wiki/ba-govern-after.webp"
+      width={2400}
+      height={1313}
+      status="Proposed"
+      beforeAlt="Original Wiki inbox: one suggested edit with only the first step marked as changed, and Accept and Decline buttons for the whole page"
+      afterAlt="Redesigned review editor: every changed step marked in red and green, a commenting mode, and a comment thread beside the document"
+      caption="Drag to compare the original inbox with the review editor."
+    />
+    <div>
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['G1']}
+        title="A dedicated review queue"
+        text="Wiki reviews have their own Needs Review page with a count in the sidebar. A short guide at the top shows each stage, from draft to published, and who can see the page at each one."
+        image="/work/idea-ai-wiki/govern-queue.webp"
+        width={2880}
+        height={1325}
+        alt="Needs Review page: a How review works strip (Draft, Submitted, In review, Published) above three pending submissions with author, tags and change count"
+      />
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['G2']}
+        title="Full before-and-after view"
+        text="Every changed step is marked, with removed text in red and added text in green. Reviewers see the whole set of changes in one pass."
+        image="/work/idea-ai-wiki/govern-diff.webp"
+        width={1390}
+        height={999}
+        alt="Review editor steps with removed text struck through in red, added text in green, and one commented phrase outlined in amber"
+      />
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['G2']}
+        title="Inline comments and a clear decision"
+        text="Reviewers select any phrase to leave a comment, the same way they would in Google Docs. They finish with Approve, Request changes or Reject, and the author sees every note."
+      >
+        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-4-review" label="Selecting a sentence in the review editor, adding a comment, approving the change and submitting the review" />
+      </DecisionRow>
+    </div>
+  </FlowChapter>
 </Section>
 
 <Section id="ai-readiness" index="07" label="AI Readiness" title="AI Readiness">

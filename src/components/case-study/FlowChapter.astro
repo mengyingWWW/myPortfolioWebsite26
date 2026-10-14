@@ -1,0 +1,58 @@
+---
+/**
+ * One redesigned flow in "Redesign": eyebrow, the flow name, the user's goal, then the slot
+ * (slider, decision rows). The h3 is a sub-item in the table of contents, linking to the id,
+ * which the Audit's "See the fix" links also target.
+ */
+interface Props {
+  n: number;
+  /** e.g. "fix-find" */
+  id: string;
+  name: string;
+  goal: string;
+}
+
+const { n, id, name, goal } = Astro.props;
+---
+
+<div id={id} class="chapter">
+  <header>
+    <p class="eyebrow">Flow {String(n).padStart(2, '0')}</p>
+    <h3 class="name" data-toc-sub>{name}</h3>
+    <p class="goal">{goal}</p>
+  </header>
+  <slot />
+</div>
+
+<style>
+  .chapter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 40px;
+    margin-top: 40px;
+    border-top: 1px solid var(--color-line);
+    padding-top: 40px;
+    scroll-margin-top: calc(5rem + 24px);
+  }
+  .eyebrow {
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+  .name {
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .goal {
+    max-width: 65ch;
+    margin-top: 12px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #3a3a3a;
+  }
+</style>
