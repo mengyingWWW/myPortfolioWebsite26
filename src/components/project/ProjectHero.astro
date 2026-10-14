@@ -3,13 +3,14 @@ import { Image } from 'astro:assets';
 import Container from '@/components/layout/Container.astro';
 import Tag from '@/components/ui/Tag.astro';
 import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
+import CoverVideo from '@/components/ui/CoverVideo.astro';
 import type { WorkEntry } from '@/lib/work';
 
 interface Props {
   project: WorkEntry;
 }
 
-const { title, subtitle, type, cover, coverAlt } = Astro.props.project.data;
+const { title, subtitle, type, cover, coverAlt, coverVideo, coverScreen } = Astro.props.project.data;
 ---
 
 <section>
@@ -20,7 +21,7 @@ const { title, subtitle, type, cover, coverAlt } = Astro.props.project.data;
   </Container>
 
   <Container>
-    <div class="aspect-[16/9] overflow-hidden">
+    <div class="relative aspect-[16/9] overflow-hidden">
       {
         cover ? (
           <Image src={cover} alt={coverAlt ?? `${title} cover`} class="h-full w-full object-cover" loading="eager" />
@@ -28,6 +29,7 @@ const { title, subtitle, type, cover, coverAlt } = Astro.props.project.data;
           <CoverPlaceholder title={title} class="h-full w-full" />
         )
       }
+      {cover && coverVideo && coverScreen && <CoverVideo src={coverVideo} screen={coverScreen} mode="autoplay" />}
     </div>
   </Container>
 </section>

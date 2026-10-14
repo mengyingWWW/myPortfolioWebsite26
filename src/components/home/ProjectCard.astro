@@ -2,9 +2,11 @@
 /**
  * Work grid card: a meta row (status | domains | role | platform) above a 16:9 cover,
  * then the title and year below it. The cover sits in grayscale and turns full color on hover / keyboard focus.
+ * A cover with coverVideo also plays that clip over coverScreen while hovered (see CoverVideo).
  */
 import { Image } from 'astro:assets';
 import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
+import CoverVideo from '@/components/ui/CoverVideo.astro';
 import { workUrl, type WorkEntry } from '@/lib/work';
 
 interface Props {
@@ -13,7 +15,7 @@ interface Props {
 
 const { project } = Astro.props;
 const { title, year, status, domains, role, platform, cover, coverAlt } = project.data;
-const { coverScale, coverFocusX, coverFocusY, coverBackground, coverBlend } = project.data;
+const { coverScale, coverFocusX, coverFocusY, coverBackground, coverBlend, coverVideo, coverScreen } = project.data;
 const meta = [status, domains.join(', '), role, platform];
 const descriptionId = `work-card-${project.id}-description`;
 // Card width = half the container (max 1600px, 40px side padding) minus half the 40px gutter.
@@ -61,6 +63,7 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
         <CoverPlaceholder title={title} class="work-card-placeholder absolute inset-0" />
       )
     }
+    {cover && coverVideo && coverScreen && <CoverVideo src={coverVideo} screen={coverScreen} mode="hover" />}
   </div>
   <div class="mt-4 flex items-baseline justify-between gap-6">
     <h3 class="line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]">{title}</h3>

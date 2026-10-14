@@ -2,13 +2,15 @@
 /**
  * A design decision in a flow chapter: principle and the Audit issues it answers, a title and one
  * sentence, beside an image (props) or other media (the slot, e.g. ClipPlayer).
- * Place rows as siblings in one wrapper: even rows put the text on the right.
+ * Without a principle there is no tag line. Place rows as siblings in one wrapper: even rows put the text on the right.
  */
 interface Props {
-  principle: string;
+  principle?: string;
   /** Audit issue ids, e.g. ["C4", "C5"]; each links to its #issue-<id> item. */
-  issues: string[];
+  issues?: string[];
   verb?: 'Fixes' | 'Prevents';
+  /** Heading level of the title: 4 under a flow chapter's h3, 3 directly under a section. */
+  level?: 3 | 4;
   title: string;
   text: string;
   image?: string;
@@ -19,23 +21,28 @@ interface Props {
   maxHeight?: number;
 }
 
-const { principle, issues, verb = 'Fixes', title, text, image, width, height, alt = '', maxHeight } = Astro.props;
+const { principle, issues = [], verb = 'Fixes', level = 4, title, text, image, width, height, alt = '', maxHeight } = Astro.props;
+const Heading = `h${level}` as 'h3' | 'h4';
 const capped = image && width && height && maxHeight && height > maxHeight;
 const style = capped ? `width:${Math.round((width * maxHeight) / height)}px` : undefined;
 ---
 
 <div class="dr">
   <div class="dr-text">
-    <p class="dr-tag">
-      {principle} · {verb}{' '}
-      {issues.map((id, i) => (
-        <>
-          {i > 0 && ', '}
-          <a href={`#issue-${id}`}><span class="sr-only">issue </span>{id}</a>
-        </>
-      ))}
-    </p>
-    <h4 class="dr-title">{title}</h4>
+    {
+      principle && (
+        <p class="dr-tag">
+          {principle} · {verb}{' '}
+          {issues.map((id, i) => (
+            <>
+              {i > 0 && ', '}
+              <a href={`#issue-${id}`}><span class="sr-only">issue </span>{id}</a>
+            </>
+          ))}
+        </p>
+      )
+    }
+    <Heading class="dr-title">{title}</Heading>
     <p class="dr-body">{text}</p>
   </div>
   <div class="dr-media">
@@ -80,8 +87,10 @@ const style = capped ? `width:${Math.round((width * maxHeight) / height)}px` : u
   .dr-tag a:hover {
     color: #111;
   }
-  .dr-title {
+  .dr-tag + .dr-title {
     margin-top: 12px;
+  }
+  .dr-title {
     font-size: 20px;
     line-height: 1.3;
     font-weight: 600;

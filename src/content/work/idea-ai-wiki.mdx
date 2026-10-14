@@ -8,10 +8,12 @@ status: "Shipped"
 domains: ["B2B SaaS", "AI Startup"]
 platform: "Web"
 cover: ../../assets/work/idea-ai-wiki/cover.png
-coverAlt: "A desktop monitor showing the IDEA AI Wiki in dark mode: a sidebar of facility-management tools, wiki categories such as Electrical and HVAC, and a list of maintenance guides with their sharing status."
+coverAlt: "A desktop monitor showing the redesigned IDEA AI Wiki editor in dark mode: category chips, a document import bar, numbered steps and a Before you start checklist."
 coverScale: 1.1
 coverFocusY: 36
 coverBackground: "#f4f4f5"
+coverVideo: "/work/idea-ai-wiki/clips/clip-hero.mp4"
+coverScreen: { x: 20.844, y: 6.833, w: 58.313, h: 58.444 }
 role: "Product Designer (Sole designer)"
 skills:
   - Product design
@@ -31,6 +33,7 @@ order: 1
 ---
 
 import data from '@/data/idea-ai-wiki/audit-issues.json';
+import AIFieldMap from '@/components/case-study/AIFieldMap.astro';
 import AnnotatedShot from '@/components/case-study/AnnotatedShot.astro';
 import AuditMatrix from '@/components/case-study/AuditMatrix.astro';
 import CaseStudy from '@/components/case-study/CaseStudy.astro';
@@ -50,10 +53,10 @@ import Placeholder from '@/components/case-study/Placeholder.astro';
 import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
 import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
 import RoleCards from '@/components/case-study/RoleCards.astro';
-import SplitBlock from '@/components/case-study/SplitBlock.astro';
 import Statement from '@/components/case-study/Statement.astro';
 import StatusBadge from '@/components/case-study/StatusBadge.astro';
 import Steps from '@/components/case-study/Steps.astro';
+import Takeaway from '@/components/case-study/Takeaway.astro';
 import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 
 <CaseStudy>
@@ -461,11 +464,38 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 </Section>
 
 <Section id="ai-readiness" index="07" label="AI Readiness" title="AI Readiness">
-  <TextPlaceholder lines={2} />
-  <Placeholder ratio="16/9" kind="diagram" source="make" label="Field → AI use map — what each authoring field lets the AI do" />
-  <SplitBlock title="Routing" figure="Applies to: asset types + keywords" />
-  <SplitBlock title="Answering" figure="Admin surface policy: full text vs AI summary, by visibility tier and team" flip />
-  <SplitBlock title="Feedback" figure="Used in automation · Test in automation" />
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">In phase 2, the AI agent answers work-order help requests with what people wrote in the wiki. The fields authors already fill in tell it where to look, what to show and where it helped.</p>
+  <AIFieldMap />
+  <div>
+    <DecisionRow
+      level={3}
+      title="Routing"
+      text="Categories, asset types and keywords match a request to the right page. The editor suggests them, so most pages get tagged as people write."
+      image="/work/idea-ai-wiki/ai-routing.webp"
+      width={1400}
+      height={430}
+      alt="Applies to section of the editor: an asset type picker and a keywords field, with the note ‘Helps the AI assistant route requests to this content.’"
+    />
+    <DecisionRow
+      level={3}
+      title="Answering"
+      text="Admins set what a requester sees for each visibility level: the full procedure, a short AI summary, or nothing. Private pages are never shown by default."
+      image="/work/idea-ai-wiki/ai-answering.webp"
+      width={958}
+      height={1206}
+      maxHeight={520}
+      alt="Admin-only Automation settings: private content set to Never surface, team content to Summary only, site-wide content to Full text"
+    />
+    <DecisionRow
+      level={3}
+      title="Tracking"
+      text="Each page shows how often the agent used it and for which work order. Authors can test how a question matches their page."
+      image="/work/idea-ai-wiki/ai-feedback.webp"
+      width={1472}
+      height={144}
+      alt="Used in automation bar: 12 times used, last work order #4521, and a Test in automation button"
+    />
+  </div>
 </Section>
 
 <Section id="outcome" index="08" label="Outcome" title="Outcome">
@@ -484,15 +514,11 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 </Section>
 
 <Section id="takeaways" index="09" label="Takeaways" title="Takeaways">
-  <Block title="Takeaway 01">
-    <TextPlaceholder lines={2} />
-  </Block>
-  <Block title="Takeaway 02">
-    <TextPlaceholder lines={2} />
-  </Block>
-  <Block title="Takeaway 03">
-    <TextPlaceholder lines={2} />
-  </Block>
+  <ol>
+    <Takeaway n={1} title="Human first in AI product design">The wiki has two kinds of users: the people who write and read it, and the AI agent that answers requests from it. I designed for the people first, the technicians, reviewers, admins and requesters, many with little time at a computer. Only then did I ask how the agent would use the content. Solving the human problems gave the AI most of what it needed.</Takeaway>
+    <Takeaway n={2} title="Audit before redesign">This project started from an engineering draft that already worked, so my first job was to understand it. On a three-person team, I reported directly to the CEO and worked with the engineer who built both the AI agent and the web app. The audit set a clear direction for the redesign and gave all three of us the same list of gaps to discuss.</Takeaway>
+    <Takeaway n={3} title="A solo designer’s workflow with AI">As the only designer, I had no one to critique ideas with. A chat assistant became that sounding board, and Figma Make let me build clickable prototypes without waiting on engineering. The engineer got working flows instead of static screens. One rule kept it on track: I set the direction from the audit, and checked every AI-generated change against it.</Takeaway>
+  </ol>
 </Section>
 
 </CaseStudy>

@@ -38,6 +38,20 @@ const work = defineCollection({
       coverBackground: z.string().optional(),
       /** "multiply" tints a white-background cover with coverBackground (white turns into it). */
       coverBlend: z.literal('multiply').optional(),
+      /**
+       * Project page hero only: a looping clip played over part of the cover, e.g. a device screen.
+       * Path under public/, e.g. "/work/my-project/clips/hero.mp4"; a .jpg of the same name is its poster.
+       * coverScreen is that area in % of the cover image (left, top, width, height).
+       */
+      coverVideo: z.string().optional(),
+      coverScreen: z
+        .object({
+          x: z.number().min(0).max(100),
+          y: z.number().min(0).max(100),
+          w: z.number().min(0).max(100),
+          h: z.number().min(0).max(100),
+        })
+        .optional(),
       role: z.string(),
       skills: z.array(z.string()),
       timeline: z.string(),
