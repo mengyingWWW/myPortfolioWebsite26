@@ -51,17 +51,11 @@ import IAComparison from '@/components/case-study/IAComparison.astro';
 import InsightRow from '@/components/case-study/InsightRow.astro';
 import KnowledgeFlow from '@/components/case-study/KnowledgeFlow.astro';
 import OutcomeTable from '@/components/case-study/OutcomeTable.astro';
-import Placeholder from '@/components/case-study/Placeholder.astro';
-import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
-import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
 import RoleCards from '@/components/case-study/RoleCards.astro';
 import ShippedShot from '@/components/case-study/ShippedShot.astro';
 import Statement from '@/components/case-study/Statement.astro';
-import Stats from '@/components/case-study/Stats.astro';
-import StatusBadge from '@/components/case-study/StatusBadge.astro';
 import Steps from '@/components/case-study/Steps.astro';
 import Takeaway from '@/components/case-study/Takeaway.astro';
-import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 
 <CaseStudy>
 
@@ -503,41 +497,52 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 </Section>
 
 <Section id="outcome" index="08" label="Outcome" title="Outcome">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I handed off a working Figma Make prototype, and the engineer built the live version from it. By the end of my internship, 6 of the 15 fixes had shipped in full and 4 in part. Two additions I proposed beyond the audit, job roles and related wikis, shipped too.</p>
-  <Stats
-    items={[
-      { value: '6', caption: 'Shipped' },
-      { value: '4', caption: 'Partly shipped' },
-      { value: '5', caption: 'Next phase' },
-    ]}
-  />
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Six of the 15 fixes shipped in full and four in part. The team shipped the fixes technicians hit every day first, and moved AI and automation work to the next phase. Two of my proposals beyond the audit also shipped: job roles and related wikis.</p>
   <div class="grid gap-16">
-    <ShippedShot name="list" shot={shipped.list} hint="Click the markers to see how each fix shipped" autoOpen />
+    <div class="grid gap-4">
+      <p class="text-base text-muted max-[901px]:hidden">Click a pin to compare the original gap with what shipped.</p>
+      <ShippedShot name="list" shot={shipped.list} />
+    </div>
     <ShippedShot name="editor" shot={shipped.editor} />
     <ShippedShot name="applies" shot={shipped.applies} />
     <ShippedShot name="review" shot={shipped.review} />
   </div>
   <OutcomeTable
-    caption="What happened to each audit gap"
+    caption="Status of the 15 audit gaps"
     rows={[
-      { status: 'Shipped', gap: 'F2', change: 'Tag list with counts and an Uncategorized bucket' },
-      { status: 'Shipped', gap: 'F3', change: 'Visibility shown with icons and names' },
-      { status: 'Shipped', gap: 'F4', change: 'One active tab style; unpublished count shown separately' },
-      { status: 'Shipped', gap: 'C3', change: 'Categories, asset types and tags picked from platform lists' },
-      { status: 'Shipped', gap: 'C5', change: 'Draft and published status shown apart from the settings' },
-      { status: 'Shipped', gap: 'G2', change: 'Full change view, step comments, three-way decision' },
-      { status: 'Partly', gap: 'C1', change: 'Structured steps shipped; the Markdown body remains' },
-      { status: 'Partly', gap: 'U1', change: 'Name and role in the inbox and review; not yet on the page' },
-      { status: 'Partly', gap: 'U2', change: 'Key steps shipped; team pin still a flat list' },
-      { status: 'Partly', gap: 'G1', change: 'A dedicated Wiki inbox with a Needs review tab; nav label unchanged' },
-      { status: 'Next phase', gap: 'F1', change: 'Grouping duplicate versions' },
-      { status: 'Next phase', gap: 'C2', change: 'Word and PDF import' },
-      { status: 'Next phase', gap: 'C4', change: 'Content type (Help guide, Policy, Reference)' },
-      { status: 'Next phase', gap: 'U3', change: 'Automation usage on each page' },
-      { status: 'Next phase', gap: 'U4', change: 'Version history' },
+      {
+        status: 'Shipped',
+        gaps: [
+          { id: 'F2', title: 'Most pages uncategorized' },
+          { id: 'F3', title: 'Visibility shown as an email' },
+          { id: 'F4', title: 'Conflicting filter states' },
+          { id: 'C3', title: 'Routing fields left blank' },
+          { id: 'C5', title: 'Status in the wrong place' },
+          { id: 'G2', title: 'All-or-nothing review' },
+        ],
+      },
+      {
+        status: 'Partly shipped',
+        gaps: [
+          { id: 'C1', title: 'Markdown-only editor' },
+          { id: 'U1', title: 'Author shown as a raw email' },
+          { id: 'U2', title: 'Pin means three things' },
+          { id: 'G1', title: 'Review alerts buried' },
+        ],
+      },
+      {
+        status: 'Next phase',
+        gaps: [
+          { id: 'F1', title: 'Duplicate titles' },
+          { id: 'C2', title: 'No way to import a document' },
+          { id: 'C4', title: 'Layout and purpose mixed' },
+          { id: 'U3', title: 'No sign the AI used it' },
+          { id: 'U4', title: 'No version history' },
+        ],
+      },
+      { status: 'Added', gaps: [{ title: 'Job roles' }, { title: 'Related wikis' }] },
     ]}
   />
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">This quarter focused on the problems people hit every day. Features tied to the AI agent and automation are planned for the next phase, and the fields that shipped, from categories to job roles, already give that work a structure to build on.</p>
 </Section>
 
 <Section id="takeaways" index="09" label="Takeaways" title="Takeaways">
