@@ -1,8 +1,11 @@
 ---
 /**
  * A live screenshot with a pin per shipped change. A pin highlights its area, dims the rest and opens
- * a card with the original audit gap and what shipped. The list under the image says the same in text,
- * and is all that shows at 900px and below.
+ * a card with the original audit gap and what shipped; Prev / Next (or ← / →) step through this
+ * figure's pins. Each figure opens its first card once when it scrolls into view, and only one card is
+ * open on the page at a time. Unopened pins pulse while their figure has no card open. The rows under
+ * the image open the same cards. At 900px and below only a plain list shows, with each gap linking to
+ * the audit.
  * Data: src/data/idea-ai-wiki/outcome-shipped.json (one entry per screen).
  */
 type Status = 'Shipped' | 'Partly shipped' | 'Added';
@@ -19,8 +22,10 @@ interface Props {
   /** Unique per page; prefixes the popover ids. */
   name: string;
   shot: { title: string; image: string; width: number; height: number; alt: string; items: Item[] };
-  /** One line above the heading, e.g. how to use the pins; hidden with the pins at 900px and below. */
+  /** A chip in the heading row saying how to use the pins; hidden with them at 900px and below. */
   hint?: string;
+  /** No longer used: every figure opens its first card once when half in view. */
+  autoOpen?: boolean;
 }
 
 const { name, shot, hint } = Astro.props;
@@ -28,13 +33,23 @@ const tone: Record<Status, string> = { Shipped: 'is-shipped', 'Partly shipped': 
 // Near an edge the bubble hangs to one side of its tail, so it stays inside the image.
 const align = (x: number) => (x > 93 ? 'is-r' : x < 7 ? 'is-l' : '');
 const popId = (id: string) => `ss-${name}-${id}`;
+const total = shot.items.length;
 ---
 
 <section class="ss" aria-labelledby={`ss-${name}`} data-shipped-shot>
-  {hint && <p class="ss-hint">{hint}</p>}
   <div class="ss-head">
     <h3 class="ss-title" id={`ss-${name}`}>{shot.title}</h3>
     <span class="ss-live">Live</span>
+    {
+      hint && (
+        <p class="ss-hint">
+          <svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">
+            <path d="M3 1.5h8a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H8.6L7 12.2 5.4 9.5H3a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2Z" fill="#067647" />
+          </svg>
+          {hint}
+        </p>
+      )
+    }
   </div>
 
   <div class="ss-stage">
@@ -43,13 +58,14 @@ const popId = (id: string) => `ss-${name}-${id}`;
       <div class="ss-hl" aria-hidden="true"></div>
     </div>
     {
-      shot.items.map((item) => (
+      shot.items.map((item, i) => (
         <>
           <button
             type="button"
             class:list={['ss-pin', tone[item.status], align(item.pin.x)]}
             style={`left:${item.pin.x}%;top:${item.pin.y}%`}
             data-box={`${item.box.x},${item.box.y},${item.box.w},${item.box.h}`}
+            data-tip={`${item.id} · ${item.gapTitle ?? 'Added beyond the audit'} — click to see`}
             data-cursor="default"
             aria-expanded="false"
             aria-controls={popId(item.id)}
@@ -58,17 +74,24 @@ const popId = (id: string) => `ss-${name}-${id}`;
             {item.id}
           </button>
           <div class="ss-pop" id={popId(item.id)} role="group" aria-label={`${item.id} details`}>
-            {item.gapTitle ? (
-              <>
-                <p class="ss-pop-label">Original gap</p>
-                <p class="ss-pop-title">
-                  {item.id} · {item.gapTitle}
-                </p>
-                <p class="ss-pop-body">{item.gapBody}</p>
-              </>
-            ) : (
-              <p class="ss-pop-label">Added beyond the audit</p>
-            )}
+            <button type="button" class="ss-close" aria-label="Close" data-cursor="default">
+              <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+                <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+            </button>
+            <div class="ss-pop-head">
+              {item.gapTitle ? (
+                <>
+                  <p class="ss-pop-label">Original gap</p>
+                  <p class="ss-pop-title">
+                    {item.id} · {item.gapTitle}
+                  </p>
+                </>
+              ) : (
+                <p class="ss-pop-label">Added beyond the audit</p>
+              )}
+            </div>
+            {item.gapBody && <p class="ss-pop-body">{item.gapBody}</p>}
             <div class="ss-pop-ship">
               <span class:list={['ss-status', tone[item.status]]}>{item.status}</span>
               <p>{item.shipped}</p>
@@ -78,13 +101,59 @@ const popId = (id: string) => `ss-${name}-${id}`;
                 See it in the audit →
               </a>
             )}
+            <div class="ss-pop-foot">
+              <span class="ss-pop-count">
+                <span class="sr-only">Marker </span>
+                {i + 1}
+                <span aria-hidden="true"> / </span>
+                <span class="sr-only"> of </span>
+                {total}
+              </span>
+              <span class="ss-pop-steps">
+                <button type="button" class="ss-step" data-step="-1" data-cursor="default" aria-disabled={i === 0 ? 'true' : undefined}>
+                  ← Prev
+                </button>
+                <button
+                  type="button"
+                  class="ss-step is-next"
+                  data-step="1"
+                  data-cursor="default"
+                  aria-disabled={i === total - 1 ? 'true' : undefined}
+                >
+                  Next →
+                </button>
+              </span>
+            </div>
           </div>
         </>
       ))
     }
+    <span class="ss-tip" aria-hidden="true"></span>
   </div>
 
-  <ol class="ss-list">
+  <ol class="ss-list ss-rows">
+    {
+      shot.items.map((item) => (
+        <li>
+          <button type="button" class="ss-row" aria-controls={popId(item.id)} aria-expanded="false" data-cursor="default">
+            <span class:list={['ss-id', tone[item.status]]}>{item.id}</span>
+            <span class="ss-list-status">{item.status}</span>
+            <span class="ss-list-text">
+              {item.gapTitle && (
+                <>
+                  <span class="ss-list-gap">{item.gapTitle}</span>{' '}
+                  <span aria-hidden="true">→</span>{' '}
+                </>
+              )}
+              {item.shipped}
+            </span>
+          </button>
+        </li>
+      ))
+    }
+  </ol>
+
+  <ol class="ss-list ss-plain">
     {
       shot.items.map((item) => (
         <li>
@@ -113,134 +182,273 @@ const popId = (id: string) => `ss-${name}-${id}`;
 </section>
 
 <script>
-  let closeOpen: ((refocus: boolean) => void) | null = null;
-  let openPin: HTMLButtonElement | null = null;
-  let openPop: HTMLElement | null = null;
-
   const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), Math.max(min, max));
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const pinsShown = matchMedia('(min-width: 901px)');
+  const scrollBehavior = (): ScrollBehavior => (reduceMotion.matches ? 'auto' : 'smooth');
 
-  type Rect = { left: number; top: number; right: number; bottom: number };
-  const overlap = (a: Rect, b: Rect) =>
-    Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
-
-  // Right, left, below or above the box, kept inside the stage. Beside the box the card narrows to the
-  // free space (down to 240px). Where nothing fits cleanly, the spot that covers the least of the box
-  // wins, and covering another pin counts heavily against a spot.
-  function place(stage: HTMLElement, pop: HTMLElement, box: number[], pin: HTMLElement) {
+  // The card opens to the right of the box, or to the left if the right has no room, narrowing to the
+  // room it has (down to 240px). It runs down from the box's top edge, or up from its bottom edge if
+  // there is no room below. With no room on either side it goes below or above the box instead, and
+  // failing that it overlaps the edge of the roomier side. It always stays `inset` inside the image.
+  function place(stage: HTMLElement, pop: HTMLElement, box: number[]) {
     const sw = stage.clientWidth;
     const sh = stage.clientHeight;
     const [x, y, w, h] = [(box[0] * sw) / 100, (box[1] * sh) / 100, (box[2] * sw) / 100, (box[3] * sh) / 100];
     const gap = 12;
-    const maxW = Math.min(340, sw - 32);
-    const fit = (space: number) => (space >= 240 ? Math.min(maxW, space) : maxW);
-    const boxRect = { left: x, top: y, right: x + w, bottom: y + h };
-    const origin = stage.getBoundingClientRect();
-    const pins = [...stage.querySelectorAll<HTMLElement>('.ss-pin')]
-      .filter((p) => p !== pin)
-      .map((p) => {
-        const r = p.getBoundingClientRect();
-        return { left: r.left - origin.left, top: r.top - origin.top, right: r.right - origin.left, bottom: r.bottom - origin.top };
-      });
-    const heights = new Map<number, number>();
+    const inset = 12;
+    const maxW = Math.min(340, sw - 2 * inset);
+    const minW = Math.min(240, maxW);
     const heightAt = (pw: number) => {
-      if (!heights.has(pw)) {
-        pop.style.width = `${pw}px`;
-        heights.set(pw, pop.offsetHeight);
-      }
-      return heights.get(pw)!;
+      pop.style.width = `${pw}px`;
+      return pop.offsetHeight;
     };
-    const rightW = fit(sw - (x + w + gap));
-    const leftW = fit(x - gap);
-    const spots: [number, (ph: number) => [number, number]][] = [
-      [rightW, () => [x + w + gap, y]],
-      [rightW, (ph) => [x + w + gap, y + h - ph]],
-      [leftW, () => [x - gap - leftW, y]],
-      [leftW, (ph) => [x - gap - leftW, y + h - ph]],
-      [maxW, () => [x, y + h + gap]],
-      [maxW, () => [x + w - maxW, y + h + gap]],
-      [maxW, (ph) => [x, y - gap - ph]],
-      [maxW, (ph) => [x + w - maxW, y - gap - ph]],
-    ];
-    const candidates = spots.map(([pw, at]) => {
-      const ph = heightAt(pw);
-      const [l, t] = at(ph);
-      const left = clamp(l, 0, sw - pw);
-      const top = clamp(t, 0, sh - ph);
-      const rect = { left, top, right: left + pw, bottom: top + ph };
-      const score = overlap(rect, boxRect) + 50 * pins.reduce((sum, p) => sum + overlap(rect, p), 0);
-      return { pw, left, top, score };
-    });
-    const best = candidates.reduce((a, b) => (b.score < a.score ? b : a));
-    pop.style.width = `${best.pw}px`;
-    pop.style.left = `${best.left}px`;
-    pop.style.top = `${best.top}px`;
+    const roomRight = sw - inset - (x + w + gap);
+    const roomLeft = x - gap - inset;
+    const downOrUp = (ph: number) => (y + ph <= sh - inset ? y : y + h - ph);
+
+    let pw: number;
+    let ph: number;
+    let left: number;
+    let top: number;
+    if (roomRight >= minW || roomLeft >= minW) {
+      const right = roomRight >= minW;
+      pw = Math.min(maxW, right ? roomRight : roomLeft);
+      ph = heightAt(pw);
+      left = right ? x + w + gap : x - gap - pw;
+      top = downOrUp(ph);
+    } else {
+      pw = maxW;
+      ph = heightAt(pw);
+      const roomBelow = sh - inset - (y + h + gap);
+      const roomAbove = y - gap - inset;
+      if (roomBelow >= ph || roomAbove >= ph) {
+        left = x;
+        top = roomBelow >= ph ? y + h + gap : y - gap - ph;
+      } else {
+        pw = minW;
+        ph = heightAt(pw);
+        left = roomRight >= roomLeft ? sw - inset - pw : inset;
+        top = downOrUp(ph);
+      }
+    }
+    pop.style.left = `${clamp(left, inset, sw - inset - pw)}px`;
+    pop.style.top = `${clamp(top, inset, sh - inset - ph)}px`;
   }
 
-  document.querySelectorAll<HTMLElement>('[data-shipped-shot]').forEach((shot) => {
+  /** Announced by a figure when it opens a card, so any other figure closes its own. */
+  const OPEN_EVENT = 'shipped-shot:open';
+  const AUTO_THRESHOLDS = Array.from({ length: 21 }, (_, i) => i / 20);
+
+  /** Share of an element's height inside the viewport. */
+  const visibleRatio = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return r.height ? Math.max(0, Math.min(r.bottom, innerHeight) - Math.max(r.top, 0)) / r.height : 0;
+  };
+
+  const ensureInView = (stage: HTMLElement) => {
+    const r = stage.getBoundingClientRect();
+    const header = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
+    if (r.top < header || r.bottom > innerHeight) stage.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+  };
+
+  function setup(shot: HTMLElement) {
     const stage = shot.querySelector<HTMLElement>('.ss-stage')!;
-    const hl = shot.querySelector<HTMLElement>('.ss-hl')!;
+    const hl = stage.querySelector<HTMLElement>('.ss-hl')!;
+    const tip = stage.querySelector<HTMLElement>('.ss-tip')!;
+    const pins = [...stage.querySelectorAll<HTMLButtonElement>('.ss-pin')];
+    const pops = pins.map((pin) => document.getElementById(pin.getAttribute('aria-controls')!)!);
+    const rows = pops.map((pop) => shot.querySelector<HTMLButtonElement>(`.ss-row[aria-controls="${pop.id}"]`));
+    const boxes = pins.map((pin) => pin.dataset.box!.split(',').map(Number));
 
-    shot.querySelectorAll<HTMLButtonElement>('.ss-pin').forEach((pin) => {
-      const pop = document.getElementById(pin.getAttribute('aria-controls')!)!;
-      const box = pin.dataset.box!.split(',').map(Number);
+    let openIndex: number | null = null;
+    /** Whether the open card came from the user (pin, row, Prev / Next) rather than the auto-open. */
+    let openedByUser = false;
+    let hasAutoOpened = false;
+    let userClosed = false;
 
-      pin.addEventListener('click', () => {
-        const wasOpen = openPin === pin;
-        closeOpen?.(false);
-        if (wasOpen) return;
-
-        hl.style.left = `${box[0]}%`;
-        hl.style.top = `${box[1]}%`;
-        hl.style.width = `${box[2]}%`;
-        hl.style.height = `${box[3]}%`;
-        place(stage, pop, box, pin);
-        pin.setAttribute('aria-expanded', 'true');
-        hl.classList.add('is-on');
-        pop.classList.add('is-on');
-        openPin = pin;
-        openPop = pop;
-        closeOpen = (refocus) => {
-          pin.setAttribute('aria-expanded', 'false');
-          hl.classList.remove('is-on');
-          pop.classList.remove('is-on');
-          openPin = openPop = closeOpen = null;
-          if (refocus) pin.focus({ preventScroll: true });
-        };
-      });
-
-      pop.querySelector('a')?.addEventListener('click', () => closeOpen?.(false));
-    });
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && closeOpen) closeOpen(true);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!closeOpen) return;
-    const target = e.target as Element;
-    if (openPin?.contains(target) || openPop?.contains(target)) return;
-    // A click on another control keeps its focus; anywhere else, focus goes back to the pin.
-    closeOpen(!target.closest('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'));
-  });
-
-  window.addEventListener('resize', () => {
-    if (openPin && openPop) {
-      const stage = openPin.closest<HTMLElement>('.ss-stage')!;
-      place(stage, openPop, openPin.dataset.box!.split(',').map(Number), openPin);
+    function close() {
+      if (openIndex === null) return;
+      pins[openIndex].setAttribute('aria-expanded', 'false');
+      rows[openIndex]?.setAttribute('aria-expanded', 'false');
+      pops[openIndex].classList.remove('is-on');
+      hl.classList.remove('is-on');
+      shot.removeAttribute('data-open');
+      openIndex = null;
     }
-  });
+
+    function open(i: number, byUser: boolean) {
+      close();
+      document.dispatchEvent(new CustomEvent(OPEN_EVENT, { detail: shot }));
+      const box = boxes[i];
+      hl.style.left = `${box[0]}%`;
+      hl.style.top = `${box[1]}%`;
+      hl.style.width = `${box[2]}%`;
+      hl.style.height = `${box[3]}%`;
+      place(stage, pops[i], box);
+      tip.classList.remove('is-on');
+      pins[i].classList.add('is-visited');
+      pins[i].setAttribute('aria-expanded', 'true');
+      rows[i]?.setAttribute('aria-expanded', 'true');
+      hl.classList.add('is-on');
+      pops[i].classList.add('is-on');
+      shot.setAttribute('data-open', '');
+      openIndex = i;
+      openedByUser = byUser;
+    }
+
+    /** The user closing the card (×, Esc, a click outside, its pin or row again). */
+    function dismiss() {
+      if (openIndex === null) return;
+      const pin = pins[openIndex];
+      const interacting = openedByUser || pops[openIndex].contains(document.activeElement);
+      userClosed = true;
+      close();
+      if (interacting) pin.focus({ preventScroll: true });
+    }
+
+    function step(dir: number) {
+      if (openIndex === null) return;
+      const next = openIndex + dir;
+      if (next < 0 || next >= pins.length) return;
+      const active = document.activeElement as HTMLElement | null;
+      const fromCard = !!active && pops[openIndex].contains(active);
+      const fromPin = active === pins[openIndex];
+      open(next, true);
+      // Keep focus on the same control in the new card, or on the pin if it was there.
+      if (fromCard) pops[next].querySelector<HTMLElement>(`.ss-step[data-step="${active!.dataset.step}"]`)?.focus({ preventScroll: true });
+      else if (fromPin) pins[next].focus({ preventScroll: true });
+    }
+
+    function showTip(pin: HTMLElement) {
+      if (openIndex !== null && pins[openIndex] === pin) return;
+      tip.textContent = pin.dataset.tip!;
+      tip.classList.add('is-on');
+      const s = stage.getBoundingClientRect();
+      const p = pin.getBoundingClientRect();
+      const tw = tip.offsetWidth;
+      const th = tip.offsetHeight;
+      let left = p.right - s.left + 10;
+      if (left + tw > s.width - 8) left = p.left - s.left - 10 - tw;
+      tip.style.left = `${clamp(left, 8, s.width - 8 - tw)}px`;
+      tip.style.top = `${p.top - s.top + p.height / 2 - th / 2}px`;
+    }
+    const hideTip = () => tip.classList.remove('is-on');
+
+    pins.forEach((pin, i) => {
+      const row = rows[i];
+      const pop = pops[i];
+
+      pin.addEventListener('click', () => (openIndex === i ? dismiss() : open(i, true)));
+      pin.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'touch') showTip(pin);
+        row?.classList.add('is-linked');
+      });
+      pin.addEventListener('pointerleave', () => {
+        hideTip();
+        row?.classList.remove('is-linked');
+      });
+      pin.addEventListener('focus', () => {
+        if (pin.matches(':focus-visible')) showTip(pin);
+      });
+      pin.addEventListener('blur', hideTip);
+
+      if (row) {
+        row.addEventListener('click', () => {
+          if (openIndex === i) {
+            dismiss();
+            return;
+          }
+          open(i, true);
+          ensureInView(stage);
+        });
+        const link = (on: boolean) => () => pin.classList.toggle('is-linked', on);
+        row.addEventListener('pointerenter', link(true));
+        row.addEventListener('pointerleave', link(false));
+        row.addEventListener('focus', link(true));
+        row.addEventListener('blur', link(false));
+      }
+
+      pop.querySelector('.ss-close')!.addEventListener('click', dismiss);
+      pop.querySelector('.ss-pop-link')?.addEventListener('click', close);
+      pop.querySelectorAll<HTMLElement>('.ss-step').forEach((button) => {
+        button.addEventListener('click', () => step(Number(button.dataset.step)));
+      });
+    });
+
+    document.addEventListener(OPEN_EVENT, (e) => {
+      if ((e as CustomEvent).detail !== shot) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (openIndex === null) return;
+      if (e.key === 'Escape') {
+        dismiss();
+      } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !(e.target as Element).closest('input, textarea, select, [contenteditable]')) {
+        e.preventDefault();
+        step(e.key === 'ArrowLeft' ? -1 : 1);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (openIndex === null) return;
+      if (shot.contains(e.target as Node) && (e.target as Element).closest('.ss-pin, .ss-pop, .ss-row')) return;
+      dismiss();
+    });
+
+    window.addEventListener('resize', () => {
+      if (openIndex !== null) place(stage, pops[openIndex], boxes[openIndex]);
+    });
+
+    // Opens the first card once, the first time the figure is half in view, without moving focus or
+    // scrolling. While another figure's card is open and that figure is still half in view, this one
+    // waits (rechecking on scroll), so figures that come into view together open one after another.
+    if (reduceMotion.matches) return;
+    let observer: IntersectionObserver;
+    let watching = false;
+    const stop = () => {
+      observer.disconnect();
+      removeEventListener('scroll', onScroll);
+    };
+    const tryAutoOpen = () => {
+      if (hasAutoOpened || userClosed || openIndex !== null) return stop();
+      if (!pinsShown.matches || visibleRatio(shot) < 0.5) return;
+      const other = document.querySelector('[data-shipped-shot][data-open]');
+      if (other && other !== shot && visibleRatio(other) >= 0.5) return;
+      hasAutoOpened = true;
+      stop();
+      open(0, false);
+    };
+    function onScroll() {
+      if (watching) return;
+      watching = true;
+      requestAnimationFrame(() => {
+        watching = false;
+        tryAutoOpen();
+      });
+    }
+    observer = new IntersectionObserver(
+      (entries) => {
+        const ratio = entries[entries.length - 1].intersectionRatio;
+        if (ratio >= 0.5) {
+          addEventListener('scroll', onScroll, { passive: true });
+          tryAutoOpen();
+        } else {
+          removeEventListener('scroll', onScroll);
+        }
+      },
+      { threshold: AUTO_THRESHOLDS },
+    );
+    observer.observe(shot);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-shipped-shot]').forEach(setup);
 </script>
 
 <style>
   .ss {
     display: grid;
     gap: 16px;
-  }
-  .ss-hint {
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--color-meta);
   }
   .ss-head {
     display: flex;
@@ -265,6 +473,21 @@ const popId = (id: string) => `ss-${name}-${id}`;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #067647;
+  }
+  .ss-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    padding: 5px 12px 5px 10px;
+    border-radius: 999px;
+    background: #f2f2f0;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #111;
+  }
+  .ss-hint svg {
+    flex-shrink: 0;
   }
 
   .ss-stage {
@@ -298,7 +521,7 @@ const popId = (id: string) => `ss-${name}-${id}`;
     opacity: 1;
   }
 
-  /* The tail's tip sits on the pin point. */
+  /* The tail's tip sits on the pin point, and the pin scales about it (transform-origin 0 0 is that point). */
   .ss-pin {
     position: absolute;
     z-index: 1;
@@ -315,6 +538,10 @@ const popId = (id: string) => `ss-${name}-${id}`;
     color: #fff;
     cursor: pointer;
     transform: translate(-50%, calc(-100% - 6px));
+    transform-origin: 0 0;
+    transition:
+      scale 150ms ease,
+      box-shadow 150ms ease;
   }
   .ss-pin::after {
     content: '';
@@ -348,8 +575,41 @@ const popId = (id: string) => `ss-${name}-${id}`;
     outline: 2px solid #111;
     outline-offset: 2px;
   }
-  .ss-pin[aria-expanded='true'] {
-    z-index: 3;
+  .ss-pin:hover,
+  .ss-pin:focus-visible,
+  .ss-pin.is-linked {
+    scale: 1.12;
+  }
+  .ss-pin.is-linked {
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 0 0 5px color-mix(in srgb, var(--tone) 55%, transparent);
+  }
+
+  /* Pulse until first opened: a ring just outside the white border, so the pill itself never tints. */
+  .ss-pin::before {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 2px solid var(--tone);
+    border-radius: 999px;
+    opacity: 0;
+    pointer-events: none;
+    animation: ss-pulse 2s ease-out infinite;
+  }
+  .ss-pin.is-visited::before,
+  .ss[data-open] .ss-pin::before {
+    animation: none;
+  }
+  @keyframes ss-pulse {
+    from {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
   }
 
   .is-shipped {
@@ -368,6 +628,24 @@ const popId = (id: string) => `ss-${name}-${id}`;
   }
   .ss-pin.is-added {
     border-style: dashed;
+  }
+
+  .ss-tip {
+    position: absolute;
+    z-index: 3;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: #111;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: nowrap;
+    color: #fff;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  .ss-tip.is-on {
+    visibility: visible;
   }
 
   .ss-pop {
@@ -390,6 +668,41 @@ const popId = (id: string) => `ss-${name}-${id}`;
     visibility: visible;
     opacity: 1;
     transition: opacity 150ms ease;
+  }
+  /* The close button's 32px square sits 8px in from the corner; the header text stops short of it. */
+  .ss-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: #6e6e6e;
+    cursor: pointer;
+  }
+  .ss-close:hover {
+    color: #111111;
+  }
+  .ss-close:focus-visible {
+    outline: 2px solid #c2410c;
+    outline-offset: 2px;
+  }
+  .ss-pop-head {
+    padding-right: 28px;
+  }
+  /* Phones lay the page out at 1200px and scale it down, so touch gets a bigger target. */
+  @media (pointer: coarse) {
+    .ss-close {
+      top: 4px;
+      right: 4px;
+      width: 44px;
+      height: 44px;
+    }
+    .ss-pop-head {
+      padding-right: 36px;
+    }
   }
   .ss-pop-label {
     font-family: var(--font-mono);
@@ -416,7 +729,7 @@ const popId = (id: string) => `ss-${name}-${id}`;
     padding-top: 12px;
     border-top: 1px solid #e6e6e4;
   }
-  .ss-pop-label + .ss-pop-ship {
+  .ss-pop-head + .ss-pop-ship {
     margin-top: 8px;
     padding-top: 0;
     border-top: 0;
@@ -432,6 +745,59 @@ const popId = (id: string) => `ss-${name}-${id}`;
     margin-top: 12px;
     font-size: 13px;
     color: #111;
+  }
+  .ss-pop-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #e6e6e4;
+  }
+  .ss-pop-count {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-meta);
+  }
+  .ss-pop-steps {
+    display: flex;
+    gap: 6px;
+  }
+  .ss-step {
+    padding: 4px 10px;
+    border: 1px solid #e6e6e4;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #111;
+    cursor: pointer;
+  }
+  .ss-step:hover {
+    background: #f2f2f0;
+  }
+  .ss-step.is-next {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+  }
+  .ss-step.is-next:hover {
+    background: #3a3a3a;
+  }
+  .ss-step[aria-disabled='true'] {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .ss-step[aria-disabled='true']:hover {
+    background: #fff;
+  }
+  .ss-step.is-next[aria-disabled='true']:hover {
+    background: #111;
+  }
+  .ss-step:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
   }
 
   .ss-status {
@@ -456,12 +822,37 @@ const popId = (id: string) => `ss-${name}-${id}`;
     border-top: 1px solid #e6e6e4;
   }
   .ss-list li {
+    border-bottom: 1px solid #e6e6e4;
+  }
+  .ss-plain li,
+  .ss-row {
     display: grid;
     grid-template-columns: 44px 112px minmax(0, 1fr);
     align-items: baseline;
     gap: 12px;
     padding: 10px 0;
-    border-bottom: 1px solid #e6e6e4;
+  }
+  .ss-row {
+    width: 100%;
+    font: inherit;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  .ss-row:hover,
+  .ss-row.is-linked,
+  .ss-row[aria-expanded='true'] {
+    background: #f6f6f4;
+    box-shadow:
+      -8px 0 0 #f6f6f4,
+      8px 0 0 #f6f6f4;
+  }
+  .ss-row:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
   }
   .ss-id {
     justify-self: start;
@@ -497,20 +888,33 @@ const popId = (id: string) => `ss-${name}-${id}`;
     color: #111;
   }
 
+  .ss-plain {
+    display: none;
+  }
   @media (max-width: 900px) {
     .ss-hl,
     .ss-pin,
     .ss-pop,
-    .ss-hint {
+    .ss-tip,
+    .ss-hint,
+    .ss-rows {
       display: none;
+    }
+    .ss-plain {
+      display: block;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .ss-hl,
     .ss-pop,
-    .ss-pop.is-on {
+    .ss-pop.is-on,
+    .ss-pin,
+    .ss-row {
       transition: none;
+    }
+    .ss-pin::before {
+      animation: none;
     }
   }
 </style>

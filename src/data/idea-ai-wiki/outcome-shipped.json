@@ -34,7 +34,7 @@
           "h": 30.86
         },
         "pin": {
-          "x": 92.1,
+          "x": 81.0,
           "y": 21.97
         },
         "gapTitle": "Visibility shown as an email",
@@ -51,7 +51,7 @@
           "h": 4.81
         },
         "pin": {
-          "x": 98.7,
+          "x": 34.0,
           "y": 14.23
         },
         "gapTitle": "Conflicting filter states",
