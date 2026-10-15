@@ -34,15 +34,15 @@ const dots = (n: number) => DOTS[n];
           <path d="M62 84 L92 83" />
           <path d="M62 98 L122 97 M62 109 L112 108" stroke-width="1.5" />
         </g>
-        <g filter="url(#ps-wobble)" fill="none" stroke="#C2410C" stroke-width="2.2" stroke-linecap="round">
+        <g filter="url(#ps-wobble)" fill="none" style="stroke: var(--cs-accent)" stroke-width="2.2" stroke-linecap="round">
           <path d="M126 26 Q133 33 126 40" />
           <path d="M135 20 Q147 33 135 46" />
           <path d="M58 26 Q51 33 58 40" />
           <path d="M49 20 Q37 33 49 46" />
         </g>
         <g filter="url(#ps-wobble)">
-          <circle cx="92" cy="35" r="2.4" fill="#C2410C" />
-          <circle cx="120" cy="84" r="8" fill="#C2410C" />
+          <circle cx="92" cy="35" r="2.4" style="fill: var(--cs-accent)" />
+          <circle cx="120" cy="84" r="8" style="fill: var(--cs-accent)" />
           <path d="M120 79.5 L120 85 M120 88.5 L120 89" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" />
         </g>
         {dots(1).map(([x, y]) => <circle cx={x} cy={y} r="2.8" fill="#111111" />)}
@@ -65,7 +65,7 @@ const dots = (n: number) => DOTS[n];
           <path d="M98 72 L148 71 M98 84 L130 83" stroke-width="1.4" stroke-dasharray="3 4" />
         </g>
         <g filter="url(#ps-wobble)">
-          <path d="M101 52 L101 58" stroke="#C2410C" stroke-width="2" stroke-linecap="round" />
+          <path d="M101 52 L101 58" style="stroke: var(--cs-accent)" stroke-width="2" stroke-linecap="round" />
         </g>
         {dots(2).map(([x, y]) => <circle cx={x} cy={y} r="2.8" fill="#111111" />)}
       </svg>
@@ -108,8 +108,8 @@ const dots = (n: number) => DOTS[n];
           <path d="M37 62 L62 60 M38 74 L58 72 M40 86 L64 84 M41 97 L56 96" stroke-width="1.5" />
           <path d="M28 120 L90 121" stroke-width="1.5" />
         </g>
-        <g filter="url(#ps-wobble)" stroke="#C2410C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M136 18 Q139 38 156 41 Q139 44 136 64 Q133 44 116 41 Q133 38 136 18 Z" fill="#FFF4EE" />
+        <g filter="url(#ps-wobble)" style="stroke: var(--cs-accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M136 18 Q139 38 156 41 Q139 44 136 64 Q133 44 116 41 Q133 38 136 18 Z" style="fill: var(--cs-accent-tint)" />
           <path d="M118 78 L156 78 Q162 78 162 84 L162 98 Q162 104 156 104 L132 104 L124 112 L125 104 L118 104 Q112 104 112 98 L112 84 Q112 78 118 78 Z" fill="#FFFFFF" />
           <path d="M130 88 Q130 83 137 83 Q144 83 144 88 Q144 92 137 94 L137 96" fill="none" />
           <path d="M137 100 L137 100.5" fill="none" />

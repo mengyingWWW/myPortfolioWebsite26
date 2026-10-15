@@ -52,13 +52,13 @@ const { roles } = Astro.props;
     color: var(--color-muted);
   }
 
-  /* The AI agent, matching its node in the knowledge-flow diagram. #9A3412 on #FFF4EE is 6.8:1. */
+  /* The AI agent, matching its node in the knowledge-flow diagram. Accent text on the tint: 6.8:1 in orange, 7.2:1 in wine. */
   .is-accent {
-    border-color: var(--accent, #c2410c);
-    background: #fff4ee;
+    border-color: var(--cs-accent);
+    background: var(--cs-accent-tint);
   }
   .is-accent .role-tag {
-    color: #9a3412;
+    color: var(--cs-accent-text);
   }
 
   @media (max-width: 1279px) {

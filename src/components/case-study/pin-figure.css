@@ -4,13 +4,14 @@
  * its own pins and card content.
  */
 
-/* The spread shadow dims everything outside the box; the frame clips it to the image. */
+/* A dashed dark outline on a white halo, so it reads on light and dark screenshots alike. The spread
+   shadow dims everything outside the box; the frame clips it to the image. */
 .pf-hl {
   position: absolute;
-  border: 2px solid #d92d20;
   border-radius: 6px;
+  outline: 2px dashed #111111;
   box-shadow:
-    0 0 12px 4px rgba(217, 45, 32, 0.25),
+    0 0 0 4px #ffffff,
     0 0 0 200vmax rgba(0, 0, 0, 0.25);
   opacity: 0;
   pointer-events: none;
@@ -102,7 +103,7 @@
   color: #111111;
 }
 .pf-close:focus-visible {
-  outline: 2px solid #c2410c;
+  outline: 2px solid var(--cs-accent);
   outline-offset: 2px;
 }
 .pf-pop-head {

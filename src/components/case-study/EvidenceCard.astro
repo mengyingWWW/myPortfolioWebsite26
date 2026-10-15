@@ -143,7 +143,7 @@ const vars = [`--ratio-inv: ${rh / rw}`, dot && `--dot-x: ${dot.x}; --dot-y: ${d
     left: calc(var(--x) * 1% - var(--outset));
     width: calc(var(--w) * 1% + 2 * var(--outset));
     height: calc(var(--h) * 1% + 2 * var(--outset));
-    border: 2px solid var(--accent, #c2410c);
+    border: 2px solid var(--cs-accent);
     border-radius: 6px;
     pointer-events: none;
   }
@@ -154,7 +154,7 @@ const vars = [`--ratio-inv: ${rh / rw}`, dot && `--dot-x: ${dot.x}; --dot-y: ${d
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--accent, #c2410c);
+    background: var(--cs-accent);
     transform: translate(-50%, -50%);
   }
   .callout-left .dot {
@@ -176,7 +176,7 @@ const vars = [`--ratio-inv: ${rh / rw}`, dot && `--dot-x: ${dot.x}; --dot-y: ${d
     position: absolute;
     top: var(--dot-top);
     height: 1px;
-    background: var(--accent, #c2410c);
+    background: var(--cs-accent);
     pointer-events: none;
   }
   .callout-right .line {

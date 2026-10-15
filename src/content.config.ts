@@ -60,6 +60,14 @@ const work = defineCollection({
       summary: z.string(),
       /** Optional headline results shown under the Overview, e.g. [{ value: "15", label: "gaps found" }]. */
       glance: z.array(z.object({ value: z.string(), label: z.string() })).optional(),
+      /**
+       * Case-study accent, as --cs-accent* tokens on the project page; defaults to orange (see
+       * [slug].astro). main: rules, pins, chips; text: accent text on white or tint; tint: chosen /
+       * highlighted fills; soft: the lightest card fill; border: hairlines on tinted cards.
+       */
+      accent: z
+        .object({ main: z.string(), text: z.string(), tint: z.string(), soft: z.string(), border: z.string() })
+        .optional(),
       order: z.number(),
     }),
 });

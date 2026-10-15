@@ -60,7 +60,7 @@ const uid = id ?? `ba-${Math.random().toString(36).slice(2, 8)}`;
   .ba-tag-l { left: 14px; }
   .ba-tag-r { right: 14px; }
   .ba-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; -webkit-appearance: none; appearance: none; }
-  .ba-frame:has(.ba-range:focus-visible) .ba-handle span { outline: 3px solid #C2410C; outline-offset: 2px; }
+  .ba-frame:has(.ba-range:focus-visible) .ba-handle span { outline: 3px solid var(--cs-accent); outline-offset: 2px; }
   .ba figcaption { margin-top: 10px; font-size: 14px; color: #6E6E6E; }
   @media (prefers-reduced-motion: reduce) { .ba-after, .ba-handle { transition: none; } }
 </style>

@@ -11,7 +11,7 @@
       <defs>
         <marker id="kf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#111111" /></marker>
         <marker id="kf-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6E6E6E" /></marker>
-        <marker id="kf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C2410C" /></marker>
+        <marker id="kf-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--cs-accent)" /></marker>
       </defs>
 
       <path d="M741 172 C 720 62, 120 62, 96 166" fill="none" stroke="#6E6E6E" stroke-width="1.5" marker-end="url(#kf-arrow-muted)" />
@@ -22,7 +22,7 @@
         <line x1="367" y1="200" x2="435" y2="200" marker-end="url(#kf-arrow)" />
         <line x1="579" y1="200" x2="647" y2="200" marker-end="url(#kf-arrow)" />
       </g>
-      <g stroke="#C2410C" stroke-width="1.5" fill="none">
+      <g style="stroke: var(--cs-accent)" stroke-width="1.5" fill="none">
         <line x1="831" y1="200" x2="899" y2="200" marker-end="url(#kf-arrow-accent)" />
         <line x1="1063" y1="200" x2="1131" y2="200" marker-end="url(#kf-arrow-accent)" />
       </g>
@@ -30,8 +30,8 @@
         <text x="199" y="188" fill="#111111">writes</text>
         <text x="401" y="188" fill="#111111">submits</text>
         <text x="613" y="188" fill="#111111">approves</text>
-        <text x="865" y="188" fill="#C2410C">retrieves</text>
-        <text x="1097" y="188" fill="#C2410C">answers</text>
+        <text x="865" y="188" style="fill: var(--cs-accent)">retrieves</text>
+        <text x="1097" y="188" style="fill: var(--cs-accent)">answers</text>
       </g>
 
       <g stroke="#6E6E6E" stroke-width="1.5" stroke-dasharray="5 5" fill="none">
@@ -62,9 +62,9 @@
       </g>
 
       <g>
-        <rect x="903" y="172" width="160" height="56" rx="28" fill="#FFF4EE" stroke="#C2410C" stroke-width="1.5" />
-        <text x="983" y="205" text-anchor="middle" class="kf-name" style="fill:#9A3412">AI agent</text>
-        <text x="983" y="252" text-anchor="middle" class="kf-tag" style="fill:#9A3412">ANSWERS FROM THE WIKI</text>
+        <rect x="903" y="172" width="160" height="56" rx="28" style="fill: var(--cs-accent-tint); stroke: var(--cs-accent)" stroke-width="1.5" />
+        <text x="983" y="205" text-anchor="middle" class="kf-name" style="fill: var(--cs-accent-text)">AI agent</text>
+        <text x="983" y="252" text-anchor="middle" class="kf-tag" style="fill: var(--cs-accent-text)">ANSWERS FROM THE WIKI</text>
       </g>
 
       <g>
@@ -82,7 +82,7 @@
         <text x="36" y="4">knowledge moves</text>
         <line x1="170" y1="0" x2="198" y2="0" stroke="#6E6E6E" stroke-width="1.5" stroke-dasharray="5 5" />
         <text x="206" y="4">rules</text>
-        <rect x="262" y="-8" width="28" height="16" rx="8" fill="#FFF4EE" stroke="#C2410C" stroke-width="1.5" />
+        <rect x="262" y="-8" width="28" height="16" rx="8" style="fill: var(--cs-accent-tint); stroke: var(--cs-accent)" stroke-width="1.5" />
         <text x="298" y="4">AI (phase 2)</text>
       </g>
     </svg>

@@ -105,10 +105,10 @@ const rowTotal = (r) => Object.values(r.cells).reduce((n, c) => n + c.length, 0)
   tbody li { font-size: 14px; line-height: 1.35; color: #111111; padding-left: 14px; position: relative; }
   tbody li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: #111111; }
   .am-empty { color: #B5B5B2; }
-  tr.is-accent th { border-top-color: #C2410C; }
-  tr.is-accent .am-row { color: #9A3412; }
-  tr.is-accent td { background: #FFF4EE; }
-  tr.is-accent li::before { background: #C2410C; }
+  tr.is-accent th { border-top-color: var(--cs-accent); }
+  tr.is-accent .am-row { color: var(--cs-accent-text); }
+  tr.is-accent td { background: var(--cs-accent-tint); }
+  tr.is-accent li::before { background: var(--cs-accent); }
   .am figcaption { margin-top: 12px; font-size: 14px; color: #6E6E6E; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>

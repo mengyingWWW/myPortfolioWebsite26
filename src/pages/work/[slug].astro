@@ -26,10 +26,26 @@ interface Props {
 
 const { project, next } = Astro.props;
 const { Content } = await render(project);
+
+const accent = {
+  main: '#C2410C',
+  text: '#9A3412',
+  tint: '#FFF4EE',
+  soft: '#FFFBF8',
+  border: '#F3C9B4',
+  ...project.data.accent,
+};
+const accentTokens = {
+  '--cs-accent': accent.main,
+  '--cs-accent-text': accent.text,
+  '--cs-accent-tint': accent.tint,
+  '--cs-accent-soft': accent.soft,
+  '--cs-accent-border': accent.border,
+};
 ---
 
 <BaseLayout title={project.data.title} description={project.data.summary}>
-  <article>
+  <article style={accentTokens}>
     <ProjectHero project={project} />
     <Container class="pt-20">
       <div
