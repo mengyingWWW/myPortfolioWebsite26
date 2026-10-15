@@ -50,13 +50,13 @@ import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
 import Columns from '@/components/case-study/Columns.astro';
 import DecisionOptions from '@/components/case-study/DecisionOptions.astro';
 import DecisionRow from '@/components/case-study/DecisionRow.astro';
-import EvidenceCard from '@/components/case-study/EvidenceCard.astro';
 import Flow from '@/components/case-study/Flow.astro';
 import FlowChapter from '@/components/case-study/FlowChapter.astro';
 import IAComparison from '@/components/case-study/IAComparison.astro';
 import InsightRow from '@/components/case-study/InsightRow.astro';
 import KnowledgeFlow from '@/components/case-study/KnowledgeFlow.astro';
 import NextPhase from '@/components/case-study/NextPhase.astro';
+import ProblemScenes from '@/components/case-study/ProblemScenes.astro';
 import ReviewOptions from '@/components/case-study/ReviewOptions.astro';
 import RoleCards from '@/components/case-study/RoleCards.astro';
 import ShippedShot from '@/components/case-study/ShippedShot.astro';
@@ -68,25 +68,17 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 <CaseStudy>
 
 <Section id="problem" index="01" label="Problem" title="Problem">
+  <p class="max-w-[60ch] text-base leading-relaxed text-meta">Facilities know-how lives in technicians’ heads, old PDFs and shared drives. IDEA asked for an AI Wiki that captures it in a form frontline staff can write, and AI agents can later answer from.</p>
+  <ProblemScenes />
   <div>
-    <p class="max-w-[60ch] text-base leading-relaxed text-meta">Facilities know-how lives in technicians’ heads, old PDFs and shared drives. IDEA asked for an AI Wiki that captures it in a form frontline staff can write, and AI agents can later answer from.</p>
-    <Statement class="mt-8">The core challenge was getting knowledge written in a shape both people and AI can use. In engineering’s prototype, most pages ended up <em>unstructured, untraceable and uncategorized.</em></Statement>
+    <Statement><em>The challenge: get knowledge written in a shape both people and AI can use.</em></Statement>
+    <BriefCallout
+      label="The brief from the CEO & PM"
+      ariaLabel="Brief from the CEO & PM"
+      text="Get technicians up to speed fast. Let anyone, including hands-on technicians, upload and share a work guide. Cut the learning load for first-time users."
+    />
+    <p class="max-w-[60ch] text-base leading-relaxed text-meta">In the prototype, most pages ended up <em>unstructured, untraceable and uncategorized</em>. <a class="underline underline-offset-[3px] hover:text-[#111]" href="#audit">The audit below</a> shows where.</p>
   </div>
-  <EvidenceCard
-    label="Wiki list · Which version should I trust?"
-    image="/work/idea-ai-wiki/problem-duplicates.png"
-    width={780}
-    height={953}
-    alt="Wiki list where four near-identical 'Test Procedure 002' pages appear as separate rows"
-    callout="Four copies of “Test Procedure 002”, scattered through the list, with nothing linking them or saying which is current."
-    boxes={[
-      { x: 2.1, y: 21.3, w: 34.5, h: 4.3 },
-      { x: 2.1, y: 61.7, w: 34.5, h: 4.3 },
-      { x: 2.1, y: 81.8, w: 30.0, h: 3.9 },
-      { x: 2.1, y: 91.7, w: 34.5, h: 4.2 },
-    ]}
-    side="right"
-  />
 </Section>
 
 <Section id="users" index="02" label="Users" title="Users">
@@ -94,11 +86,6 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
     <p>Everyone in this chain uses the wiki: the technician who writes a procedure, the lead who reviews it, the admin who decides who sees it, the requester who needs help. Many of them have a GED-level education and spend most of their day on site, not at a computer.</p>
     <p>That was the barrier this project set out to remove. If any step feels like paperwork, knowledge stops moving, and in phase 2 the AI agent has nothing reliable to answer from.</p>
   </div>
-  <BriefCallout
-    label="The brief from the CEO & PM"
-    ariaLabel="Brief from the CEO & PM"
-    text="Get technicians up to speed fast. Let anyone, including hands-on technicians, upload and share a work guide. Cut the learning load for first-time users."
-  />
   <KnowledgeFlow />
   <RoleCards
     roles={[
