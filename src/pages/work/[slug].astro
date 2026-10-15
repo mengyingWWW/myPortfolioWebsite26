@@ -7,6 +7,7 @@ import MetaPanel from '@/components/project/MetaPanel.astro';
 import NextProject from '@/components/project/NextProject.astro';
 import TableOfContents from '@/components/case-study/TableOfContents.astro';
 import BackToTop from '@/components/case-study/BackToTop.astro';
+import AtAGlance from '@/components/case-study/AtAGlance.astro';
 import { mdxComponents } from '@/components/mdx';
 import { getSortedWork, type WorkEntry } from '@/lib/work';
 
@@ -37,6 +38,13 @@ const { Content } = await render(project);
         <div>
           <h2 class="text-sm font-medium tracking-wide text-muted uppercase">Overview</h2>
           <p class="mt-3 max-w-[65ch] text-xl leading-relaxed">{project.data.summary}</p>
+          {
+            project.data.glance && (
+              <div class="mt-8 max-w-[65ch]">
+                <AtAGlance items={project.data.glance} />
+              </div>
+            )
+          }
         </div>
         <MetaPanel project={project} />
       </div>

@@ -1,28 +1,29 @@
 ---
 /**
- * Custom cursor: a 14px dot in two zones:
+ * Custom cursor (fine pointers with hover only; touch devices keep the native one).
+ *
+ * Default, a 14px dot in two zones:
  *   hero   (over [data-cursor-zone="hero"]): a crisp dark dot plus a soft cast shadow
  *          that trails behind it, offset down-right as if lit by the same sun.
  *   normal (everywhere else): a white dot with difference blending.
- * Over clickable elements (a, button, [role="button"]) it becomes the lens: a 52px glass circle,
- * no label; elements with data-cursor-label (nav and footer links) get a 64px labeled one
- * instead. Big targets opt into the 88px adaptive view circle. All hide the shadow.
- *
- * The glass states (view, lens) rely on backdrop-filter, which only sees the page if no ancestor
- * is a backdrop root (mix-blend-mode, filter, opacity < 1, isolation...). So the root stays a
- * plain fixed child of <body>, blend modes apply only to the dot, the visibility fade is on the
- * shapes themselves, and sizes animate width/height: transforms only position.
- *
- * Per-element overrides:
- *   data-cursor="view"         88px labeled glass circle (big targets only, e.g. project cards)
- *   data-cursor-label="EMAIL"  label shown in the glass circle (the view circle defaults to "VIEW";
- *                              the lens shows one only when this is set)
- *   data-cursor="default"      keep the plain dot on a clickable element
- *   data-cursor="hide"         hide the custom cursor
+ * Over anything clickable (CLICKABLE below) it becomes one glass circle, the same everywhere: 64px,
+ * with a label naming the action. The label comes from the nearest [data-cursor-label] (e.g.
+ * "CLOSE", "DRAG"); links without one say "VIEW", other controls without one show no word. The
+ * cursor is aria-hidden, so controls keep their own accessible names. Text fields keep the I-beam.
  * Page-wide: <html data-cursor-hidden> hides it wherever it is (the footer logo's sun stands in).
+ *
+ * The glass relies on backdrop-filter, which only sees the page if no ancestor is a backdrop root
+ * (mix-blend-mode, filter, opacity < 1, isolation...). So the root stays a plain fixed child of
+ * <body>, blend modes apply only to the dot, the visibility fade is on the shape itself, and sizes
+ * animate width/height: transforms only position.
+ *
+ * The blur is kept low so text under the circle stays readable. For contrast the script samples
+ * what's under the pointer (walking up from the hovered element: the pixels of the first image,
+ * video or canvas, or the first non-transparent background) and sets data-tone: dark text on a
+ * light glass, or white text on a darkened glass.
  */
 interface Props {
-  /** Label shown when an element doesn't set data-cursor-label. */
+  /** Label shown over links without their own data-cursor-label. */
   label?: string;
 }
 
@@ -56,12 +57,16 @@ const { label = 'VIEW' } = Astro.props;
     pointer-events: none;
   }
 
+  .cursor * {
+    pointer-events: none;
+  }
+
   .cursor[data-pressed] {
     --cursor-press: 0.85;
   }
 
-  /* Blend modes only work on the outermost element (inner layers are isolated). Never in the
-     glass states: a blending root would hide the page from backdrop-filter. */
+  /* Blend modes only work on the outermost element (inner layers are isolated). Never over a
+     clickable element: a blending root would hide the page from backdrop-filter. */
   .cursor[data-zone='normal'][data-state='default'] {
     mix-blend-mode: difference;
   }
@@ -72,14 +77,6 @@ const { label = 'VIEW' } = Astro.props;
   }
 
   .cursor[data-state='view'] {
-    --cursor-diameter: 88px;
-  }
-
-  .cursor[data-state='lens'] {
-    --cursor-diameter: 52px;
-  }
-
-  .cursor[data-state='lens'][data-labeled] {
     --cursor-diameter: 64px;
   }
 
@@ -108,25 +105,11 @@ const { label = 'VIEW' } = Astro.props;
     left: 0;
   }
 
-  /* Glass material, one flat layer stack: backdrop blur + tint (the element), drop shadow, and
-     an edge: a 0.5px border plus inner highlight for the lens, a lit 1px rim (::after) for the
-     view circle. The defaults are the lens. The border is an inset shadow because Chrome rounds
-     a 0.5px border up to 1px. Shadows stay declared (transparent) outside the glass states so
-     they fade with the grow/shrink instead of popping; shadow lists only interpolate when their
-     shapes match, so every list is outer, outer, inset, inset. */
+  /* Glass: a light blur and tint, a soft drop shadow, and a hairline edge plus inner highlight.
+     The edge is an inset shadow because Chrome rounds a 0.5px border up to 1px. Shadows stay
+     declared (transparent) outside the glass state so they fade with the grow/shrink instead of
+     popping; shadow lists only interpolate when their shapes match. */
   .cursor-shape {
-    --glass-blur: 4px;
-    --glass-saturate: 160%;
-    --glass-brightness: 1;
-    --glass-tint: rgb(0 0 0 / 0.06);
-    --glass-solid: rgb(255 255 255 / 0.9);
-    --glass-rim: 0;
-    --glass-shadow:
-      0 2px 10px rgb(0 0 0 / 0.08),
-      0 0 0 rgb(0 0 0 / 0),
-      inset 0 0 0 0.5px rgb(0 0 0 / 0.14),
-      inset 0 0 0 1px rgb(255 255 255 / 0.6);
-
     position: relative;
     display: flex;
     flex: none;
@@ -137,7 +120,6 @@ const { label = 'VIEW' } = Astro.props;
     border-radius: 50%;
     background-color: var(--cursor-fill);
     box-shadow:
-      0 0 0 rgb(0 0 0 / 0),
       0 0 0 rgb(0 0 0 / 0),
       inset 0 0 0 0 rgb(0 0 0 / 0),
       inset 0 0 0 0 rgb(255 255 255 / 0);
@@ -156,94 +138,60 @@ const { label = 'VIEW' } = Astro.props;
     opacity: 1;
   }
 
-  /* The view circle is clearer, glossier glass: a light tint and a lit rim instead of the border. */
-  .cursor[data-state='view'] .cursor-shape {
-    --glass-blur: 5px;
-    --glass-saturate: 170%;
-    --glass-brightness: 1.12;
-    --glass-tint: rgb(255 255 255 / 0.1);
-    --glass-rim: 1;
-    --glass-shadow:
-      0 8px 24px rgb(0 0 0 / 0.12),
-      0 1px 2px rgb(0 0 0 / 0.08),
-      inset 0 0 0 0 rgb(0 0 0 / 0),
-      inset 0 0 0 0 rgb(255 255 255 / 0);
-  }
-
-  /* Dark mode (view circle over dark covers; set from the sampled luminance). */
-  .cursor[data-tone='dark'] .cursor-shape {
-    --glass-tint: rgb(18 18 18 / 0.16);
-    --glass-solid: rgb(28 28 28 / 0.9);
-    --glass-rim: 0.7;
-  }
-
   .cursor-shape.cursor--glass {
-    background-color: var(--glass-tint);
-    box-shadow: var(--glass-shadow);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
+    background-color: rgb(255 255 255 / 0.28);
+    box-shadow:
+      0 4px 14px rgb(0 0 0 / 0.12),
+      inset 0 0 0 0.5px rgb(0 0 0 / 0.16),
+      inset 0 0 0 1px rgb(255 255 255 / 0.5);
+    -webkit-backdrop-filter: blur(2px) saturate(140%);
+    backdrop-filter: blur(2px) saturate(140%);
     /* No opacity fade while glass: WebKit drops the backdrop blur while a backdrop-filtered
        element animates its opacity. */
     transition-property: width, height, background-color, box-shadow, backdrop-filter, -webkit-backdrop-filter;
   }
 
-  /* Edge light: the mask cuts the gradient down to a 1px ring. Bright at the top, with a faint
-     second reflection along the bottom. */
-  .cursor-shape::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 200ms ease;
-    padding: 1px;
-    background: linear-gradient(
-      180deg,
-      rgb(255 255 255 / 0.8) 0%,
-      rgb(255 255 255 / 0.2) 35%,
-      rgb(255 255 255 / 0.05) 65%,
-      rgb(255 255 255 / 0.3) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    mask-composite: exclude;
-  }
-
-  .cursor-shape.cursor--glass::after {
-    opacity: var(--glass-rim);
-  }
-
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .cursor-shape.cursor--glass {
-      background-color: var(--glass-solid);
+      background-color: rgb(255 255 255 / 0.85);
+    }
+    .cursor[data-tone='dark'] .cursor-shape.cursor--glass {
+      background-color: rgb(28 28 28 / 0.85);
     }
   }
 
   @media (prefers-reduced-transparency: reduce) {
     .cursor-shape.cursor--glass {
-      background-color: var(--glass-solid);
+      background-color: rgb(255 255 255 / 0.92);
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
     }
+    .cursor[data-tone='dark'] .cursor-shape.cursor--glass {
+      background-color: rgb(28 28 28 / 0.92);
+    }
   }
 
-  /* --cursor-label-color is the sampled backdrop pushed toward black (light) or white (dark), a
-     rough stand-in for iOS vibrancy. No blend modes here: they would break the backdrop blur. */
+  /* Over a dark backdrop (data-tone, sampled in the script) the glass darkens and the label turns
+     white. 0.6 keeps white text at 4.5:1 even where a small light detail the sampling can't see
+     (a slider's divider or tag) passes under the label. */
+  .cursor[data-tone='dark'] .cursor-shape.cursor--glass {
+    background-color: rgb(17 17 17 / 0.6);
+    box-shadow:
+      0 4px 14px rgb(0 0 0 / 0.2),
+      inset 0 0 0 0.5px rgb(255 255 255 / 0.22),
+      inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+
   .cursor-label {
     position: relative;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
+    line-height: 1.4;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: var(--cursor-label-color, #1a1a1a);
-    text-shadow: 0 0 6px rgb(255 255 255 / 0.7);
+    color: #111;
+    text-shadow: 0 0 6px rgb(255 255 255 / 0.8);
     opacity: 0;
     transition:
       opacity 150ms ease-out,
@@ -252,25 +200,15 @@ const { label = 'VIEW' } = Astro.props;
   }
 
   .cursor[data-tone='dark'] .cursor-label {
-    text-shadow: 0 0 6px rgb(0 0 0 / 0.5);
+    color: #fff;
+    text-shadow: 0 0 6px rgb(0 0 0 / 0.6);
   }
 
   .cursor[data-state='view'] .cursor-label {
     opacity: 1;
-    transition-delay: 100ms, 0s, 0s;
+    transition-delay: 100ms;
   }
 
-  /* The lens blurs the word under it; a labeled one names the action instead. */
-  .cursor[data-state='lens'][data-labeled] .cursor-label {
-    font-size: 10px;
-    color: #1a1a1a;
-    text-shadow: 0 0 6px rgb(255 255 255 / 0.9);
-    opacity: 1;
-    transition:
-      opacity var(--cursor-morph),
-      color 200ms ease,
-      text-shadow 200ms ease;
-  }
   /* Same gray as the darkest leaf shadow (--shadow-alpha comes from SHADOW_DARKNESS);
      multiply deepens it where it overlaps a leaf shadow, like real overlapping shade.
      --cursor-shadow-peak offsets the blur thinning the center of such a small shape. */
@@ -299,7 +237,6 @@ const { label = 'VIEW' } = Astro.props;
 
   @media (prefers-reduced-motion: reduce) {
     .cursor-shape,
-    .cursor-shape::after,
     .cursor-label,
     .cursor-shadow {
       transition: none;
@@ -340,107 +277,111 @@ const { label = 'VIEW' } = Astro.props;
   const STRETCH_SPEED = 20;
   const TEXT_FIELD =
     'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])';
-  const CLICKABLE = 'a[href], button, [role="button"], [data-cursor]';
+  const CLICKABLE =
+    'a[href], button, [role="button"], summary, label[for], [data-cursor="view"], [onclick], input[type="button"], input[type="submit"], input[type="reset"], input[type="range"]';
+  const LINK = 'a[href], [data-cursor="view"]';
+  const LABELLED = '[data-cursor-label]';
   const HERO_ZONE = '[data-cursor-zone="hero"]';
 
   type Zone = 'hero' | 'normal';
+  type State = 'default' | 'view' | 'hide';
   type Tone = 'light' | 'dark';
-  type RGB = [number, number, number];
 
-  /** View circle diameter, for sampling what's under it. Matches the CSS. */
-  const VIEW_DIAMETER = 88;
   /** Luminance hysteresis: go dark below the first, back to light above the second. */
   const DARK_BELOW = 0.42;
   const LIGHT_ABOVE = 0.5;
-  /** How far the label color is pushed toward black (light tone) or white (dark tone). */
-  const LABEL_TO_BLACK = 0.85;
-  const LABEL_TO_WHITE = 0.88;
-  /** Width of the downscaled copy of a cover used for sampling. */
-  const SAMPLE_WIDTH = 160;
-  /** Sample grid radius in steps: (2n+1)² points, keeping those inside the circle. */
-  const SAMPLE_STEPS = 5;
-  const PAGE_COLOR: RGB = [255, 255, 255];
+  const MEDIA = 'img, video, canvas';
 
+  type RGB = [number, number, number];
   const luma = ([r, g, b]: RGB) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-  const mix = (c: RGB, to: number, amount: number) => c.map((v) => Math.round(v + (to - v) * amount)) as RGB;
 
+  /** Downscaled width media pixels are read at; plenty for an average under a 64px circle. */
+  const SAMPLE_WIDTH = 96;
+  /** Radius of the view circle, and the sample grid across it: (2n+1)² points inside the circle. */
+  const SAMPLE_RADIUS = 32;
+  const SAMPLE_STEPS = 4;
+
+  /** sRGB channels of an opaque-enough computed color; null when (nearly) transparent. */
   function parseColor(value: string): RGB | null {
     const m = value.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?\)/);
-    if (!m || (m[4] !== undefined && Number(m[4]) === 0)) return null;
+    if (!m || (m[4] !== undefined && Number(m[4]) < 0.1)) return null;
     return [Number(m[1]), Number(m[2]), Number(m[3])];
   }
 
-  /** Downscaled pixels per cover image; null when it can't be read. */
-  const pixelCache = new WeakMap<HTMLImageElement, ImageData | null>();
+  const sampleCanvas = document.createElement('canvas');
+  const sampleCtx = sampleCanvas.getContext('2d', { willReadFrequently: true });
+  /** Still images never change, so their pixels are read once; video frames are read each time. */
+  const imageCache = new WeakMap<Element, ImageData | null>();
 
-  function coverPixels(img: HTMLImageElement): ImageData | null {
-    if (pixelCache.has(img)) return pixelCache.get(img)!;
-    if (!img.complete || !img.naturalWidth) return null;
+  function mediaPixels(el: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): ImageData | null {
+    if (el instanceof HTMLImageElement && imageCache.has(el)) return imageCache.get(el)!;
+    const [w, h] =
+      el instanceof HTMLImageElement
+        ? [el.complete ? el.naturalWidth : 0, el.naturalHeight]
+        : el instanceof HTMLVideoElement
+          ? [el.readyState >= 2 ? el.videoWidth : 0, el.videoHeight]
+          : [el.width, el.height];
+    if (!w || !h || !sampleCtx) return null;
     let data: ImageData | null = null;
     try {
-      const canvas = document.createElement('canvas');
-      canvas.width = SAMPLE_WIDTH;
-      canvas.height = Math.max(1, Math.round((SAMPLE_WIDTH * img.naturalHeight) / img.naturalWidth));
-      const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      sampleCanvas.width = SAMPLE_WIDTH;
+      sampleCanvas.height = Math.max(1, Math.round((SAMPLE_WIDTH * h) / w));
+      sampleCtx.drawImage(el, 0, 0, sampleCanvas.width, sampleCanvas.height);
+      data = sampleCtx.getImageData(0, 0, sampleCanvas.width, sampleCanvas.height);
     } catch {
-      data = null;
+      data = null; // Cross-origin media taints the canvas.
     }
-    pixelCache.set(img, data);
+    if (el instanceof HTMLImageElement) imageCache.set(el, data);
     return data;
   }
 
-  /** What a view target looks like under the circle: its cover (as displayed) over the page. */
-  interface Backdrop {
-    img: HTMLImageElement;
-    frame: HTMLElement;
-    frameColor: RGB | null;
-    multiply: RGB | null;
-  }
-
-  function backdropOf(el: HTMLElement): Backdrop | null {
-    const img = el.querySelector('img');
-    const frame = img?.parentElement;
-    if (!img || !frame) return null;
-    const frameColor = parseColor(getComputedStyle(frame).backgroundColor);
-    const multiply = getComputedStyle(img).mixBlendMode === 'multiply' ? frameColor : null;
-    return { img, frame, frameColor, multiply };
-  }
-
-  /** Average displayed color inside a circle; the cover is object-fit: cover in its (clipping) frame. */
-  function sampleColor(backdrop: Backdrop | null, cx: number, cy: number, radius: number): RGB {
-    const data = backdrop && coverPixels(backdrop.img);
-    const frame = backdrop?.frame.getBoundingClientRect();
-    const box = backdrop?.img.getBoundingClientRect();
-    const scale = data && box ? Math.max(box.width / data.width, box.height / data.height) : 1;
-    const sum = [0, 0, 0];
+  /** Average luminance of media as displayed under the circle (object-fit cover/contain/fill); null if unreadable. */
+  function mediaLuma(el: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement, cx: number, cy: number): number | null {
+    const data = mediaPixels(el);
+    if (!data) return null;
+    const style = getComputedStyle(el);
+    const box = el.getBoundingClientRect();
+    const fit = style.objectFit;
+    const sx = box.width / data.width;
+    const sy = box.height / data.height;
+    const [kx, ky] =
+      fit === 'fill' ? [sx, sy] : fit === 'contain' ? [Math.min(sx, sy), Math.min(sx, sy)] : [Math.max(sx, sy), Math.max(sx, sy)];
+    const left = box.left + (box.width - data.width * kx) / 2;
+    const top = box.top + (box.height - data.height * ky) / 2;
+    // A multiply-blended cover is tinted by the background behind it.
+    const tint = style.mixBlendMode === 'multiply' && el.parentElement ? parseColor(getComputedStyle(el.parentElement).backgroundColor) : null;
+    let sum = 0;
     let n = 0;
     for (let i = -SAMPLE_STEPS; i <= SAMPLE_STEPS; i++) {
       for (let j = -SAMPLE_STEPS; j <= SAMPLE_STEPS; j++) {
         if (i * i + j * j > SAMPLE_STEPS * SAMPLE_STEPS) continue;
-        const x = cx + (i / SAMPLE_STEPS) * radius;
-        const y = cy + (j / SAMPLE_STEPS) * radius;
-        let c: RGB = PAGE_COLOR;
-        if (backdrop && frame && x >= frame.left && x < frame.right && y >= frame.top && y < frame.bottom) {
-          c = backdrop.frameColor ?? PAGE_COLOR;
-          if (data && box) {
-            const u = Math.floor((x - box.left - (box.width - data.width * scale) / 2) / scale);
-            const v = Math.floor((y - box.top - (box.height - data.height * scale) / 2) / scale);
-            if (u >= 0 && v >= 0 && u < data.width && v < data.height) {
-              const k = (v * data.width + u) * 4;
-              c = [data.data[k], data.data[k + 1], data.data[k + 2]];
-              if (backdrop.multiply) c = c.map((ch, ci) => (ch * backdrop.multiply![ci]) / 255) as RGB;
-            }
-          }
-        }
-        sum[0] += c[0];
-        sum[1] += c[1];
-        sum[2] += c[2];
+        const x = cx + (i / SAMPLE_STEPS) * SAMPLE_RADIUS;
+        const y = cy + (j / SAMPLE_STEPS) * SAMPLE_RADIUS;
+        if (x < box.left || x >= box.right || y < box.top || y >= box.bottom) continue;
+        const u = Math.floor((x - left) / kx);
+        const v = Math.floor((y - top) / ky);
+        if (u < 0 || v < 0 || u >= data.width || v >= data.height) continue;
+        const k = (v * data.width + u) * 4;
+        let c: RGB = [data.data[k], data.data[k + 1], data.data[k + 2]];
+        if (tint) c = c.map((ch, ci) => (ch * tint[ci]) / 255) as RGB;
+        sum += luma(c);
         n++;
       }
     }
-    return [sum[0] / n, sum[1] / n, sum[2] / n];
+    return n ? sum / n : null;
+  }
+
+  /**
+   * Luminance (0–1) of what's under a point: walking up from the element there, the first media
+   * (its pixels under the circle, or dark when they can't be read) or non-transparent background.
+   */
+  function backdropLuma(x: number, y: number): number {
+    for (let el = document.elementFromPoint(x, y); el; el = el.parentElement) {
+      if (el.matches(MEDIA)) return mediaLuma(el as HTMLImageElement | HTMLVideoElement | HTMLCanvasElement, x, y) ?? 0;
+      const c = parseColor(getComputedStyle(el).backgroundColor);
+      if (c) return luma(c);
+    }
+    return 1;
   }
 
   const root = document.querySelector<HTMLElement>('[data-custom-cursor]');
@@ -463,49 +404,26 @@ const { label = 'VIEW' } = Astro.props;
     const shadow = { x: -100, y: -100 };
     let inside = false;
     let hasMoved = false;
-    let state = 'default';
-    let labeled = false;
+    let state: State = 'default';
     let zone: Zone = 'normal';
     let tone: Tone = 'light';
-    let backdropEl: HTMLElement | null = null;
-    let backdrop: Backdrop | null = null;
-    let labelColor = '';
+    /** Set when the pointer or the page moved; the tone is re-sampled on the next frame. */
+    let toneDirty = true;
 
     let stretch = 1;
     let angle = 0;
 
     document.documentElement.classList.add('has-custom-cursor');
 
-    function resolveState(target: Element | null): { state: string; label?: string; el?: HTMLElement } {
+    function resolveState(target: Element | null): { state: State; label?: string } {
       if (document.documentElement.hasAttribute('data-cursor-hidden')) return { state: 'hide' };
       if (!target) return { state: 'default' };
       if (target.closest(TEXT_FIELD)) return { state: 'hide' };
-      const el = target.closest<HTMLElement>(CLICKABLE);
+      const el = target.closest(CLICKABLE);
       if (!el) return { state: 'default' };
-      const mode = el.dataset.cursor;
-      if (mode === 'default' || mode === 'hide') return { state: mode };
-      const label = el.closest<HTMLElement>('[data-cursor-label]')?.dataset.cursorLabel;
-      return { state: mode === 'view' ? 'view' : 'lens', label, el };
-    }
-
-    // Only the view circle adapts; the lens always sits on the light header or hero.
-    function updateTone() {
-      if (state !== 'view') {
-        tone = 'light';
-        labelColor = '';
-      } else {
-        const c = sampleColor(backdrop, dot.x, dot.y, VIEW_DIAMETER / 2);
-        const l = luma(c);
-        if (tone === 'light' && l < DARK_BELOW) tone = 'dark';
-        else if (tone === 'dark' && l > LIGHT_ABOVE) tone = 'light';
-        const [r, g, b] = tone === 'light' ? mix(c, 0, LABEL_TO_BLACK) : mix(c, 255, LABEL_TO_WHITE);
-        labelColor = `rgb(${r} ${g} ${b})`;
-      }
-      if (root.dataset.tone !== tone) root.dataset.tone = tone;
-      if (root.style.getPropertyValue('--cursor-label-color') !== labelColor) {
-        if (labelColor) root.style.setProperty('--cursor-label-color', labelColor);
-        else root.style.removeProperty('--cursor-label-color');
-      }
+      // Buttons and controls name their own action; only links fall back to the default word.
+      const named = target.closest<HTMLElement>(LABELLED)?.dataset.cursorLabel;
+      return { state: 'view', label: named ?? (el.matches(LINK) ? defaultLabel : '') };
     }
 
     // Overlays drawn above the hero (the nav) count as hero too, hence the rect check.
@@ -518,29 +436,39 @@ const { label = 'VIEW' } = Astro.props;
       return 'normal';
     }
 
+    function updateTone() {
+      toneDirty = false;
+      const l = backdropLuma(mouse.x, mouse.y);
+      if (tone === 'light' && l < DARK_BELOW) tone = 'dark';
+      else if (tone === 'dark' && l > LIGHT_ABOVE) tone = 'light';
+      if (root.dataset.tone !== tone) root.dataset.tone = tone;
+    }
+
+    let hovered: Element | null = null;
+
     function update(target: Element | null) {
+      hovered = target;
+      toneDirty = true;
       const next = resolveState(target);
-      if (next.state === 'view' && (state !== 'view' || next.el !== backdropEl)) {
-        backdropEl = next.el ?? null;
-        backdrop = next.el ? backdropOf(next.el) : null;
-      }
+      // Pick the tone before the circle appears, so it never flashes the wrong one.
+      if (next.state === 'view' && state !== 'view') updateTone();
       state = next.state;
       zone = resolveZone(target, mouse.x, mouse.y);
-      // The view circle always has a label; the lens only when the element names one.
-      labeled = state === 'view' || (state === 'lens' && next.label !== undefined);
       // Keep the old label while shrinking back so it doesn't flash a different word.
-      if (labeled) label.textContent = next.label ?? defaultLabel;
+      if (next.label !== undefined && label.textContent !== next.label) label.textContent = next.label;
       render();
     }
+
+    // A control can change its action under a still pointer (a clip's PLAY becomes PAUSE).
+    new MutationObserver((records) => {
+      if (state === 'view' && hovered && records.some((r) => r.target.contains(hovered))) update(hovered);
+    }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-cursor-label'] });
 
     function render() {
       root.dataset.state = state;
       root.dataset.zone = zone;
-      root.toggleAttribute('data-labeled', labeled);
-      shape.classList.toggle('cursor--glass', state === 'view' || state === 'lens');
-      shape.classList.toggle('cursor--glass-light', state === 'lens');
+      shape.classList.toggle('cursor--glass', state === 'view');
       root.toggleAttribute('data-visible', inside && hasMoved && state !== 'hide');
-      updateTone();
     }
 
     // Inside the page content, excluding the scrollbar gutter.
@@ -608,7 +536,7 @@ const { label = 'VIEW' } = Astro.props;
       dot.x += (mouse.x - dot.x) * td;
       dot.y += (mouse.y - dot.y) * td;
       pos.style.transform = `translate3d(${dot.x}px, ${dot.y}px, 0)`;
-      if (state === 'view') updateTone();
+      if (state === 'view' && toneDirty) updateTone();
 
       // The shadow trails behind and stretches along its direction of travel.
       const ts = reduced ? 1 : lerpFactor(SHADOW_EASE, frames);

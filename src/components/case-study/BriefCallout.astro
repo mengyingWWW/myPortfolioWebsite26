@@ -1,0 +1,45 @@
+---
+/** A paraphrased brief set off from the body: a mono label over the text, with an accent rule on the left. */
+interface Props {
+  label: string;
+  text: string;
+  /** Accessible name for the aside; defaults to the label. */
+  ariaLabel?: string;
+}
+
+const { label, text, ariaLabel = label } = Astro.props;
+---
+
+<aside class="brief" aria-label={ariaLabel}>
+  <p class="brief-label">{label}</p>
+  <p class="brief-text">{text}</p>
+</aside>
+
+<style>
+  .brief {
+    margin-block: 32px;
+    border-left: 3px solid #c2410c;
+    padding-left: 20px;
+  }
+  .brief-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6e6e6e;
+  }
+  .brief-text {
+    max-width: 60ch;
+    margin-top: 8px;
+    font-size: 20px;
+    line-height: 1.45;
+    color: #111111;
+  }
+
+  @media (max-width: 900px) {
+    .brief-text {
+      font-size: 18px;
+    }
+  }
+</style>

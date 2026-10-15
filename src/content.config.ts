@@ -58,6 +58,8 @@ const work = defineCollection({
       tools: z.array(z.string()),
       team: z.array(z.string()),
       summary: z.string(),
+      /** Optional headline results shown under the Overview, e.g. [{ value: "15", label: "gaps found" }]. */
+      glance: z.array(z.object({ value: z.string(), label: z.string() })).optional(),
       order: z.number(),
     }),
 });

@@ -1,0 +1,121 @@
+---
+// Accessible tabs for showing one of several same-kind figures (e.g. 4 audit shots, 4 shipped shots).
+// Usage (MDX):
+//   <TabGroup id="audit-tabs" label="Audit by flow" tabs={[{ label: 'Find', meta: '4' }, ...]}>
+//     <div data-tab-panel><AnnotatedShot ... /></div>
+//     <div data-tab-panel>...</div>
+//   </TabGroup>
+// Panels are matched to tabs by order. WAI-ARIA tabs pattern: arrow keys / Home / End, automatic activation.
+// Links to an element inside a hidden panel (e.g. #issue-F2) switch to that panel first, then scroll.
+interface Tab { label: string; meta?: string }
+interface Props { id: string; label: string; tabs: Tab[]; hint?: string }
+const { id, label, tabs, hint } = Astro.props;
+---
+<div class="tg" id={id} data-tab-group>
+  {hint && <p class="tg-hint" id={`${id}-hint`}>{hint}</p>}
+  <div class="tg-list" role="tablist" aria-label={label} aria-describedby={hint ? `${id}-hint` : undefined}>
+    {tabs.map((t, i) => (
+      <button
+        type="button"
+        role="tab"
+        class="tg-tab"
+        id={`${id}-tab-${i}`}
+        aria-controls={`${id}-panel-${i}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        tabindex={i === 0 ? 0 : -1}
+        data-cursor-label="VIEW"
+      >
+        <span>{t.label}</span>
+        {t.meta && <span class="tg-meta">{t.meta}</span>}
+      </button>
+    ))}
+  </div>
+  <div class="tg-panels"><slot /></div>
+</div>
+
+<script>
+  type Group = { el: HTMLElement; tabs: HTMLButtonElement[]; panels: HTMLElement[]; select: (i: number, focus?: boolean) => void };
+  const groups: Group[] = [];
+
+  document.querySelectorAll<HTMLElement>('[data-tab-group]').forEach((el) => {
+    const tabs = Array.from(el.querySelectorAll<HTMLButtonElement>(':scope > .tg-list > [role="tab"]'));
+    const panels = Array.from(el.querySelectorAll<HTMLElement>(':scope > .tg-panels > [data-tab-panel]'));
+    panels.forEach((p, i) => {
+      p.id = `${el.id}-panel-${i}`;
+      p.setAttribute('role', 'tabpanel');
+      p.setAttribute('aria-labelledby', `${el.id}-tab-${i}`);
+      p.tabIndex = 0;
+      p.hidden = i !== 0;
+    });
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, j) => {
+        const on = i === j;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((p, j) => (p.hidden = i !== j));
+      if (focus) tabs[i]?.focus();
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const last = tabs.length - 1;
+        const next = { ArrowRight: i === last ? 0 : i + 1, ArrowLeft: i === 0 ? last : i - 1, Home: 0, End: last }[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        select(next, true);
+      });
+    });
+    groups.push({ el, tabs, panels, select });
+  });
+
+  // Reveal the panel that holds a link target, so #issue-XX links work from anywhere on the page.
+  const reveal = (hash: string) => {
+    if (!hash || hash.length < 2) return null;
+    const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!target) return null;
+    for (const g of groups) {
+      const i = g.panels.findIndex((p) => p.contains(target));
+      if (i >= 0 && g.panels[i].hidden) g.select(i);
+    }
+    return target;
+  };
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element).closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+    if (a) reveal(a.hash);
+  }, true);
+  addEventListener('hashchange', () => reveal(location.hash)?.scrollIntoView());
+  if (location.hash) requestAnimationFrame(() => reveal(location.hash)?.scrollIntoView());
+</script>
+
+<style>
+  .tg { display: grid; gap: 16px; }
+  .tg-hint {
+    margin: 0; font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #6E6E6E;
+  }
+  .tg-list {
+    justify-self: start; max-width: 100%;
+    display: flex; gap: 4px; padding: 4px; border-radius: 999px;
+    background: #EDEDEB; box-shadow: inset 0 0 0 1px #E0E0DD;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .tg-list::-webkit-scrollbar { display: none; }
+  .tg-tab {
+    flex: none; display: inline-flex; align-items: center; gap: 8px;
+    min-height: 44px; padding: 10px 20px; border-radius: 999px; border: 0;
+    background: transparent; color: #3A3A3A;
+    font-family: inherit; font-size: 15px; font-weight: 500; line-height: 1; cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .tg-tab:hover { background: #FFFFFF; color: #111111; }
+  .tg-tab[aria-selected='true'] { background: #111111; color: #FFFFFF; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+  .tg-tab:focus-visible { outline: 2px solid #C2410C; outline-offset: 2px; }
+  .tg-meta {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; color: #6E6E6E;
+  }
+  .tg-tab[aria-selected='true'] .tg-meta { color: #BDBDBA; }
+  .tg-panels > [data-tab-panel]:focus-visible { outline: 2px solid #C2410C; outline-offset: 4px; border-radius: 8px; }
+  @media (prefers-reduced-motion: reduce) { .tg-tab { transition: none; } }
+</style>

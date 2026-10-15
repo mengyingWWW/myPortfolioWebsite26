@@ -1,5 +1,5 @@
 ---
-title: IDEA Wiki Redesign
+title: IDEA AI Wiki Redesign
 subtitle: "Redesigning an AI wiki for every technician and future automation"
 year: 2026
 type: "AI Product Redesign"
@@ -26,9 +26,13 @@ tools:
   - Cursor
   - Claude
 team:
-  - 1 CEO
+  - 1 CEO & PM
   - 1 Engineer
-summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its latest feature is an AI Wiki where technicians store step-by-step procedures; in a later phase, AI agents would use those procedures to answer work-order help requests. The prototype worked, but it was built for people who write like engineers. As the only designer, I audited it across four core flows, found 15 UX gaps, and redesigned each flow around two users: a technician writing at a GED reading level, and an AI that needs structure to answer from. Six of the 15 fixes shipped in full, and four more in part."
+summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its newest feature, the AI Wiki, is where technicians store step-by-step procedures. In a later phase, an AI agent will use them to answer work-order help requests. The engineering prototype assumed everyone writes like an engineer, while many technicians, reviewers and requesters spend little time at a computer. The team needed anyone, whatever their computer skills, to upload a guide and share what they know. As the sole designer, I audited four core flows, found 15 UX gaps, and redesigned each flow around that need. 10 of the 15 fixes have shipped, 6 in full and 4 in part."
+glance:
+  - { value: "4", label: "flows audited" }
+  - { value: "15", label: "gaps found" }
+  - { value: "10", label: "fixes shipped" }
 order: 1
 ---
 
@@ -41,8 +45,10 @@ import CaseStudy from '@/components/case-study/CaseStudy.astro';
 import Section from '@/components/case-study/Section.astro';
 import BeforeAfterSlider from '@/components/case-study/BeforeAfterSlider.astro';
 import Block from '@/components/case-study/Block.astro';
+import BriefCallout from '@/components/case-study/BriefCallout.astro';
 import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
 import Columns from '@/components/case-study/Columns.astro';
+import DecisionOptions from '@/components/case-study/DecisionOptions.astro';
 import DecisionRow from '@/components/case-study/DecisionRow.astro';
 import EvidenceCard from '@/components/case-study/EvidenceCard.astro';
 import Flow from '@/components/case-study/Flow.astro';
@@ -50,11 +56,13 @@ import FlowChapter from '@/components/case-study/FlowChapter.astro';
 import IAComparison from '@/components/case-study/IAComparison.astro';
 import InsightRow from '@/components/case-study/InsightRow.astro';
 import KnowledgeFlow from '@/components/case-study/KnowledgeFlow.astro';
-import OutcomeTable from '@/components/case-study/OutcomeTable.astro';
+import NextPhase from '@/components/case-study/NextPhase.astro';
+import ReviewOptions from '@/components/case-study/ReviewOptions.astro';
 import RoleCards from '@/components/case-study/RoleCards.astro';
 import ShippedShot from '@/components/case-study/ShippedShot.astro';
 import Statement from '@/components/case-study/Statement.astro';
 import Steps from '@/components/case-study/Steps.astro';
+import TabGroup from '@/components/case-study/TabGroup.astro';
 import Takeaway from '@/components/case-study/Takeaway.astro';
 
 <CaseStudy>
@@ -64,50 +72,21 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
     <p class="max-w-[60ch] text-base leading-relaxed text-meta">Facilities know-how lives in technicians’ heads, old PDFs and shared drives. IDEA asked for an AI Wiki that captures it in a form frontline staff can write, and AI agents can later answer from.</p>
     <Statement class="mt-8">The core challenge was getting knowledge written in a shape both people and AI can use. In engineering’s prototype, most pages ended up <em>unstructured, untraceable and uncategorized.</em></Statement>
   </div>
-  <div class="grid grid-cols-2 gap-8 max-[900px]:grid-cols-1">
-    <EvidenceCard
-      label="Editor · How do I write this?"
-      image="/work/idea-ai-wiki/problem-editor.png"
-      width={960}
-      height={790}
-      alt="Engineering prototype editor with an empty Markdown box and blank Categories, Asset types and Keywords fields"
-      callout="A blank Markdown box and empty Categories, Asset types and Keywords fields. Hard to start, easy to skip."
-      boxes={[
-        { x: 2.1, y: 20.9, w: 58.3, h: 7.6 },
-        { x: 2.1, y: 74.1, w: 52.1, h: 24.4 },
-      ]}
-      side="right"
-      calloutBelow
-    />
-    <EvidenceCard
-      label="Wiki list · Which version should I trust?"
-      image="/work/idea-ai-wiki/problem-duplicates.png"
-      width={780}
-      height={953}
-      alt="Wiki list where four near-identical 'Test Procedure 002' pages appear as separate rows"
-      callout="Four copies of “Test Procedure 002”, scattered through the list, with nothing linking them or saying which is current."
-      boxes={[
-        { x: 2.1, y: 21.3, w: 34.5, h: 4.3 },
-        { x: 2.1, y: 61.7, w: 34.5, h: 4.3 },
-        { x: 2.1, y: 81.8, w: 30.0, h: 3.9 },
-        { x: 2.1, y: 91.7, w: 34.5, h: 4.2 },
-      ]}
-      side="right"
-      calloutBelow
-    />
-    <EvidenceCard
-      label="Detail page · Who wrote this, and what changed?"
-      image="/work/idea-ai-wiki/problem-detail.png"
-      width={1460}
-      height={270}
-      alt="Procedure detail header showing the author as a raw email address and 'Updated 3d ago' with no link"
-      callout="The author is a raw email address, and “Updated 3d ago” leads nowhere. No way to see who changed what."
-      boxes={[{ x: 48.3, y: 44.4, w: 49.3, h: 18.5 }]}
-      side="right"
-      calloutBelow
-      class="col-span-2 max-[900px]:col-span-1"
-    />
-  </div>
+  <EvidenceCard
+    label="Wiki list · Which version should I trust?"
+    image="/work/idea-ai-wiki/problem-duplicates.png"
+    width={780}
+    height={953}
+    alt="Wiki list where four near-identical 'Test Procedure 002' pages appear as separate rows"
+    callout="Four copies of “Test Procedure 002”, scattered through the list, with nothing linking them or saying which is current."
+    boxes={[
+      { x: 2.1, y: 21.3, w: 34.5, h: 4.3 },
+      { x: 2.1, y: 61.7, w: 34.5, h: 4.3 },
+      { x: 2.1, y: 81.8, w: 30.0, h: 3.9 },
+      { x: 2.1, y: 91.7, w: 34.5, h: 4.2 },
+    ]}
+    side="right"
+  />
 </Section>
 
 <Section id="users" index="02" label="Users" title="Users">
@@ -115,6 +94,11 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
     <p>Everyone in this chain uses the wiki: the technician who writes a procedure, the lead who reviews it, the admin who decides who sees it, the requester who needs help. Many of them have a GED-level education and spend most of their day on site, not at a computer.</p>
     <p>That was the barrier this project set out to remove. If any step feels like paperwork, knowledge stops moving, and in phase 2 the AI agent has nothing reliable to answer from.</p>
   </div>
+  <BriefCallout
+    label="The brief from the CEO & PM"
+    ariaLabel="Brief from the CEO & PM"
+    text="Get technicians up to speed fast. Let anyone, including hands-on technicians, upload and share a work guide. Cut the learning load for first-time users."
+  />
   <KnowledgeFlow />
   <RoleCards
     roles={[
@@ -149,7 +133,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 </Section>
 
 <Section id="audit" index="03" label="Audit" title="Audit">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I audited the prototype the way its users would meet it: four flows, each walked as the person who does that job. On every screen I logged what got in the way, which line of the brief it missed, and a direction for the fix. Fifteen gaps came out of it.</p>
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I audited the prototype the way its users would meet it: four flows, each walked as the person who does that job. On every screen I logged what got in the way, which line of the brief it missed, and a direction for the fix. The audit turned up 15 gaps.</p>
   <Block title="Method">
     <Steps
       steps={[
@@ -167,15 +151,41 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         },
       ]}
     />
+    <div class="mt-12">
+      <p id="worked-from" class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">What I worked from</p>
+      <ul aria-labelledby="worked-from" class="mt-4 grid grid-cols-4 gap-x-6 gap-y-6 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
+        <li class="border-t border-[#e6e6e4] pt-4">
+          <p class="text-[15px] font-semibold text-[#111]">CEO & PM brief</p>
+          <p class="mt-1 text-[14px] leading-relaxed text-[#3a3a3a]">Get first-time users productive fast, and let anyone upload a guide.</p>
+        </li>
+        <li class="border-t border-[#e6e6e4] pt-4">
+          <p class="text-[15px] font-semibold text-[#111]">Prototype data</p>
+          <p class="mt-1 text-[14px] leading-relaxed text-[#3a3a3a]">18 pages, 3 categorized. 4 copies of one title.</p>
+        </li>
+        <li class="border-t border-[#e6e6e4] pt-4">
+          <p class="text-[15px] font-semibold text-[#111]">Role walkthroughs</p>
+          <p class="mt-1 text-[14px] leading-relaxed text-[#3a3a3a]">Each flow walked as a technician, reviewer, admin and requester.</p>
+        </li>
+        <li class="border-t border-[#e6e6e4] pt-4">
+          <p class="text-[15px] font-semibold text-[#111]">Team reviews</p>
+          <p class="mt-1 text-[14px] leading-relaxed text-[#3a3a3a]">Gaps reviewed with the CEO & PM and engineer to set priorities.</p>
+        </li>
+      </ul>
+    </div>
   </Block>
   <AuditMatrix />
   <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Here is where each gap sits in the prototype. Pins match the list beside each screen; every gap links to its fix.</p>
-  <div class="grid gap-24">
-    <AnnotatedShot flow={data.find} index="01" />
-    <AnnotatedShot flow={data.contribute} index="02" />
-    <AnnotatedShot flow={data.use} index="03" />
-    <AnnotatedShot flow={data.govern} index="04" />
-  </div>
+  <TabGroup
+    id="audit-tabs"
+    label="Audit by flow"
+    hint="4 flows · pick one to see its gaps"
+    tabs={[{ label: 'Find', meta: '4 gaps' }, { label: 'Contribute', meta: '5 gaps' }, { label: 'Use', meta: '4 gaps' }, { label: 'Govern', meta: '2 gaps' }]}
+  >
+    <div data-tab-panel><AnnotatedShot flow={data.find} index="01" /></div>
+    <div data-tab-panel><AnnotatedShot flow={data.contribute} index="02" /></div>
+    <div data-tab-panel><AnnotatedShot flow={data.use} index="03" /></div>
+    <div data-tab-panel><AnnotatedShot flow={data.govern} index="04" /></div>
+  </TabGroup>
 </Section>
 
 <Section id="insights" index="04" label="Insights" title="Insights">
@@ -199,12 +209,12 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       cause="Uncategorized"
       count={4}
       insight="Tags were optional, so nobody filled them in. The AI routes on tags."
-      principle="Suggest, then confirm."
+      principle="AI suggests, people decide."
       text="The tool proposes tags. People accept them with a click."
       accent
     />
   </ol>
-  <p class="text-base leading-relaxed text-meta">I started with the structure, then went flow by flow.</p>
+  <p class="text-base leading-relaxed text-meta">I fixed the structure first and worked through the flows one by one.</p>
 </Section>
 
 <Section id="information-architecture" index="05" label="Information Architecture" title="Information Architecture">
@@ -231,7 +241,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 </Section>
 
 <Section id="redesign" index="06" label="Redesign" title="Redesign">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Each flow below opens with a side-by-side comparison, then walks through the key decisions. Tags link back to the gaps they fix.</p>
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Each flow below opens with a side-by-side comparison and walks through its key decisions. Tags link back to the gaps they fix.</p>
 
   <FlowChapter n={1} id="fix-find" name="Find" goal="Help technicians find the right procedure quickly and trust that it’s the latest version.">
     <BeforeAfterSlider
@@ -244,6 +254,13 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       afterAlt="Redesigned Wiki list: a tag cloud with counts, scope tabs, visibility badges, and versions grouped under one title"
       caption="Drag to compare the original list with the redesign."
     />
+    <div class="mb-10 grid grid-cols-2 gap-x-14 gap-y-12 max-[901px]:mb-2 max-[901px]:grid-cols-1">
+      <div>
+        <p class="font-mono text-xs leading-[1.5] text-meta">Owned at a glance · Fixes{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-F4"><span class="sr-only">issue </span>F4</a></p>
+        <h4 class="mt-3 text-xl leading-[1.3] font-semibold text-[#111]">Consistent filter states</h4>
+        <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">All tabs share one active style. Pending drafts have their own counter, which stays visible on every tab.</p>
+      </div>
+    </div>
     <div>
       <DecisionRow
         principle="Owned at a glance"
@@ -251,10 +268,10 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         title="Grouped versions"
         text="Duplicate procedures are grouped under one title. Users open a single row to see every version and which one is newest."
       >
-        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-1-find" label="Filtering the list by the HVAC tag, then expanding a procedure to show its four versions" />
+        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-1-find" label="Filtering the list by the HVAC tag and expanding a procedure to show its four versions" />
       </DecisionRow>
       <DecisionRow
-        principle="Suggest, then confirm"
+        principle="AI suggests, people decide"
         issues={['F2']}
         title="Tags built from real content"
         text="The tag list is generated from existing pages and shows a count for each tag. An Uncategorized filter makes untagged pages easy to spot."
@@ -272,16 +289,6 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         width={2016}
         height={626}
         alt="List rows with visibility badges: a lock with an owner’s name, a team name, and Everyone at this site"
-      />
-      <DecisionRow
-        principle="Owned at a glance"
-        issues={['F4']}
-        title="Consistent filter states"
-        text="All tabs share one active style. Pending drafts have their own counter, which stays visible on every tab."
-        image="/work/idea-ai-wiki/find-tabs.webp"
-        width={2016}
-        height={219}
-        alt="Scope tabs with one underlined active tab and a separate ‘4 drafts pending’ counter"
       />
     </div>
   </FlowChapter>
@@ -302,17 +309,19 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       afterAlt="Redesigned editor: category chips, an Import Word / PDF bar, numbered steps, a Before you start list, and a settings panel for content type, page type and visibility"
       caption="Drag to compare the original editor with the redesign."
     />
+    <div class="mb-10 grid grid-cols-2 gap-x-14 gap-y-12 max-[901px]:mb-2 max-[901px]:grid-cols-1">
+      <div>
+        <p class="font-mono text-xs leading-[1.5] text-meta">Shape first · Fixes{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-C1"><span class="sr-only">issue </span>C1</a></p>
+        <h4 class="mt-3 text-xl leading-[1.3] font-semibold text-[#111]">Guided step editor</h4>
+        <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">Authors fill in numbered steps, with optional Warning and Verify lines, plus a short “Before you start” list for tools, PPE and hazards.</p>
+      </div>
+      <div>
+        <p class="font-mono text-xs leading-[1.5] text-meta">AI suggests, people decide · Fixes{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-C4"><span class="sr-only">issue </span>C4</a>,{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-C5"><span class="sr-only">issue </span>C5</a></p>
+        <h4 class="mt-3 text-xl leading-[1.3] font-semibold text-[#111]">Separate content type</h4>
+        <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">Content type (Help guide, Policy, Reference) is its own choice, separate from page layout. Draft status now sits on its own, below the editable settings.</p>
+      </div>
+    </div>
     <div>
-      <DecisionRow
-        principle="Shape first"
-        issues={['C1']}
-        title="Guided step editor"
-        text="Authors fill in numbered steps, with optional Warning and Verify lines, plus a short “Before you start” list for tools, PPE and hazards."
-        image="/work/idea-ai-wiki/contribute-steps.webp"
-        width={1397}
-        height={792}
-        alt="Editor with three numbered step fields and a Before you start list: Tools, PPE, Access needed, Hazards"
-      />
       <DecisionRow
         principle="Shape first"
         issues={['C2']}
@@ -322,24 +331,16 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         <ClipPlayer src="/work/idea-ai-wiki/clips/clip-2b-import" label="Importing a Word document, which converts into a draft procedure" />
       </DecisionRow>
       <DecisionRow
-        principle="Suggest, then confirm"
+        principle="AI suggests, people decide"
         issues={['C3']}
         title="AI-suggested categories"
         text="Matching categories are highlighted as the author types a title. One click keeps or removes each suggestion."
       >
         <ClipPlayer src="/work/idea-ai-wiki/clips/clip-2a-ai-tags" label="Typing a procedure title while AI-suggested categories Facilities and HVAC highlight" />
       </DecisionRow>
-      <DecisionRow
-        principle="Suggest, then confirm"
-        issues={['C4', 'C5']}
-        title="Separate content type"
-        text="Content type (Help guide, Policy, Reference) is its own choice, separate from page layout. Draft status now sits on its own, below the editable settings."
-        image="/work/idea-ai-wiki/contribute-settings.webp"
-        width={497}
-        height={1029}
-        maxHeight={480}
-        alt="Settings panel: Content type (Help guide, Policy, Reference), Page type (Procedure, Informational), Who can see this (Private, Team, Site), and a separate Draft status"
-      />
+      <div class="my-20 max-[901px]:my-12">
+        <DecisionOptions />
+      </div>
       <DecisionRow
         principle="Owned at a glance"
         issues={['F1']}
@@ -368,7 +369,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         principle="Owned at a glance"
         issues={['U1']}
         title="Author name and role"
-        text="Each page shows the author's name, role and team, with a badge for who can see it. Readers know whose knowledge it is and who to ask."
+        text="Each page shows the author’s name, role and team, with a badge for who can see it. Readers know whose knowledge it is and who to ask."
         image="/work/idea-ai-wiki/use-author.webp"
         width={1051}
         height={119}
@@ -388,32 +389,34 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         principle="Owned at a glance"
         issues={['U2']}
         title="Pin to team"
-        text="Pinning a page for a team uses a searchable list. It works the same with five teams or fifty."
+        text="Pinning a page for a team uses a searchable list. It works the same with 5 teams or 50."
         image="/work/idea-ai-wiki/use-pin.webp"
         width={468}
         height={514}
         alt="Pin to team dropdown with a search field and checkboxes for Facilities Crew, Test Admin Group, Team A, IT Support and Building Maintenance"
       />
       <DecisionRow
-        principle="Suggest, then confirm"
+        principle="AI suggests, people decide"
         issues={['U3']}
         title="Automation usage"
         text="A small module shows how often the AI agent has used the page and the last work order it answered. Authors can also test how the agent would match a question to it."
-        image="/work/idea-ai-wiki/use-automation.webp"
-        width={1504}
-        height={519}
-        alt="Used in automation module: 12 times used, last work order #4521, a Test in automation button, and an AI summary of the procedure"
-      />
+      >
+        <div class="grid w-full justify-items-start gap-3">
+          <span class="rounded-full bg-[#f2f2f0] px-2.5 py-1 text-xs leading-[1.2] font-medium whitespace-nowrap text-[#6e6e6e]">Proposed</span>
+          <img class="block h-auto max-w-full rounded-lg" src="/work/idea-ai-wiki/use-automation.webp" width={1504} height={519} alt="Used in automation module: 12 times used, last work order #4521, a Test in automation button, and an AI summary of the procedure" loading="lazy" decoding="async" />
+        </div>
+      </DecisionRow>
       <DecisionRow
         principle="Owned at a glance"
         issues={['U4']}
         title="Version history"
         text="Every edit is listed with its author, date and a short summary of the change. Reviewer notes from the review flow will appear here too."
-        image="/work/idea-ai-wiki/use-history.webp"
-        width={1504}
-        height={569}
-        alt="Version history panel listing three edits with author, role, date and a one-line summary"
-      />
+      >
+        <div class="grid w-full justify-items-start gap-3">
+          <span class="rounded-full bg-[#f2f2f0] px-2.5 py-1 text-xs leading-[1.2] font-medium whitespace-nowrap text-[#6e6e6e]">Proposed</span>
+          <img class="block h-auto max-w-full rounded-lg" src="/work/idea-ai-wiki/use-history.webp" width={1504} height={569} alt="Version history panel listing three edits with author, role, date and a one-line summary" loading="lazy" decoding="async" />
+        </div>
+      </DecisionRow>
     </div>
   </FlowChapter>
 
@@ -428,7 +431,25 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       afterAlt="Redesigned review editor: every changed step marked in red and green, a commenting mode, and a comment thread beside the document"
       caption="Drag to compare the original inbox with the review editor."
     />
+    <div class="grid grid-cols-2 gap-x-14 gap-y-12 max-[901px]:grid-cols-1">
+      <div>
+        <p class="font-mono text-xs leading-[1.5] text-meta">Owned at a glance · Fixes{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-G2"><span class="sr-only">issue </span>G2</a></p>
+        <h4 class="mt-3 text-xl leading-[1.3] font-semibold text-[#111]">Full before-and-after view</h4>
+        <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">Every changed step is marked, with removed text in red and added text in green. Reviewers see the whole set of changes in one pass.</p>
+      </div>
+    </div>
+    <div class="mb-10 max-[901px]:mb-2">
+      <ReviewOptions />
+    </div>
     <div>
+      <DecisionRow
+        principle="Owned at a glance"
+        issues={['G2']}
+        title="Inline comments and a clear decision"
+        text="Reviewers select any phrase to leave a comment, the same way they would in Google Docs. They finish with Approve, Request changes or Reject, and the author sees every note."
+      >
+        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-4-review" label="Selecting a sentence in the review editor, adding a comment, approving the change and submitting the review" />
+      </DecisionRow>
       <DecisionRow
         principle="Owned at a glance"
         issues={['G1']}
@@ -439,24 +460,6 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         height={1325}
         alt="Needs Review page: a How review works strip (Draft, Submitted, In review, Published) above three pending submissions with author, tags and change count"
       />
-      <DecisionRow
-        principle="Owned at a glance"
-        issues={['G2']}
-        title="Full before-and-after view"
-        text="Every changed step is marked, with removed text in red and added text in green. Reviewers see the whole set of changes in one pass."
-        image="/work/idea-ai-wiki/govern-diff.webp"
-        width={1390}
-        height={999}
-        alt="Review editor steps with removed text struck through in red, added text in green, and one commented phrase outlined in amber"
-      />
-      <DecisionRow
-        principle="Owned at a glance"
-        issues={['G2']}
-        title="Inline comments and a clear decision"
-        text="Reviewers select any phrase to leave a comment, the same way they would in Google Docs. They finish with Approve, Request changes or Reject, and the author sees every note."
-      >
-        <ClipPlayer src="/work/idea-ai-wiki/clips/clip-4-review" label="Selecting a sentence in the review editor, adding a comment, approving the change and submitting the review" />
-      </DecisionRow>
     </div>
   </FlowChapter>
 </Section>
@@ -484,72 +487,38 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       maxHeight={520}
       alt="Admin-only Automation settings: private content set to Never surface, team content to Summary only, site-wide content to Full text"
     />
-    <DecisionRow
-      level={3}
-      title="Tracking"
-      text="Each page shows how often the agent used it and for which work order. Authors can test how a question matches their page."
-      image="/work/idea-ai-wiki/ai-feedback.webp"
-      width={1472}
-      height={144}
-      alt="Used in automation bar: 12 times used, last work order #4521, and a Test in automation button"
-    />
+    <div class="mt-20 max-[901px]:mt-12">
+      <h3 class="text-xl leading-[1.3] font-semibold text-[#111]">Tracking</h3>
+      <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">Each page shows how often the agent used it and for which work order. Authors can test how a question matches their page.</p>
+      <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">The usage bar and AI summary are shown on each procedure page (see{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#fix-use">Use</a>).</p>
+    </div>
   </div>
 </Section>
 
 <Section id="outcome" index="08" label="Outcome" title="Outcome">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Six of the 15 fixes shipped in full and four in part. The team shipped the fixes technicians hit every day first, and moved AI and automation work to the next phase. Two of my proposals beyond the audit also shipped: job roles and related wikis.</p>
-  <div class="grid gap-16">
-    <div class="grid gap-4">
-      <p class="text-base text-muted max-[901px]:hidden">Click a pin to compare the original gap with what shipped.</p>
-      <ShippedShot name="list" shot={shipped.list} />
-    </div>
-    <ShippedShot name="editor" shot={shipped.editor} />
-    <ShippedShot name="applies" shot={shipped.applies} />
-    <ShippedShot name="review" shot={shipped.review} />
-  </div>
-  <OutcomeTable
-    caption="Status of the 15 audit gaps"
-    rows={[
-      {
-        status: 'Shipped',
-        gaps: [
-          { id: 'F2', title: 'Most pages uncategorized' },
-          { id: 'F3', title: 'Visibility shown as an email' },
-          { id: 'F4', title: 'Conflicting filter states' },
-          { id: 'C3', title: 'Routing fields left blank' },
-          { id: 'C5', title: 'Status in the wrong place' },
-          { id: 'G2', title: 'All-or-nothing review' },
-        ],
-      },
-      {
-        status: 'Partly shipped',
-        gaps: [
-          { id: 'C1', title: 'Markdown-only editor' },
-          { id: 'U1', title: 'Author shown as a raw email' },
-          { id: 'U2', title: 'Pin means three things' },
-          { id: 'G1', title: 'Review alerts buried' },
-        ],
-      },
-      {
-        status: 'Next phase',
-        gaps: [
-          { id: 'F1', title: 'Duplicate titles' },
-          { id: 'C2', title: 'No way to import a document' },
-          { id: 'C4', title: 'Layout and purpose mixed' },
-          { id: 'U3', title: 'No sign the AI used it' },
-          { id: 'U4', title: 'No version history' },
-        ],
-      },
-      { status: 'Added', gaps: [{ title: 'Job roles' }, { title: 'Related wikis' }] },
-    ]}
-  />
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">10 of the 15 fixes have shipped, 6 in full and 4 in part. Two of my proposals beyond the audit also shipped: job roles and related wikis.</p>
+  <TabGroup
+    id="outcome-tabs"
+    label="What shipped, by screen"
+    hint="4 screens · pick one, then click a pin"
+    tabs={[shipped.list, shipped.editor, shipped.applies, shipped.review].map((s) => ({
+      label: s.title,
+      meta: `${s.items.length} ${s.items.length === 1 ? 'change' : 'changes'}`,
+    }))}
+  >
+    <div data-tab-panel><ShippedShot name="list" shot={shipped.list} /></div>
+    <div data-tab-panel><ShippedShot name="editor" shot={shipped.editor} /></div>
+    <div data-tab-panel><ShippedShot name="applies" shot={shipped.applies} /></div>
+    <div data-tab-panel><ShippedShot name="review" shot={shipped.review} /></div>
+  </TabGroup>
+  <NextPhase />
 </Section>
 
 <Section id="takeaways" index="09" label="Takeaways" title="Takeaways">
   <ol>
-    <Takeaway n={1} title="Human first in AI product design">The wiki has two kinds of users: the people who write and read it, and the AI agent that answers requests from it. I designed for the people first, the technicians, reviewers, admins and requesters, many with little time at a computer. Only then did I ask how the agent would use the content. Solving the human problems gave the AI most of what it needed.</Takeaway>
-    <Takeaway n={2} title="Audit before redesign">This project started from an engineering draft that already worked, so my first job was to understand it. On a three-person team, I reported directly to the CEO and worked with the engineer who built both the AI agent and the web app. The audit set a clear direction for the redesign and gave all three of us the same list of gaps to discuss.</Takeaway>
-    <Takeaway n={3} title="A solo designer’s workflow with AI">As the only designer, I had no one to critique ideas with. A chat assistant became that sounding board, and Figma Make let me build clickable prototypes without waiting on engineering. The engineer got working flows instead of static screens. One rule kept it on track: I set the direction from the audit, and checked every AI-generated change against it.</Takeaway>
+    <Takeaway n={1} title="Human first in AI product design">Four kinds of people share every page, many with little time at a computer. I designed for them first, and solving their problems gave the AI most of what it needed.</Takeaway>
+    <Takeaway n={2} title="Audit before redesign">Starting from a working engineering draft, I audited before redesigning, which gave the CEO & PM, the engineer and me one shared list of gaps. If I ran it again, I’d put the redesign in front of two or three technicians right after the audit, and track the{' '}<a class="underline underline-offset-[3px]" href="#metrics">Metrics</a>{' '}above after launch.</Takeaway>
+    <Takeaway n={3} title="Directing AI as a solo designer">AI sped up the making. The design calls stayed mine. I used Claude to pressure-test my reasoning and Figma Make to turn each decision into a clickable flow the engineer could build from. Every AI-generated change had to trace back to a gap in the audit, or I cut it.</Takeaway>
   </ol>
 </Section>
 

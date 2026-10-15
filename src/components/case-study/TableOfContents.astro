@@ -9,7 +9,7 @@
 <nav class="toc" aria-label="On this page" data-toc hidden>
   <p class="toc-label">On this page</p>
   <ol class="toc-list" data-toc-list></ol>
-  <button type="button" class="toc-top" data-toc-top data-cursor="default"><span aria-hidden="true">↑</span> Top</button>
+  <button type="button" class="toc-top" data-toc-top data-cursor-label="TOP"><span aria-hidden="true">↑</span> Top</button>
 </nav>
 
 <style>
@@ -166,7 +166,6 @@
       const link = document.createElement('a');
       link.href = `#${target.id}`;
       link.textContent = heading.textContent?.trim() ?? '';
-      link.dataset.cursor = 'default';
       link.addEventListener('click', (e) => {
         e.preventDefault();
         scrollToTarget(target, heading);

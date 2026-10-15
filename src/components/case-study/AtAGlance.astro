@@ -1,0 +1,23 @@
+---
+// One light line of headline results, placed right under the Overview.
+// Usage: <AtAGlance items={[{ value: '4', label: 'flows audited' }, ...]} />
+interface Item { value: string; label: string }
+interface Props { items: Item[] }
+const { items } = Astro.props;
+---
+<ul class="ag" aria-label="At a glance">
+  {items.map((it) => (
+    <li><strong>{it.value}</strong> {it.label}</li>
+  ))}
+</ul>
+
+<style>
+  .ag {
+    list-style: none; margin: 0; padding: 14px 0 0; border-top: 1px solid #E6E6E4;
+    display: flex; flex-wrap: wrap; gap: 6px 24px;
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 13px; letter-spacing: 0.02em; color: #6E6E6E;
+  }
+  .ag li { white-space: nowrap; }
+  .ag strong { font-weight: 600; color: #111111; font-size: 15px; }
+</style>

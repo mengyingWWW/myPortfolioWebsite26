@@ -3,14 +3,14 @@
     "title": "Find",
     "image": "/work/idea-ai-wiki/audit-find.webp",
     "width": 2400,
-    "height": 1313,
+    "height": 1200,
     "alt": "Engineering prototype Wiki list: scope tabs, a Browse panel with three categories, and procedure rows with visibility badges",
     "fix": "#fix-find",
     "issues": [
       {
         "id": "F1",
         "x": 45.4,
-        "y": 31.3,
+        "y": 34.2,
         "cause": "Untraceable",
         "figma": 61,
         "title": "Duplicate titles",
@@ -19,7 +19,7 @@
       {
         "id": "F2",
         "x": 26.0,
-        "y": 24.6,
+        "y": 26.9,
         "cause": "Uncategorized",
         "figma": 62,
         "title": "Most pages uncategorized",
@@ -28,16 +28,16 @@
       {
         "id": "F3",
         "x": 74.4,
-        "y": 26.5,
+        "y": 29.0,
         "cause": "Untraceable",
         "figma": 63,
         "title": "Visibility shown as an email",
-        "body": "\"Private to buildingadmin@\u2026\" names an address, not who can actually see the page."
+        "body": "\"Private to buildingadmin@…\" names an address, not who can actually see the page."
       },
       {
         "id": "F4",
         "x": 63.1,
-        "y": 14.4,
+        "y": 15.8,
         "cause": "Untraceable",
         "figma": 64,
         "title": "Conflicting filter states",
@@ -49,14 +49,14 @@
     "title": "Contribute",
     "image": "/work/idea-ai-wiki/audit-contribute.webp",
     "width": 2400,
-    "height": 1313,
+    "height": 1200,
     "alt": "Engineering prototype New procedure editor: a Markdown hint, an empty steps list, blank Applies-to fields and a Page type card",
     "fix": "#fix-contribute",
     "issues": [
       {
         "id": "C1",
-        "x": 52.8,
-        "y": 24.0,
+        "x": 55.8,
+        "y": 26.3,
         "cause": "Unstructured",
         "figma": 65,
         "title": "Markdown-only editor",
@@ -65,7 +65,7 @@
       {
         "id": "C2",
         "x": 65.0,
-        "y": 17.8,
+        "y": 19.5,
         "cause": "Unstructured",
         "figma": 66,
         "title": "No way to import a document",
@@ -73,8 +73,8 @@
       },
       {
         "id": "C3",
-        "x": 48.0,
-        "y": 53.4,
+        "x": 52.0,
+        "y": 58.4,
         "cause": "Uncategorized",
         "figma": 67,
         "title": "Routing fields left blank",
@@ -83,7 +83,7 @@
       {
         "id": "C4",
         "x": 97.5,
-        "y": 16.4,
+        "y": 17.9,
         "cause": "Uncategorized",
         "figma": 68,
         "title": "Layout and purpose mixed",
@@ -92,11 +92,11 @@
       {
         "id": "C5",
         "x": 86.1,
-        "y": 74.3,
+        "y": 81.3,
         "cause": "Unstructured",
         "figma": 69,
         "title": "Status in the wrong place",
-        "body": "\"Draft \u00b7 Not yet saved\" sits inside the editable settings card, where it reads like an option."
+        "body": "\"Draft · Not yet saved\" sits inside the editable settings card, where it reads like an option."
       }
     ]
   },
@@ -104,14 +104,14 @@
     "title": "Use",
     "image": "/work/idea-ai-wiki/audit-use.webp",
     "width": 2400,
-    "height": 1313,
+    "height": 1200,
     "alt": "Engineering prototype procedure detail page: author email, update and review dates, Pin for team buttons and numbered steps",
     "fix": "#fix-use",
     "issues": [
       {
         "id": "U1",
         "x": 48.0,
-        "y": 17.0,
+        "y": 18.6,
         "cause": "Untraceable",
         "figma": 70,
         "title": "Author shown as a raw email",
@@ -120,7 +120,7 @@
       {
         "id": "U2",
         "x": 59.1,
-        "y": 20.0,
+        "y": 21.9,
         "cause": "Unstructured",
         "figma": 71,
         "title": "Pin means three things",
@@ -129,7 +129,7 @@
       {
         "id": "U3",
         "x": 71.0,
-        "y": 24.8,
+        "y": 27.1,
         "cause": "Uncategorized",
         "figma": 72,
         "title": "No sign the AI used it",
@@ -138,7 +138,7 @@
       {
         "id": "U4",
         "x": 66.2,
-        "y": 13.8,
+        "y": 15.1,
         "cause": "Untraceable",
         "figma": 73,
         "title": "No version history",
@@ -150,14 +150,14 @@
     "title": "Govern",
     "image": "/work/idea-ai-wiki/audit-govern.webp",
     "width": 2400,
-    "height": 1313,
+    "height": 1200,
     "alt": "Engineering prototype Wiki inbox: a suggested edit with one struck-through step and Accept and Decline buttons",
     "fix": "#fix-govern",
     "issues": [
       {
         "id": "G1",
         "x": 16.5,
-        "y": 41.1,
+        "y": 45.0,
         "cause": "Untraceable",
         "figma": 74,
         "title": "Review alerts buried",
@@ -166,7 +166,7 @@
       {
         "id": "G2",
         "x": 32.4,
-        "y": 67.6,
+        "y": 74.0,
         "cause": "Untraceable",
         "figma": 75,
         "title": "All-or-nothing review",

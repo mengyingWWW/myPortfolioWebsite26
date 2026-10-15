@@ -1,0 +1,140 @@
+---
+// "Next phase" block for idea-ai-wiki "08 Outcome".
+// Part 1: roadmap (Now / Next / Later). Part 2: how success would be measured, one card per root cause.
+// IDs link to the audit list anchors (#issue-XX). Baselines come from the engineering prototype only.
+const shipped = ["F2", "F3", "F4", "C3", "C5", "G2"];
+const partly = ["C1", "U1", "U2", "G1"];
+const next = [
+  { title: "History and ownership", items: [["F1", "Duplicate titles"], ["U4", "No version history"]] },
+  { title: "Migration", items: [["C2", "No way to import a document"]] },
+  { title: "Ready for the AI", items: [["C4", "Layout and purpose mixed"], ["U3", "No sign the AI used it"]] },
+];
+const measures = [
+  {
+    cause: "Unstructured",
+    metrics: [["Time to publish a first page", "down"], ["Pages written with the step editor", "up"]],
+    baseline: "Not tracked yet",
+  },
+  {
+    cause: "Untraceable",
+    metrics: [["Review turnaround", "down"], ["Duplicate titles", "down"]],
+    baseline: "4 copies of one title",
+  },
+  {
+    cause: "Uncategorized",
+    accent: true,
+    metrics: [["Pages with a category", "up"], ["Requests the AI answers from the wiki", "up"]],
+    baseline: "3 of 18 pages categorized",
+  },
+];
+---
+<div class="np">
+  <h3 class="np-h" id="roadmap" data-toc-sub>Roadmap</h3>
+  <aside class="np-brief" aria-label="Priorities from the CEO and PM">
+    <span class="np-eyebrow">The CEO &amp; PM on priorities</span>
+    <p>Get the core feature built and live first. Automation keeps improving after launch.</p>
+  </aside>
+
+  <ol class="np-road">
+    <li class="np-col is-now">
+      <div class="np-col-head"><span class="np-dot" aria-hidden="true"></span>Now<span class="np-col-sub">Live</span></div>
+      <p class="np-group">Shipped <span class="np-n">6</span></p>
+      <ul class="np-chips">{shipped.map((id) => <li><a class="np-chip is-shipped" href={`#issue-${id}`}>{id}</a></li>)}</ul>
+      <p class="np-group">Partly shipped <span class="np-n">4</span></p>
+      <ul class="np-chips">{partly.map((id) => <li><a class="np-chip is-partly" href={`#issue-${id}`}>{id}</a></li>)}</ul>
+      <p class="np-group">Added</p>
+      <p class="np-text">Job roles · Related wikis</p>
+    </li>
+    <li class="np-col is-next">
+      <div class="np-col-head"><span class="np-dot" aria-hidden="true"></span>Next<span class="np-col-sub">5 fixes</span></div>
+      {next.map((g) => (
+        <div class="np-block">
+          <p class="np-group">{g.title}</p>
+          <ul class="np-list">
+            {g.items.map(([id, t]) => <li><a class="np-chip" href={`#issue-${id}`}>{id}</a><span>{t}</span></li>)}
+          </ul>
+        </div>
+      ))}
+    </li>
+    <li class="np-col is-later">
+      <div class="np-col-head"><span class="np-dot" aria-hidden="true"></span>Later<span class="np-col-sub">Phase 2</span></div>
+      <p class="np-text is-strong">The AI agent answers work-order help requests from the wiki.</p>
+      <p class="np-text">It routes on the tags, visibility and content types set up in this phase.</p>
+    </li>
+  </ol>
+
+  <h3 class="np-h" id="metrics" data-toc-sub>Metrics</h3>
+  <ul class="np-measure">
+    {measures.map((m) => (
+      <li class={`np-card ${m.accent ? "is-accent" : ""}`}>
+        <span class="np-cause">{m.cause}</span>
+        <ul class="np-metrics">
+          {m.metrics.map(([label, dir]) => (
+            <li>
+              <span class={`np-arrow is-${dir}`} aria-hidden="true">{dir === "up" ? "↑" : "↓"}</span>
+              <span>{label}<span class="sr-only">{dir === "up" ? " (should go up)" : " (should go down)"}</span></span>
+            </li>
+          ))}
+        </ul>
+        <div class="np-base"><span class="np-eyebrow">Starting point</span><p>{m.baseline}</p></div>
+      </li>
+    ))}
+  </ul>
+  <p class="np-note">Known starting points come from the engineering prototype.</p>
+</div>
+
+<style>
+  .np { display: grid; gap: 20px; }
+  .np-h { margin: 16px 0 0; font-size: 22px; font-weight: 600; color: #111111; scroll-margin-top: 120px; }
+  .np-eyebrow, .np-col-sub, .np-n, .np-chip, .np-cause {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; letter-spacing: 0.04em;
+  }
+  .np-eyebrow { display: block; color: #6E6E6E; text-transform: uppercase; }
+  .np-brief { border-left: 3px solid #C2410C; padding-left: 20px; }
+  .np-brief p { margin: 6px 0 0; font-size: 18px; line-height: 1.45; color: #111111; }
+
+  .np-road { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .np-col { padding: 16px; border: 1px solid #E6E6E4; border-radius: 10px; background: #FFFFFF; display: grid; gap: 10px; align-content: start; }
+  .np-col-head { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: #111111; padding-bottom: 10px; border-bottom: 1px solid #E6E6E4; }
+  .np-col-sub { margin-left: auto; color: #6E6E6E; font-weight: 400; }
+  .np-dot { width: 10px; height: 10px; border-radius: 50%; background: #6E6E6E; }
+  .is-now .np-dot { background: #067647; }
+  .is-later { border-color: #C2410C; background: #FFFBF8; }
+  .is-later .np-dot { background: #C2410C; }
+  .is-later .np-col-head { color: #9A3412; }
+  .np-group { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: #3A3A3A; }
+  .np-n { color: #6E6E6E; font-weight: 400; margin-left: 4px; }
+  .np-text { margin: 0; font-size: 14px; line-height: 1.45; color: #3A3A3A; }
+  .np-text.is-strong { color: #111111; font-weight: 500; }
+  .np-chips, .np-list { list-style: none; margin: 0; padding: 0; }
+  .np-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .np-list { display: grid; gap: 6px; }
+  .np-list li { display: flex; align-items: baseline; gap: 8px; font-size: 14px; line-height: 1.4; color: #111111; }
+  .np-chip { display: inline-block; min-width: 30px; text-align: center; padding: 2px 7px; border-radius: 999px; border: 1px solid #D9D9D6; background: #F6F6F4; color: #111111; text-decoration: none; }
+  .np-chip.is-shipped { background: #ECFDF3; border-color: #067647; color: #067647; }
+  .np-chip.is-partly { background: #FFFAEB; border-color: #B54708; color: #B54708; }
+  .np-chip:hover { text-decoration: underline; }
+  .np-chip:focus-visible { outline: 2px solid #C2410C; outline-offset: 2px; }
+  .np-block { display: grid; gap: 6px; }
+
+  .np-measure { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .np-card { display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 16px; border-top: 2px solid #111111; background: #F6F6F4; border-radius: 0 0 8px 8px; }
+  .np-card.is-accent { border-top-color: #C2410C; background: #FFF4EE; }
+  .np-cause { color: #111111; font-weight: 600; text-transform: uppercase; }
+  .is-accent .np-cause { color: #9A3412; }
+  .np-metrics { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; align-content: start; }
+  .np-metrics li { display: flex; gap: 8px; font-size: 14px; line-height: 1.4; color: #111111; }
+  .np-arrow { flex: none; width: 18px; text-align: center; font-weight: 600; }
+  .np-arrow.is-up { color: #067647; }
+  .np-arrow.is-down { color: #067647; }
+  .np-base { padding-top: 10px; border-top: 1px solid #D9D9D6; }
+  .is-accent .np-base { border-top-color: #F3C9B4; }
+  .np-base p { margin: 2px 0 0; font-size: 14px; font-weight: 600; color: #111111; }
+  .np-note { margin: -4px 0 0; font-size: 14px; color: #6E6E6E; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 900px) {
+    .np-road, .np-measure { grid-template-columns: 1fr; }
+  }
+</style>

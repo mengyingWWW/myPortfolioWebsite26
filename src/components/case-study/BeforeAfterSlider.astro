@@ -13,7 +13,7 @@ const { before, after, beforeAlt, afterAlt, width, height, status = "Proposed", 
 const uid = id ?? `ba-${Math.random().toString(36).slice(2, 8)}`;
 ---
 <figure class="ba" id={uid}>
-  <div class="ba-frame" data-cursor="default" style={`--pos:50%; aspect-ratio:${width}/${height}`}>
+  <div class="ba-frame" style={`--pos:50%; aspect-ratio:${width}/${height}`}>
     <img class="ba-img" src={before} alt={beforeAlt} width={width} height={height} loading="lazy" decoding="async" />
     <div class="ba-after" aria-hidden="false">
       <img class="ba-img" src={after} alt={afterAlt} width={width} height={height} loading="lazy" decoding="async" />
@@ -21,7 +21,7 @@ const uid = id ?? `ba-${Math.random().toString(36).slice(2, 8)}`;
     <div class="ba-handle" aria-hidden="true"><span>‹ ›</span></div>
     <span class="ba-tag ba-tag-l">Before</span>
     <span class="ba-tag ba-tag-r">After <em>· {status}</em></span>
-    <input class="ba-range" type="range" min="0" max="100" value="50" step="1"
+    <input class="ba-range" type="range" min="0" max="100" value="50" step="1" data-cursor-label="DRAG"
       aria-label="Compare before and after. Move left to show more of the redesign, right to show more of the original." />
   </div>
   {caption && <figcaption>{caption}</figcaption>}

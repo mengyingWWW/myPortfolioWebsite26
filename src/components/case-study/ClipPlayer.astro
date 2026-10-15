@@ -15,11 +15,11 @@ interface Props {
 const { src, label, width = 1440, height = 900 } = Astro.props;
 ---
 
-<div class="clip" data-clip data-cursor="default" style={`max-width:${width}px`}>
+<div class="clip" data-clip style={`max-width:${width}px`}>
   <video muted loop playsinline preload="none" poster={`${src}.jpg`} width={width} height={height} aria-label={label}>
     <source src={`${src}.mp4`} type="video/mp4" />
   </video>
-  <button type="button" class="clip-toggle" aria-label="Play video" data-cursor="default">
+  <button type="button" class="clip-toggle" aria-label="Play video" data-cursor-label="PLAY">
     <svg class="icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor"></path></svg>
     <svg class="icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"></path></svg>
   </button>
@@ -38,6 +38,7 @@ const { src, label, width = 1440, height = 900 } = Astro.props;
       const playing = !video.paused;
       clip.classList.toggle('is-playing', playing);
       button.setAttribute('aria-label', playing ? 'Pause video' : 'Play video');
+      button.dataset.cursorLabel = playing ? 'PAUSE' : 'PLAY';
     };
     const sync = () => {
       if (near && !pausedByUser) video.play().catch(render);

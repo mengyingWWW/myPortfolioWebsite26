@@ -1,0 +1,57 @@
+---
+/**
+ * The card a pin opens in a pinned screenshot (ShippedShot, AnnotatedShot): a close button, the
+ * content (slot; start it with a .pf-pop-head so it clears the button), and a footer with
+ * "n / total" and Prev / Next. Behavior in pin-figure.ts, styles in pin-figure.css.
+ */
+import './pin-figure.css';
+
+interface Props {
+  id: string;
+  /** Accessible name of the card, e.g. "F2 details". */
+  label: string;
+  /** 0-based position among the figure's pins. */
+  index: number;
+  total: number;
+}
+
+const { id, label, index, total } = Astro.props;
+---
+
+<div class="pf-pop" id={id} role="group" aria-label={label} data-pin-pop>
+  <button type="button" class="pf-close" aria-label="Close" data-cursor-label="CLOSE" data-pin-close>
+    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+      <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+    </svg>
+  </button>
+  <slot />
+  <div class="pf-pop-foot">
+    <span class="pf-pop-count">
+      <span class="sr-only">Marker </span>
+      {index + 1}
+      <span aria-hidden="true"> / </span>
+      <span class="sr-only"> of </span>
+      {total}
+    </span>
+    <span class="pf-pop-steps">
+      <button
+        type="button"
+        class="pf-step"
+        data-pin-step="-1"
+        aria-disabled={index === 0 ? 'true' : undefined}
+        data-cursor-label="PREV"
+      >
+        ← Prev
+      </button>
+      <button
+        type="button"
+        class="pf-step is-next"
+        data-pin-step="1"
+        aria-disabled={index === total - 1 ? 'true' : undefined}
+        data-cursor-label="NEXT"
+      >
+        Next →
+      </button>
+    </span>
+  </div>
+</div>

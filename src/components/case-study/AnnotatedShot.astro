@@ -1,81 +1,120 @@
 ---
-// Annotated "before" screenshot for one flow: numbered pins on the image + the issue list beside it.
+// Annotated "before" screenshot for one flow: numbered pins on a full-width image, each opening a
+// card with the gap (pin-figure.ts: Prev / Next, auto-open in view, one card open on the page).
+// At 900px and below the pins give way to a plain list of the same gaps.
 // Data: src/data/idea-ai-wiki/audit-issues.json (one entry per flow).
-// Static for now; pins and list items share ids so an interactive version can be added later.
+// Used inside TabGroup (the tab names the flow), so there is no flow heading here.
+// Each pin is #issue-XX, so links from anywhere on the page open its card (or reach its list item).
+import PinCard from './PinCard.astro';
+import './pin-figure.css';
+
 interface Issue { id: string; x: number; y: number; cause: string; title: string; body: string }
 interface Props {
   flow: { title: string; image: string; width: number; height: number; alt: string; fix: string; issues: Issue[] };
-  index: string; // "01"
+  index?: string; // kept for backwards compatibility; not shown
 }
-const { flow, index } = Astro.props;
+const { flow } = Astro.props;
+const total = flow.issues.length;
+const popId = (id: string) => `as-pop-${id}`;
+const causeClass = (cause: string) => `as-cause ${cause === 'Uncategorized' ? 'is-accent' : ''}`;
 ---
-<section class="as" aria-labelledby={`as-${flow.title.toLowerCase()}`}>
-  <h3 class="as-title" id={`as-${flow.title.toLowerCase()}`}>
-    <span class="as-idx">{index}</span>{' '}{flow.title}{' '}
-    <span class="as-count">{flow.issues.length} gaps</span>{' '}
-    <span class="as-badge">Before</span>
-  </h3>
-  <div class="as-grid">
-    <figure class="as-figure">
+<div class="as" data-pin-figure>
+  <figure class="as-figure">
+    <figcaption class="as-cap"><span class="as-badge">Before</span>Engineering prototype · {flow.title}</figcaption>
+    <div class="as-stage" data-pin-stage>
       <div class="as-frame">
         <img src={flow.image} width={flow.width} height={flow.height} alt={flow.alt} loading="lazy" decoding="async" />
-        {flow.issues.map((i) => (
-          <a class="as-pin" href={`#issue-${i.id}`} style={`left:${i.x}%;top:${i.y}%`} aria-label={`${i.id}: ${i.title}`}>
-            {i.id}
-          </a>
-        ))}
       </div>
-    </figure>
-    <ol class="as-list">
-      {flow.issues.map((i) => (
-        <li id={`issue-${i.id}`}>
-          <div class="as-head">
-            <span class="as-code">{i.id}</span>
-            <span class={`as-cause ${i.cause === "Uncategorized" ? "is-accent" : ""}`}>{i.cause}</span>
-          </div>
-          <p class="as-issue">{i.title}</p>
-          <p class="as-body">{i.body}</p>
-          <a class="as-fix" href={flow.fix}>See the fix →</a>
-        </li>
+      {flow.issues.map((i, n) => (
+        <>
+          <button
+            type="button"
+            class="as-pin pf-pin"
+            id={`issue-${i.id}`}
+            style={`left:${i.x}%;top:${i.y}%`}
+            data-pin
+            data-tip={`${i.id} · ${i.title} — click to see`}
+            aria-expanded="false"
+            aria-controls={popId(i.id)}
+            aria-label={`${i.id}: ${i.title}`}
+            data-cursor-label="VIEW"
+          >
+            {i.id}
+          </button>
+          <PinCard id={popId(i.id)} label={`${i.id} details`} index={n} total={total}>
+            <div class="as-head pf-pop-head">
+              <span class="as-code">{i.id}</span>
+              <span class={causeClass(i.cause)}>{i.cause}</span>
+            </div>
+            <p class="as-issue">{i.title}</p>
+            <p class="as-body">{i.body}</p>
+            <a class="as-fix" href={flow.fix} data-pin-link>See the fix <span aria-hidden="true">→</span></a>
+          </PinCard>
+        </>
       ))}
-    </ol>
-  </div>
-</section>
+      <span class="pf-tip" aria-hidden="true" data-pin-tip></span>
+    </div>
+  </figure>
+  <ol class="as-list pf-plain">
+    {flow.issues.map((i) => (
+      <li data-pin-item>
+        <div class="as-head">
+          <span class="as-code">{i.id}</span>
+          <span class={causeClass(i.cause)}>{i.cause}</span>
+        </div>
+        <p class="as-issue">{i.title}</p>
+        <p class="as-body">{i.body}</p>
+        <a class="as-fix" href={flow.fix}>See the fix <span aria-hidden="true">→</span></a>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<script>
+  import { initPinFigures } from './pin-figure';
+  initPinFigures();
+</script>
 
 <style>
-  .as { display: grid; gap: 20px; }
-  .as-title { display: flex; align-items: baseline; gap: 12px; margin: 0; font-size: 22px; font-weight: 600; }
-  .as-idx, .as-count, .as-code, .as-cause, .as-badge {
+  .as { display: grid; gap: 24px; }
+  .as-figure { margin: 0; display: grid; gap: 10px; }
+  .as-cap, .as-badge, .as-code, .as-cause {
     font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
-    font-size: 12px; letter-spacing: 0.04em; font-weight: 400;
+    font-size: 12px; letter-spacing: 0.04em;
   }
-  .as-idx, .as-count { color: #6E6E6E; }
-  .as-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 32px; align-items: start; }
-  .as-figure { margin: 0; min-width: 0; }
-  .as-frame { position: relative; border-radius: 8px; overflow: hidden; background: #1c1c1c; }
+  .as-cap { display: flex; align-items: center; gap: 10px; color: #6E6E6E; }
+  .as-badge { padding: 3px 10px; border-radius: 999px; background: #F2F2F0; color: #111111; border: 1px solid #E6E6E4; }
+  .as-stage { position: relative; }
+  .as-frame { position: relative; border-radius: 10px; overflow: hidden; background: #1c1c1c; }
   .as-frame img { display: block; width: 100%; height: auto; }
   .as-pin {
-    position: absolute; transform: translate(-50%, -50%);
-    min-width: 24px; height: 22px; padding: 0 5px; border-radius: 999px;
-    background: #C2410C; color: #FFFFFF; border: 1.5px solid #FFFFFF;
-    display: grid; place-items: center; text-decoration: none;
-    font: 600 10px/1 var(--font-mono, ui-monospace, monospace);
-    box-shadow: 0 2px 8px rgba(0,0,0,.35);
+    --tone: #C2410C;
+    position: absolute; z-index: 1; transform: translate(-50%, -50%);
+    min-width: 26px; height: 20px; padding: 0 5px; border-radius: 999px;
+    background: var(--tone); color: #FFFFFF; border: 1.5px solid #FFFFFF;
+    display: grid; place-items: center; cursor: pointer;
+    font: 600 10.5px/1 var(--font-mono, ui-monospace, monospace);
+    box-shadow: 0 2px 8px rgba(0,0,0,.45);
+    transition: transform .15s ease;
   }
+  .as-pin:hover, .as-pin:focus-visible, .as-pin[aria-expanded='true'] { transform: translate(-50%, -50%) scale(1.1); }
   .as-pin:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
-  .as-badge { margin-left: auto; padding: 3px 10px; border-radius: 999px; background: #F2F2F0; color: #111111; border: 1px solid #E6E6E4; }
-  .as-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid #E6E6E4; }
-  .as-list li { padding: 14px 0; border-bottom: 1px solid #E6E6E4; scroll-margin-top: 120px; }
-  .as-list li:target { background: #FFF4EE; box-shadow: -8px 0 0 #FFF4EE, 8px 0 0 #FFF4EE; }
+
   .as-head { display: flex; align-items: center; gap: 10px; }
   .as-code { color: #FFFFFF; background: #C2410C; border-radius: 999px; padding: 2px 8px; }
   .as-cause { color: #6E6E6E; }
   .as-cause.is-accent { color: #9A3412; }
-  .as-issue { margin: 8px 0 4px; font-size: 15px; font-weight: 600; color: #111111; }
+  .as-issue { margin: 8px 0 4px; font-size: 15px; line-height: 1.35; font-weight: 600; color: #111111; }
   .as-body { margin: 0; font-size: 14px; line-height: 1.45; color: #3A3A3A; }
-  .as-fix { display: inline-block; margin-top: 8px; font-size: 13px; color: #111111; text-underline-offset: 3px; }
+  .as-fix { display: inline-block; margin-top: 12px; font-size: 13px; color: #111111; text-underline-offset: 3px; }
+
+  .as-list { list-style: none; margin: 0; padding: 0; }
+  .as-list li { padding: 16px 0; border-top: 1px solid #E6E6E4; scroll-margin-top: 120px; }
+  .as-list .as-issue { font-size: 16px; }
+  .as-list .as-body { font-size: 15px; line-height: 1.5; }
+  .as-list .as-fix { margin-top: 8px; font-size: 14px; }
   @media (max-width: 900px) {
-    .as-grid { grid-template-columns: 1fr; }
-    .as-pin { min-width: 20px; height: 18px; font-size: 9px; padding: 0 3px; }
+    .as-pin { display: none; }
   }
+  @media (prefers-reduced-motion: reduce) { .as-pin { transition: none; } }
 </style>
