@@ -33,6 +33,7 @@ glance:
   - { value: "67%", label: "less build time" }
   - { value: "5", label: "pin types on one map" }
   - { value: "4", label: "use cases, one mobile map" }
+accent: { main: '#0F766E', text: '#115E59', tint: '#F0FDFA', soft: '#F7FEFC', border: '#99F6E4' }
 order: 2
 ---
 
@@ -42,6 +43,7 @@ import Block from '@/components/case-study/Block.astro';
 import BriefCallout from '@/components/case-study/BriefCallout.astro';
 import Columns from '@/components/case-study/Columns.astro';
 import DecisionRow from '@/components/case-study/DecisionRow.astro';
+import MappingProblemScenes from '@/components/case-study/MappingProblemScenes.astro';
 import Placeholder from '@/components/case-study/Placeholder.astro';
 import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
 import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
@@ -56,17 +58,15 @@ import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 <CaseStudy>
 
 <Section id="problem" index="01" label="Problem" title="Problem">
-  <div class="max-w-[60ch] text-base leading-relaxed text-meta"><TextPlaceholder lines={2} /></div>
-  {/* TODO: Mapping version of <ProblemScenes> */}
-  <ol class="grid grid-cols-4 gap-5 max-[1000px]:grid-cols-2 max-[1000px]:gap-y-7 max-[560px]:grid-cols-1">
-    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 1 · [setup: technician arrives on site]" /></li>
-    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 2 · [friction: can't find the asset]" /></li>
-    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 3 · [workaround: asks around / guesses]" /></li>
-    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 4 · [cost: time lost or wrong asset]" /></li>
-  </ol>
+  <p class="max-w-[60ch] text-base leading-relaxed text-meta">For K-12 districts, Guardian covers work orders, assets, IT, projects, visitors and safety, so it holds a record for nearly everything and everyone on campus. On a phone, all of that lived in lists. A work order could say Room 214, and nothing showed where Room 214 was or what else was in it.</p>
+  <MappingProblemScenes />
   <div>
-    <Statement>[One-sentence core challenge…] <em>[keyword1, keyword2 and keyword3.]</em></Statement>
-    <BriefCallout label="The brief from the CEO & PM" text="[Paraphrased brief]" />
+    <Statement>Every record in Guardian knew where it belonged, but no one on site could see it. Mapping puts it on a map of the real campus, <em>down to the floor and room.</em></Statement>
+    <BriefCallout
+      label="From the engineering spec"
+      ariaLabel="From the engineering spec"
+      text="Show where people, assets and work orders are, on the map and inside buildings. Help staff respond in an emergency. Stop teams from mapping and updating asset locations by hand."
+    />
   </div>
 </Section>
 
