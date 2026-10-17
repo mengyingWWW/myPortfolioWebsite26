@@ -3,8 +3,9 @@
  * A looping clip laid over part of a cover image (e.g. a device screen). Decorative: the cover keeps its alt.
  * The layer covers the image box and repeats the card's cover transform (--cover-shift-x/y, --cover-scale),
  * so the clip stays on the screen however the cover is framed. Without those variables it sits untransformed.
- *   mode="hover":    loads on first hover / keyboard focus of the enclosing link, plays from the start
- *                    while hovered, then pauses and fades out. Only on devices that can hover.
+ *   mode="hover":    preloads once the enclosing link comes within ~200px of the viewport (or on first
+ *                    hover / keyboard focus, if sooner), plays from the start while hovered, then
+ *                    pauses and fades out. Only on devices that can hover.
  *   mode="autoplay": loads and plays while in view.
  * With reduced motion it is removed and never loads.
  */
@@ -14,16 +15,22 @@ interface Props {
   /** The area to cover, in % of the cover image. */
   screen: { x: number; y: number; w: number; h: number };
   mode: 'hover' | 'autoplay';
+  /** Match the cover image's blend (e.g. "multiply") so a full-bleed hover clip doesn't flash white. */
+  blend?: string;
 }
 
-const { src, screen, mode } = Astro.props;
+const { src, screen, mode, blend } = Astro.props;
 const poster = src.replace(/\.mp4$/, '.jpg');
+/** Blend on the layer, not the video: .cv-layer's transform creates a stacking context that would
+ *  otherwise confine mix-blend-mode to the layer (so a white video never tints into the card). */
+const layerStyle = blend ? `mix-blend-mode:${blend}` : undefined;
+const videoStyle = `left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height:${screen.h}%`;
 ---
 
-<div class:list={['cv-layer', `is-${mode}`]} data-cover-video={mode} aria-hidden="true">
+<div class:list={['cv-layer', `is-${mode}`, blend && 'is-blend']} style={layerStyle} data-cover-video={mode} aria-hidden="true">
   <video
     class="cv-video"
-    style={`left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height:${screen.h}%`}
+    style={videoStyle}
     data-src={src}
     data-poster={poster}
     autoplay={mode === 'autoplay'}
@@ -47,6 +54,7 @@ const poster = src.replace(/\.mp4$/, '.jpg');
 
     const load = () => {
       if (video.src) return;
+      video.preload = 'auto';
       video.poster = video.dataset.poster!;
       video.src = video.dataset.src!;
     };
@@ -54,6 +62,10 @@ const poster = src.replace(/\.mp4$/, '.jpg');
 
     if (mode === 'hover') {
       const host = layer.closest<HTMLElement>('a') ?? layer.parentElement!;
+      // Shown only once a frame is actually playing, so a slow first load never fades in an empty box.
+      video.addEventListener('playing', () => {
+        if (layer.classList.contains('is-on')) layer.classList.add('is-ready');
+      });
       const start = () => {
         load();
         if (video.currentTime) video.currentTime = 0;
@@ -62,7 +74,7 @@ const poster = src.replace(/\.mp4$/, '.jpg');
       };
       const stop = () => {
         video.pause();
-        layer.classList.remove('is-on');
+        layer.classList.remove('is-on', 'is-ready');
       };
       // Rewind once hidden, so the next hover opens on the first frame (which matches the still), not the last one shown.
       video.addEventListener('transitionend', () => {
@@ -72,6 +84,16 @@ const poster = src.replace(/\.mp4$/, '.jpg');
       host.addEventListener('pointerleave', stop);
       host.addEventListener('focusin', () => host.matches(':focus-visible') && start());
       host.addEventListener('focusout', stop);
+      // Download ahead of the first hover, so playback starts at once.
+      const preload = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          load();
+          preload.disconnect();
+        },
+        { rootMargin: '200px' },
+      );
+      preload.observe(host);
     } else {
       new IntersectionObserver(([entry]) => {
         if (entry.isIntersecting) {
@@ -103,7 +125,7 @@ const poster = src.replace(/\.mp4$/, '.jpg');
     opacity: 0;
     transition: opacity 300ms ease;
   }
-  .is-hover.is-on .cv-video {
+  .is-hover.is-on.is-ready .cv-video {
     opacity: 1;
   }
 </style>

@@ -63,7 +63,11 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
         <CoverPlaceholder title={title} class="work-card-placeholder absolute inset-0" />
       )
     }
-    {cover && coverVideo && coverScreen && <CoverVideo src={coverVideo} screen={coverScreen} mode="hover" />}
+    {
+      cover && coverVideo && coverScreen && (
+        <CoverVideo src={coverVideo} screen={coverScreen} mode="hover" blend={coverBlend} />
+      )
+    }
   </div>
   <div class="mt-4 flex items-baseline justify-between gap-6">
     <h3 class="line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]">{title}</h3>
@@ -126,11 +130,19 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
     transform: translate(var(--cover-shift-x, 0%), var(--cover-shift-y, 0%)) scale(var(--cover-scale, 1));
     transform-origin: 0 0;
     filter: grayscale(1);
-    transition: filter 500ms ease;
+    transition:
+      filter 500ms ease,
+      opacity 300ms ease;
   }
 
   .work-card:is(:hover, :focus-visible) .work-card-image {
     filter: grayscale(0);
+  }
+
+  /* A blended hover clip multiplies with whatever is under it, so the still would ghost through.
+     Fade the still out (in step with the clip's fade-in) once the clip is showing a frame. */
+  :global(.work-card-cover:has(.cv-layer.is-blend.is-on.is-ready) .work-card-image) {
+    opacity: 0;
   }
 
   /* The label repeats the title under the cover, so it only appears on hover. */

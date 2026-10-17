@@ -1,29 +1,194 @@
 ---
 title: IDEA Mapping Design
-subtitle: Placeholder subtitle.
+subtitle: "Building Guardian’s mobile map from 0→1 to bring facility data into the field"
 year: 2026
 type: "0→1 UI/UX Design"
-method: Method
+method: "[Method]"
 status: "Shipped"
 domains: ["B2B SaaS", "AI Startup"]
 platform: "Mobile"
 cover: ../../assets/work/idea-mapping/cover-mockup.png
-coverAlt: "Three phones showing the IDEA Mapping app: selecting assets on a building floor plan to geofence, a city map with clustered pins for people, assets and locations, and the map in Emergency mode with first-aid points and shelters."
+coverAlt: "Three phones showing IDEA Mapping: a building floor plan with an AED pinned in the Mechanical room, the campus map with clustered pins for people, assets, locations and work orders, and a scan result flagging that the AED's recorded location doesn't match where it was scanned."
 coverScale: 0.9
 coverBackground: "#f4f4f5"
 coverBlend: multiply
-role: "0→1 UI/UX Design"
+coverVideo: "/work/idea-mapping/clips/cover-loop.mp4"
+coverScreen: { x: 0, y: 0, w: 100, h: 100 }
+role: "Product Designer (Sole designer)"
 skills:
-  - Skill
-timeline: Timeline
+  - 0→1 Product design
+  - Mobile interaction design
+  - Design systems
+  - AI prototyping
+timeline: "Jul 2026 – Aug 2026"
 tools:
-  - Tool
+  - Figma (Figma Make)
+  - Cursor
+  - Claude
 team:
-  - Team
-summary: Placeholder summary.
+  - 1 CEO & PM
+  - 1 Engineer
+summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its records say where every asset, person and work order should be. On site, technicians, admins and responders still walk the halls to find them. Mapping is the new mobile feature that puts those records on a map. I started from an engineering spec: five pin types, four use cases and two map layers, with open questions about floors, crowded pins and modes. As the sole designer, I answered them in an interactive prototype that served as the spec. With it, the engineer built the feature in a third of the planned time, and the core design has shipped."
+glance:
+  - { value: "67%", label: "less build time" }
+  - { value: "5", label: "pin types on one map" }
+  - { value: "4", label: "use cases, one mobile map" }
 order: 2
 ---
 
-## Section heading
+import CaseStudy from '@/components/case-study/CaseStudy.astro';
+import Section from '@/components/case-study/Section.astro';
+import Block from '@/components/case-study/Block.astro';
+import BriefCallout from '@/components/case-study/BriefCallout.astro';
+import Columns from '@/components/case-study/Columns.astro';
+import DecisionRow from '@/components/case-study/DecisionRow.astro';
+import Placeholder from '@/components/case-study/Placeholder.astro';
+import PlaceholderList from '@/components/case-study/PlaceholderList.astro';
+import PlaceholderTable from '@/components/case-study/PlaceholderTable.astro';
+import RoleCards from '@/components/case-study/RoleCards.astro';
+import Statement from '@/components/case-study/Statement.astro';
+import Stats from '@/components/case-study/Stats.astro';
+import Steps from '@/components/case-study/Steps.astro';
+import TabGroup from '@/components/case-study/TabGroup.astro';
+import Takeaway from '@/components/case-study/Takeaway.astro';
+import TextPlaceholder from '@/components/case-study/TextPlaceholder.astro';
 
-Placeholder copy.
+<CaseStudy>
+
+<Section id="problem" index="01" label="Problem" title="Problem">
+  <div class="max-w-[60ch] text-base leading-relaxed text-meta"><TextPlaceholder lines={2} /></div>
+  {/* TODO: Mapping version of <ProblemScenes> */}
+  <ol class="grid grid-cols-4 gap-5 max-[1000px]:grid-cols-2 max-[1000px]:gap-y-7 max-[560px]:grid-cols-1">
+    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 1 · [setup: technician arrives on site]" /></li>
+    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 2 · [friction: can't find the asset]" /></li>
+    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 3 · [workaround: asks around / guesses]" /></li>
+    <li><Placeholder kind="image" ratio="4/3" source="make" label="Panel 4 · [cost: time lost or wrong asset]" /></li>
+  </ol>
+  <div>
+    <Statement>[One-sentence core challenge…] <em>[keyword1, keyword2 and keyword3.]</em></Statement>
+    <BriefCallout label="The brief from the CEO & PM" text="[Paraphrased brief]" />
+  </div>
+</Section>
+
+<Section id="users" index="02" label="Users" title="Users">
+  <div class="max-w-[65ch] text-lg leading-relaxed text-muted"><TextPlaceholder lines={3} /></div>
+  <Placeholder kind="diagram" ratio="16/7" label="[Field workflow: who touches the map, where]" />
+  <RoleCards
+    roles={[
+      { name: '[Role 1]', tag: '[How they use the map]', text: '[Job on site + what they need from a map]' },
+      { name: '[Role 2]', tag: '[How they use the map]', text: '[Job on site + what they need from a map]' },
+      { name: '[Role 3]', tag: '[How they use the map]', text: '[Job on site + what they need from a map]' },
+    ]}
+  />
+</Section>
+
+<Section id="scope" index="03" label="Scope" title="Scope">
+  <div class="max-w-[65ch] text-lg leading-relaxed text-muted"><TextPlaceholder lines={2} /></div>
+  <Columns cols="1 1 1">
+    <div>
+      <p class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">Must for v1</p>
+      <div class="mt-4"><PlaceholderList count={3} /></div>
+    </div>
+    <div>
+      <p class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">Later</p>
+      <div class="mt-4"><PlaceholderList count={3} /></div>
+    </div>
+    <div>
+      <p class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">Not doing</p>
+      <div class="mt-4"><PlaceholderList count={3} /></div>
+    </div>
+  </Columns>
+  <Block title="Principles">
+    <Steps
+      steps={[
+        { lead: '[Principle 1]', text: '[One sentence]' },
+        { lead: '[Principle 2]', text: '[One sentence]' },
+        { lead: '[Principle 3]', text: '[One sentence]' },
+      ]}
+    />
+  </Block>
+</Section>
+
+<Section id="decisions" index="04" label="Key Decisions" title="Key Decisions">
+  <div class="max-w-[65ch] text-lg leading-relaxed text-muted"><TextPlaceholder lines={2} /></div>
+  <div>
+    <DecisionRow level={3} principle="[Principle 1]" title="[Decision 1: the question]" text="[Chosen option · trade-off · outcome]">
+      <Placeholder class="w-full" kind="diagram" ratio="4/3" label="[A/B/C options for decision 1]" />
+    </DecisionRow>
+    <DecisionRow level={3} principle="[Principle 2]" title="[Decision 2: the question]" text="[Chosen option · trade-off · outcome]">
+      <Placeholder class="w-full" kind="diagram" ratio="4/3" label="[A/B/C options for decision 2]" />
+    </DecisionRow>
+    <DecisionRow level={3} principle="[Principle 3]" title="[Decision 3: the question]" text="[Chosen option · trade-off · outcome]">
+      <Placeholder class="w-full" kind="diagram" ratio="4/3" label="[A/B/C options for decision 3]" />
+    </DecisionRow>
+  </div>
+  {/* TODO: Mapping version of DecisionOptions for the decision with real A/B/C */}
+</Section>
+
+<Section id="prototype" index="05" label="Prototype" title="Prototype as Spec">
+  <div class="max-w-[65ch] text-lg leading-relaxed text-muted"><TextPlaceholder lines={3} /></div>
+  <Placeholder kind="diagram" ratio="16/7" label="[Handoff before vs. vibe-coded prototype flow]" />
+  <Placeholder kind="motion" ratio="16/10" source="have" label="[Figma Make prototype clip]" />
+  <Stats
+    items={[
+      { value: '[67%]', caption: '[less engineering build time]' },
+      { value: '[ ]', caption: '[baseline]' },
+      { value: '[ ]', caption: '[actual]' },
+    ]}
+  />
+  <div class="max-w-[60ch] text-base leading-relaxed text-meta"><TextPlaceholder lines={1} /></div>
+</Section>
+
+<Section id="outcome" index="06" label="Outcome" title="Outcome">
+  <div class="max-w-[65ch] text-lg leading-relaxed text-muted"><TextPlaceholder lines={2} /></div>
+  <TabGroup
+    id="outcome-tabs"
+    label="What shipped, by task"
+    hint="3 tasks · pick one"
+    tabs={[{ label: '[Task 1]' }, { label: '[Task 2]' }, { label: '[Task 3]' }]}
+  >
+    <div data-tab-panel>
+      <Placeholder kind="interactive" ratio="16/10" source="have" label="[Live screens for task 1, with pins]" />
+      {/* TODO: ShippedShot */}
+    </div>
+    <div data-tab-panel>
+      <Placeholder kind="interactive" ratio="16/10" source="have" label="[Live screens for task 2, with pins]" />
+      {/* TODO: ShippedShot */}
+    </div>
+    <div data-tab-panel>
+      <Placeholder kind="interactive" ratio="16/10" source="have" label="[Live screens for task 3, with pins]" />
+      {/* TODO: ShippedShot */}
+    </div>
+  </TabGroup>
+  <div>
+    <h3 id="metrics" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Metrics</h3>
+    <div class="mt-6"><PlaceholderTable columns={['Metric', 'Starting point', 'Direction']} rows={3} /></div>
+  </div>
+  <div>
+    <h3 id="roadmap" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Roadmap</h3>
+    <Columns cols="1 1 1" class="mt-6">
+      <div>
+        <p class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">Now</p>
+        <div class="mt-4"><PlaceholderList count={2} /></div>
+      </div>
+      <div>
+        <p class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">Next</p>
+        <div class="mt-4"><PlaceholderList count={2} /></div>
+      </div>
+      <div>
+        <p class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">Later</p>
+        <div class="mt-4"><PlaceholderList count={2} /></div>
+      </div>
+    </Columns>
+  </div>
+</Section>
+
+<Section id="takeaways" index="07" label="Takeaways" title="Takeaways">
+  <ol>
+    <Takeaway n={1} title="[Takeaway 1]"><TextPlaceholder lines={2} /></Takeaway>
+    <Takeaway n={2} title="[Takeaway 2]"><TextPlaceholder lines={2} /></Takeaway>
+    <Takeaway n={3} title="[An honest gap]"><TextPlaceholder lines={2} /></Takeaway>
+  </ol>
+</Section>
+
+</CaseStudy>

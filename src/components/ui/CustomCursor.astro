@@ -6,11 +6,13 @@
  *   hero   (over [data-cursor-zone="hero"]): a crisp dark dot plus a soft cast shadow
  *          that trails behind it, offset down-right as if lit by the same sun.
  *   normal (everywhere else): a white dot with difference blending.
- * Over anything clickable (CLICKABLE below) it becomes one glass circle, the same everywhere: 64px,
- * with a label naming the action. The label comes from the nearest [data-cursor-label] (e.g.
- * "CLOSE", "DRAG"); links without one say "VIEW", other controls without one show no word. The
- * cursor is aria-hidden, so controls keep their own accessible names. Text fields keep the I-beam.
- * Page-wide: <html data-cursor-hidden> hides it wherever it is (the footer logo's sun stands in).
+ * Over most clickables it becomes one glass circle with a label naming the action: 64px for links
+ * and cards ([data-cursor="view"]), 36px for icon-only controls ([data-cursor="icon"]). The label
+ * comes from the nearest [data-cursor-label] (e.g. "CLOSE", "DRAG"); links without one say "VIEW",
+ * other controls without one show no word. Nav and footer text links keep the dot and shrink it to
+ * 6px (no glass) — their hover state is an On-style underline. The cursor is aria-hidden, so
+ * controls keep their own accessible names. Text fields keep the I-beam. Page-wide:
+ * <html data-cursor-hidden> hides it wherever it is (the footer logo's sun stands in).
  *
  * The glass relies on backdrop-filter, which only sees the page if no ancestor is a backdrop root
  * (mix-blend-mode, filter, opacity < 1, isolation...). So the root stays a plain fixed child of
@@ -67,17 +69,29 @@ const { label = 'VIEW' } = Astro.props;
 
   /* Blend modes only work on the outermost element (inner layers are isolated). Never over a
      clickable element: a blending root would hide the page from backdrop-filter. */
-  .cursor[data-zone='normal'][data-state='default'] {
+  .cursor[data-zone='normal'][data-state='default'],
+  .cursor[data-zone='normal'][data-state='compact'] {
     mix-blend-mode: difference;
   }
 
-  .cursor[data-zone='hero'][data-state='default'] {
+  .cursor[data-zone='hero'][data-state='default'],
+  .cursor[data-zone='hero'][data-state='compact'] {
     --cursor-fill: #111;
     mix-blend-mode: multiply;
   }
 
+  /* Nav / footer text links: keep the dot, shrink it. */
+  .cursor[data-state='compact'] {
+    --cursor-diameter: 6px;
+  }
+
   .cursor[data-state='view'] {
     --cursor-diameter: 64px;
+  }
+
+  /* Icon-only controls: a smaller glass circle, same recipe as view. */
+  .cursor[data-state='icon'] {
+    --cursor-diameter: 36px;
   }
 
   .cursor-pos {
@@ -204,7 +218,8 @@ const { label = 'VIEW' } = Astro.props;
     text-shadow: 0 0 6px rgb(0 0 0 / 0.6);
   }
 
-  .cursor[data-state='view'] .cursor-label {
+  .cursor[data-state='view'] .cursor-label,
+  .cursor[data-state='icon'] .cursor-label {
     opacity: 1;
     transition-delay: 100ms;
   }
@@ -278,13 +293,15 @@ const { label = 'VIEW' } = Astro.props;
   const TEXT_FIELD =
     'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])';
   const CLICKABLE =
-    'a[href], button, [role="button"], summary, label[for], [data-cursor="view"], [onclick], input[type="button"], input[type="submit"], input[type="reset"], input[type="range"]';
+    'a[href], button, [role="button"], summary, label[for], [data-cursor="view"], [data-cursor="icon"], [onclick], input[type="button"], input[type="submit"], input[type="reset"], input[type="range"]';
   const LINK = 'a[href], [data-cursor="view"]';
+  /** Nav and footer text links use an On-style underline; the cursor stays a small dot. */
+  const CHROME_LINK = 'header.nav a[href], footer a[href]';
   const LABELLED = '[data-cursor-label]';
   const HERO_ZONE = '[data-cursor-zone="hero"]';
 
   type Zone = 'hero' | 'normal';
-  type State = 'default' | 'view' | 'hide';
+  type State = 'default' | 'compact' | 'view' | 'icon' | 'hide';
   type Tone = 'light' | 'dark';
 
   /** Luminance hysteresis: go dark below the first, back to light above the second. */
@@ -421,8 +438,11 @@ const { label = 'VIEW' } = Astro.props;
       if (target.closest(TEXT_FIELD)) return { state: 'hide' };
       const el = target.closest(CLICKABLE);
       if (!el) return { state: 'default' };
+      // Nav / footer links: shrink the dot; their hover is the underline, not glass.
+      if (el.matches(CHROME_LINK)) return { state: 'compact' };
       // Buttons and controls name their own action; only links fall back to the default word.
       const named = target.closest<HTMLElement>(LABELLED)?.dataset.cursorLabel;
+      if (el.matches('[data-cursor="icon"]')) return { state: 'icon', label: named ?? '' };
       return { state: 'view', label: named ?? (el.matches(LINK) ? defaultLabel : '') };
     }
 
@@ -451,7 +471,8 @@ const { label = 'VIEW' } = Astro.props;
       toneDirty = true;
       const next = resolveState(target);
       // Pick the tone before the circle appears, so it never flashes the wrong one.
-      if (next.state === 'view' && state !== 'view') updateTone();
+      const glass = next.state === 'view' || next.state === 'icon';
+      if (glass && state !== 'view' && state !== 'icon') updateTone();
       state = next.state;
       zone = resolveZone(target, mouse.x, mouse.y);
       // Keep the old label while shrinking back so it doesn't flash a different word.
@@ -461,13 +482,13 @@ const { label = 'VIEW' } = Astro.props;
 
     // A control can change its action under a still pointer (a clip's PLAY becomes PAUSE).
     new MutationObserver((records) => {
-      if (state === 'view' && hovered && records.some((r) => r.target.contains(hovered))) update(hovered);
+      if ((state === 'view' || state === 'icon') && hovered && records.some((r) => r.target.contains(hovered))) update(hovered);
     }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-cursor-label'] });
 
     function render() {
       root.dataset.state = state;
       root.dataset.zone = zone;
-      shape.classList.toggle('cursor--glass', state === 'view');
+      shape.classList.toggle('cursor--glass', state === 'view' || state === 'icon');
       root.toggleAttribute('data-visible', inside && hasMoved && state !== 'hide');
     }
 
@@ -536,7 +557,7 @@ const { label = 'VIEW' } = Astro.props;
       dot.x += (mouse.x - dot.x) * td;
       dot.y += (mouse.y - dot.y) * td;
       pos.style.transform = `translate3d(${dot.x}px, ${dot.y}px, 0)`;
-      if (state === 'view' && toneDirty) updateTone();
+      if ((state === 'view' || state === 'icon') && toneDirty) updateTone();
 
       // The shadow trails behind and stretches along its direction of travel.
       const ts = reduced ? 1 : lerpFactor(SHADOW_EASE, frames);
