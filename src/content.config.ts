@@ -68,6 +68,18 @@ const work = defineCollection({
       accent: z
         .object({ main: z.string(), text: z.string(), tint: z.string(), soft: z.string(), border: z.string() })
         .optional(),
+      /**
+       * Band of key screens shown full width between the Overview and the case study (see ScreenWall.astro).
+       * screens: paths under public/; orientation: "portrait" (phones, default) or "landscape" (desktop).
+       */
+      screenWall: z
+        .object({
+          screens: z.array(z.string()).min(1),
+          orientation: z.enum(['portrait', 'landscape']).optional(),
+          label: z.string().optional(),
+          ariaLabel: z.string().optional(),
+        })
+        .optional(),
       order: z.number(),
     }),
 });

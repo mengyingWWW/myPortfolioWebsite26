@@ -90,11 +90,12 @@ const geo = sunPathGeometry(0);
     transition: opacity 300ms ease;
   }
 
+  /* Solid white behind the indicator (bottom 90px), fading out above it, so text never shows through. */
   .section-progress-fade {
     position: absolute;
     inset: auto 0 0;
-    height: 128px;
-    background: linear-gradient(to top, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+    height: 150px;
+    background: linear-gradient(to top, #fff 0, #fff 90px, rgba(255, 255, 255, 0));
   }
 
   .section-progress-button {

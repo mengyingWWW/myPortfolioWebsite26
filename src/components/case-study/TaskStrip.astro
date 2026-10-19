@@ -1,0 +1,30 @@
+---
+/**
+ * Final design, all tasks visible at once: one phone clip per task in a row, title + one line under each.
+ * 5 across on desktop, 3 on tablet, 2 on phones. Each clip plays only near the viewport (ClipPlayer).
+ */
+import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
+interface Task { title: string; note: string; src: string; label: string }
+interface Props { tasks: Task[] }
+const { tasks } = Astro.props;
+---
+<div class="ts">
+  {tasks.map((t, i) => (
+    <figure class="ts-item">
+      <div class="ts-phone"><ClipPlayer src={t.src} label={t.label} width={780} height={1688} /></div>
+      <figcaption><span>{String(i + 1).padStart(2, '0')}</span><b>{t.title}</b>{t.note}</figcaption>
+    </figure>
+  ))}
+</div>
+<style>
+  .ts { margin-top: 32px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; }
+  .ts-item { margin: 0; display: flex; flex-direction: column; gap: 16px; }
+  .ts-phone { aspect-ratio: 780 / 1688; border-radius: 22px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 8px 22px rgba(17,24,39,.07); }
+  .ts-phone :global(.clip) { height: 100%; }
+  .ts-phone :global(video) { width: 100%; height: 100%; object-fit: cover; display: block; }
+  figcaption { font-size: 14px; line-height: 1.5; color: #555; }
+  figcaption span { display: block; font: 500 11px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; color: var(--cs-accent-text, #115E59); }
+  figcaption b { display: block; margin: 2px 0 4px; font-size: 16px; color: #111; }
+  @media (max-width: 1000px) { .ts { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 36px; } }
+  @media (max-width: 560px) { .ts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; row-gap: 28px; } .ts-phone { border-radius: 16px; } }
+</style>

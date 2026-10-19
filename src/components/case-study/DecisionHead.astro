@@ -1,0 +1,18 @@
+---
+/** Number + heading + lead for one key decision. Extra paragraphs go in the slot. */
+interface Props { id: string; n: string; title: string; lead: string }
+const { id, n, title, lead } = Astro.props;
+---
+<header class="dh" id={id}>
+  <span class="dh-n">{n}</span>
+  <h3 class="dh-title">{title}</h3>
+  <p class="dh-lead">{lead}</p>
+  <slot />
+</header>
+<style>
+  .dh { max-width: 64ch; scroll-margin-top: calc(5rem + 24px); }
+  .dh-n { font: 500 12px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; color: var(--cs-accent-text, #115E59); }
+  .dh-title { margin-top: 8px; font-size: 24px; line-height: 1.25; font-weight: 600; color: #111; }
+  .dh-lead, .dh :global(p) { margin-top: 10px; font-size: 17px; line-height: 1.6; color: #3a3a3a; }
+  @media (max-width: 640px) { .dh-title { font-size: 21px; } }
+</style>

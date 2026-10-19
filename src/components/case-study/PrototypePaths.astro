@@ -1,0 +1,42 @@
+---
+/**
+ * "AI Prototyping" for idea-mapping: a plain comparison of three ways the feature could have
+ * reached the engineer. Typographic table, hairlines only; my row is marked with the accent.
+ */
+const rows = [
+  { who: 'Engineer alone', click: 'The build itself', decided: 'While coding' },
+  { who: 'Static Figma', click: 'Late', decided: 'Before build' },
+  { who: 'Figma Make', click: 'Every week', decided: 'Before build, tried in review', mine: true },
+];
+---
+
+<figure class="pt">
+  <table>
+    <thead>
+      <tr><th scope="col"><span class="sr-only">Approach</span></th><th scope="col">Something to click</th><th scope="col">Interactions decided</th></tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr class:list={{ 'is-mine': r.mine }}>
+          <th scope="row">{r.who}{r.mine && <span class="pt-me">My approach</span>}</th>
+          <td>{r.click}</td>
+          <td>{r.decided}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</figure>
+
+<style>
+  .pt { margin: 2.5rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 17px; line-height: 1.4; }
+  thead th { padding: 0 16px 12px 0; text-align: left; font: 500 12px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; text-transform: uppercase; color: #8A8A8A; border-bottom: 1px solid #111; }
+  tbody th, tbody td { padding: 18px 16px 18px 0; text-align: left; border-bottom: 1px solid #E6E6E4; vertical-align: baseline; }
+  tbody th { font-weight: 500; color: #111; width: 34%; }
+  tbody td { color: #6E6E6E; }
+  .is-mine th, .is-mine td { color: #111; font-weight: 600; }
+  .is-mine th { box-shadow: inset 3px 0 0 var(--cs-accent, #0F766E); padding-left: 14px; }
+  .pt-me { display: block; margin-top: 2px; font: 500 11px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; text-transform: uppercase; color: var(--cs-accent-text, #115E59); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 560px) { table { font-size: 15px; } tbody th { width: 30%; } }
+</style>

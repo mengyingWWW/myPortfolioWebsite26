@@ -1,0 +1,274 @@
+---
+/**
+ * "Structure" for idea-mapping: an information-architecture diagram in the style of AKOOL 4.1.
+ * Top: one phone (390×844) split into the zones of the All screen.
+ * Bottom: the user-flow tree in three branches (Map · Modes · Search & Scan). Each branch head
+ * has a coloured arrow up to its zone on the phone. Grey lines = structure, teal arrows = steps / leads to.
+ * Lines are drawn by the script below from the rendered boxes, so they follow any text change.
+ * Content is fixed to the Mapping prototype; edit the markup to change labels.
+ */
+---
+
+<figure class="ms" data-ms>
+  <div class="ms-scroll">
+    <div class="ms-board" data-ms-board>
+      <svg class="ms-wires" data-ms-wires aria-hidden="true"></svg>
+
+      <div class="ms-band">
+        <p class="ms-lbl">Information architecture</p>
+        <div class="ms-phone" data-ms-phone>
+          <svg viewBox="0 0 390 844" font-weight="600" text-anchor="middle" role="img" aria-label="The Mapping screen: search and scan bar, mode chips, the map with a floor picker, a bottom sheet and Map options">
+            <rect x="2" y="2" width="386" height="840" rx="52" fill="#fff" stroke="#9CA3AF" stroke-width="3"/>
+            <rect data-z="search" x="22" y="56" width="346" height="46" rx="23" fill="#DBEAFE"/><text x="195" y="85" font-size="20" fill="#2563EB">Search · Scan</text>
+            <rect data-z="modes" x="22" y="112" width="346" height="34" rx="17" fill="#EDE9FE"/><text x="195" y="135" font-size="16" fill="#7C3AED">Geofence · Relocate · Emergency</text>
+            <rect data-z="map" x="22" y="156" width="346" height="606" rx="18" fill="#CCFBF1"/>
+            <text x="180" y="300" font-size="24" fill="#0F766E">Map</text>
+            <text x="180" y="330" font-size="17" font-weight="500" fill="#0F766E">Clusters → pins</text>
+            <text x="180" y="354" font-size="17" font-weight="500" fill="#0F766E">Building → floor → room</text>
+            <rect x="322" y="380" width="36" height="150" rx="18" fill="#fff" stroke="#0F766E" stroke-width="1.5"/><text x="340" y="455" font-size="15" fill="#0F766E" transform="rotate(90 340 455)">Floors</text>
+            <rect x="34" y="704" width="150" height="40" rx="20" fill="#fff" stroke="#0F766E" stroke-width="1.5"/><text x="109" y="730" font-size="16" fill="#0F766E">Map options</text>
+            <rect x="10" y="552" width="370" height="140" rx="26" fill="#fff" fill-opacity=".75" stroke="#0F766E" stroke-width="1.5" stroke-dasharray="6 5"/>
+            <rect x="175" y="562" width="40" height="5" rx="2.5" fill="#0F766E"/>
+            <text x="195" y="618" font-size="20" fill="#0F766E">Bottom sheet</text><text x="195" y="645" font-size="16" font-weight="500" fill="#0F766E">slides up over the map</text>
+            <rect x="22" y="772" width="346" height="48" rx="12" fill="#F3F4F6"/><text x="195" y="802" font-size="16" font-weight="500" fill="#9CA3AF">Guardian tab bar</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="ms-flow">
+        <p class="ms-lbl">User flow</p>
+        <div class="ms-cols">
+
+          <!-- MAP -->
+          <div class="ms-branch" data-bus>
+            <div class="n h z1" data-head="map" data-to="map" data-col="#0F766E">Map</div>
+            <div class="ms-sub">
+              <div class="ms-chain" data-line="grey">
+                <div class="n s">Map view</div>
+                <div class="n">Clusters<ul><li>Type + count</li><li>Split as you zoom</li></ul></div>
+                <div class="n">Pins<ul><li>5 types</li></ul></div>
+                <div class="ms-tree" data-spine>
+                  <div class="n z1">Bottom sheet<ul><li>Where it is</li><li>Details, last seen</li></ul></div>
+                  <div class="ms-kids">
+                    <div class="n" data-from="relocate">Update location</div>
+                    <div class="n" data-from="geofence">Set geofence</div>
+                  </div>
+                </div>
+              </div>
+              <div class="ms-tree" data-spine>
+                <div class="n s">Building view</div>
+                <div class="ms-kids">
+                  <div class="n">Change building</div>
+                  <div class="n">Floor picker<ul><li>Scroll + search</li><li>Pill while a sheet is open</li></ul></div>
+                  <div class="n">Rooms</div>
+                </div>
+              </div>
+              <div class="ms-tree" data-spine>
+                <div class="n s">Map options</div>
+                <div class="ms-kids">
+                  <div class="n">Map / Building view</div>
+                  <div class="n">Show on map<ul><li>5 pin types</li><li>Hide items not seen in 7 days</li></ul></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODES -->
+          <div class="ms-branch" data-bus>
+            <div class="n h z3" data-head="modes" data-to="modes" data-col="#7C3AED">Modes</div>
+            <div class="ms-sub">
+              <div class="ms-chain" data-line="step">
+                <div class="n s z3">Relocate</div>
+                <div class="n">Pick a building</div>
+                <div class="n">Select assets<ul><li>One or many</li><li>From list or pin</li></ul></div>
+                <div class="n" data-target="relocate">Set new location<ul><li>Suggested · Tap on map · Search</li></ul></div>
+                <div class="n">Confirm move<ul><li>From → To</li></ul></div>
+                <div class="n end">Submit request<ul><li>To Facilities Lead</li></ul></div>
+              </div>
+              <div class="ms-chain" data-line="step">
+                <div class="n s z3">Geofence</div>
+                <div class="n">Pick a building</div>
+                <div class="n">Select assets</div>
+                <div class="n" data-target="geofence">Set boundary<ul><li>Use saved · Draw new</li></ul></div>
+                <div class="n">Alerts<ul><li>Leaves / enters</li><li>SMS · Email · who</li></ul></div>
+                <div class="n end">Activate fence</div>
+              </div>
+              <div class="ms-chain" data-line="step">
+                <div class="n s em">Emergency</div>
+                <div class="n" data-fork>Incident on map<ul><li>Building, floor, time</li></ul></div>
+                <div class="n">Admin<ul><li>People, first aid, rally points, shelters</li><li>Auto-refresh</li></ul></div>
+                <div class="n em">Notify</div>
+                <div class="n" data-branch>Viewer<ul><li>View-only</li></ul></div>
+                <div class="n em">Report emergency</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEARCH -->
+          <div class="ms-branch">
+            <div class="n h z2" data-head="search" data-to="search" data-col="#2563EB">Search &amp; Scan</div>
+            <div class="ms-tree" data-spine data-headless>
+              <div class="ms-kids">
+                <div class="n">Search<ul><li>Pins, assets, people</li><li>Results by group</li><li>Tap → bottom sheet</li></ul></div>
+                <div class="n">Scan asset label<ul><li>Opens its bottom sheet</li><li>Flags a location mismatch</li></ul></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <figcaption class="ms-key"><span><i></i>Structure</span><span><i class="x"></i>Step / leads to</span></figcaption>
+</figure>
+
+<script>
+  const NS = 'http://www.w3.org/2000/svg';
+  const GREY = '#9CA3AF', TEAL = '#0F766E', R = 9;
+
+  function setup(root: HTMLElement) {
+    const board = root.querySelector<HTMLElement>('[data-ms-board]')!;
+    const svg = root.querySelector<SVGSVGElement>('[data-ms-wires]')!;
+    const phone = root.querySelector<HTMLElement>('[data-ms-phone]')!;
+
+    const box = (el: Element) => {
+      const a = el.getBoundingClientRect(), t = board.getBoundingClientRect();
+      return { l: a.left - t.left, r: a.right - t.left, t: a.top - t.top, b: a.bottom - t.top,
+               cx: (a.left + a.right) / 2 - t.left, cy: (a.top + a.bottom) / 2 - t.top };
+    };
+    const path = (d: string, col: string, marker?: string, w = 1.5) => {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', col); p.setAttribute('stroke-width', String(w));
+      if (marker) p.setAttribute('marker-end', `url(#${marker})`);
+      svg.appendChild(p);
+    };
+    const dot = (x: number, y: number, col: string, r = 3) => {
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', String(x)); c.setAttribute('cy', String(y)); c.setAttribute('r', String(r)); c.setAttribute('fill', col);
+      svg.appendChild(c);
+    };
+    const marker = (id: string, col: string) =>
+      `<marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9" fill="none" stroke="${col}" stroke-width="1.6"/></marker>`;
+    // down, across at ym, down
+    const elbow = (x1: number, y1: number, x2: number, y2: number, ym: number, col: string, k = 6) => {
+      if (Math.abs(x1 - x2) < 2) return path(`M${x1},${y1}V${y2}`, col);
+      const s = x2 > x1 ? 1 : -1;
+      path(`M${x1},${y1}V${ym - k}Q${x1},${ym} ${x1 + s * k},${ym}H${x2 - s * k}Q${x2},${ym} ${x2},${ym + k}V${y2}`, col);
+    };
+
+    function draw() {
+      const uid = root.dataset.msId!;
+      svg.innerHTML = `<defs>${marker(uid + 't', TEAL)}${marker(uid + 'map', '#0F766E')}${marker(uid + 'modes', '#7C3AED')}${marker(uid + 'search', '#2563EB')}</defs>`;
+      const ph = box(phone);
+
+      // branch heads -> zones on the phone
+      root.querySelectorAll<HTMLElement>('[data-head]').forEach((h) => {
+        const hb = box(h), zone = root.querySelector(`[data-z="${h.dataset.to}"]`)!, z = box(zone);
+        const col = h.dataset.col!, id = uid + h.dataset.head;
+        const ty = z.cy;
+        if (hb.cx < ph.l) {
+          // left of the phone: straight up, then right into the zone
+          const x = hb.cx;
+          path(`M${x},${hb.t}V${ty + R}Q${x},${ty} ${x + R},${ty}H${z.l - 3}`, col, id, 1.8);
+        } else {
+          // under or right of the phone: route around its right side
+          const gap = h.dataset.head === 'search' ? 0 : 44;
+          const xv = Math.max(hb.cx, ph.r + gap);
+          const yb = ph.b + 24;
+          let d = `M${hb.cx},${hb.t}`;
+          if (xv - hb.cx > 2) d += `V${yb + R}Q${hb.cx},${yb} ${hb.cx + R},${yb}H${xv - R}Q${xv},${yb} ${xv},${yb - R}`;
+          d += `V${ty + R}Q${xv},${ty} ${xv - R},${ty}H${z.r + 3}`;
+          path(d, col, id, 1.8);
+        }
+        dot(hb.cx, hb.t, col, 3.5);
+      });
+
+      // branch head -> its columns
+      root.querySelectorAll<HTMLElement>('[data-bus]').forEach((br) => {
+        const h = box(br.firstElementChild!);
+        br.querySelectorAll(':scope > .ms-sub > *').forEach((col) => {
+          const first = box(col.firstElementChild!);
+          elbow(h.cx, h.b, first.cx, first.t, h.b + 12, GREY); dot(first.cx, first.t, GREY);
+        });
+        dot(h.cx, h.b, GREY);
+      });
+
+      // spines (parent + indented children)
+      root.querySelectorAll<HTMLElement>('[data-spine]').forEach((t) => {
+        const head = t.hasAttribute('data-headless') ? t.closest('.ms-branch')!.firstElementChild! : t.firstElementChild!;
+        const h = box(head), x = h.l + 11;
+        t.querySelectorAll(':scope > .ms-kids > .n').forEach((k) => {
+          const b = box(k), y = b.t + 14;
+          path(`M${x},${h.b}V${y - R}Q${x},${y} ${x + R},${y}H${b.l}`, GREY); dot(b.l, y, GREY);
+        });
+        dot(x, h.b, GREY);
+      });
+
+      // chains: grey = structure, teal = steps
+      root.querySelectorAll<HTMLElement>('[data-line]').forEach((ch) => {
+        const step = ch.dataset.line === 'step';
+        const items = [...ch.children];
+        for (let i = 0; i < items.length - 1; i++) {
+          const aEl = items[i], bEl = items[i + 1];
+          const a = box(aEl.classList.contains('n') ? aEl : aEl.firstElementChild!);
+          const b = box(bEl.classList.contains('n') ? bEl : bEl.firstElementChild!);
+          if ((bEl as HTMLElement).hasAttribute('data-branch')) {
+            const fork = box(ch.querySelector('[data-fork]')!), xx = fork.l - 8;
+            path(`M${fork.l},${fork.cy}H${xx + R}Q${xx},${fork.cy} ${xx},${fork.cy + R}V${b.cy - R}Q${xx},${b.cy} ${xx + R},${b.cy}H${b.l - 2}`, TEAL, uid + 't');
+            continue;
+          }
+          if (step) path(`M${a.l + 16},${a.b}V${b.t - 2}`, TEAL, uid + 't');
+          else { path(`M${a.l + 16},${a.b}V${b.t}`, GREY); dot(a.l + 16, b.t, GREY); }
+        }
+      });
+
+      // bottom sheet actions -> the matching mode step
+      root.querySelectorAll<HTMLElement>('[data-from]').forEach((s) => {
+        const tEl = root.querySelector(`[data-target="${s.dataset.from}"]`);
+        if (!tEl) return;
+        const S = box(s), T = box(tEl), y = S.cy, ty = T.cy, x = T.l - 10, dn = ty > y ? 1 : -1;
+        path(`M${S.r},${y}H${x - R}Q${x},${y} ${x},${y + dn * R}V${ty - dn * R}Q${x},${ty} ${x + R},${ty}H${T.l - 2}`, TEAL, uid + 't');
+        dot(S.r, y, TEAL);
+      });
+    }
+
+    draw();
+    new ResizeObserver(draw).observe(board);
+    document.fonts?.ready.then(draw);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-ms]').forEach((el, i) => {
+    el.dataset.msId = 'ms' + i;
+    setup(el);
+  });
+</script>
+
+<style>
+  .ms { margin: 2.5rem 0; }
+  .ms-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ms-board { position: relative; min-width: 1040px; }
+  .ms-wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+  .ms-lbl { margin: 0; font-weight: 600; font-size: 16px; color: #111827; }
+  .ms-band { padding: 4px 0 24px; }
+  .ms-phone { width: 250px; margin: 0 auto; }
+  .ms-phone svg { display: block; width: 100%; height: auto; font-family: inherit; }
+  .ms-flow { padding-top: 20px; border-top: 1px solid #E5E7EB; }
+  .ms-cols { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 3fr) minmax(0, 1.05fr); gap: 36px; margin-top: 24px; }
+  .ms-branch { display: flex; flex-direction: column; align-items: center; }
+  .ms-sub { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; width: 100%; margin-top: 24px; }
+  .ms-branch > [data-headless] { align-self: stretch; margin-top: 10px; }
+  .ms-chain { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+  .ms-tree { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .ms-kids { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding-left: 20px; }
+  .n { position: relative; z-index: 1; display: inline-block; max-width: 100%; padding: 6px 11px; border-radius: 8px; background: #F3F4F6; color: #111827; font-size: 12.5px; line-height: 1.4; }
+  .n ul { margin: 3px 0 0; padding-left: 14px; font-size: 11.5px; color: #6B7280; }
+  .n.h { font-weight: 600; font-size: 14px; padding: 8px 14px; }
+  .n.s { font-weight: 600; }
+  .z1, .end { background: #CCFBF1; color: #115E59; }
+  .z2 { background: #DBEAFE; color: #2563EB; }
+  .z3 { background: #EDE9FE; color: #7C3AED; }
+  .em { background: #FEE2E2; color: #DC2626; }
+  .ms-key { display: flex; gap: 22px; margin-top: 16px; font-size: 12px; color: #6B7280; }
+  .ms-key i { display: inline-block; width: 22px; border-top: 1.5px solid #9CA3AF; vertical-align: 3px; margin-right: 6px; }
+  .ms-key i.x { border-color: #0F766E; }
+</style>

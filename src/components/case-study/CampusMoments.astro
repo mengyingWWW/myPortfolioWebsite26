@@ -1,0 +1,278 @@
+---
+/**
+ * "02 Users" for idea-mapping: a campus cross-section with one labelled spot per user type.
+ * A row of always-visible tabs under the drawing gives each role and its key question, so the section
+ * reads without clicking. Labels on the drawing and the tabs are synced; the active one opens a
+ * speech bubble (tail pointing at its tab) with who they are, what they ask and which Mapping modes answer.
+ * Role 1 is open on load. Drawing labels show the role name on wide screens and just the number on narrow ones.
+ */
+interface Role {
+  name: string;        // e.g. "Technician"
+  about: string;       // one line: who they are
+  questions: string[]; // what they ask the map, without quote marks
+  modes: string[];     // Mapping modes that answer, e.g. ["All", "Relocate"]
+  answer: string;      // how Mapping answers
+  x: number;           // label position, % of the drawing width
+  y: number;           // label position, % of the drawing height
+}
+interface Props { roles: Role[]; hint?: string }
+const { roles, hint = 'Tap a role for the details.' } = Astro.props;
+---
+
+<figure class="cm" data-cm>
+  <div class="cm-canvas">
+    <svg class="cm-art" viewBox="0 54 640 162" aria-hidden="true">
+ <defs><filter id="cm-wobble" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="11"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter></defs>
+ <!-- tints -->
+ <g filter="url(#cm-wobble)" style="fill:var(--cs-accent);fill-opacity:.14" stroke="none">
+  <path d="M42 106 L268 105 L268 146 L42 147 Z"/>
+  <path d="M520 200 Q560 186 604 200 Z"/>
+ </g>
+ <g filter="url(#cm-wobble)" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- ground -->
+  <path d="M10 200 L630 199"/>
+  <!-- school: 3 floors -->
+  <path d="M40 64 L270 63 L270 200 L40 200 Z"/>
+  <path d="M34 64 L276 63"/>
+  <path d="M41 105 L269 104 M41 146 L269 145"/>
+  <!-- stairs -->
+  <path d="M232 200 L232 192 L242 192 L242 184 L252 184 L252 176 L262 176 L262 168 L269 168" stroke-width="1.6"/>
+  <path d="M232 145 L232 137 L242 137 L242 129 L252 129 L252 121 L262 121 L262 113 L269 113" stroke-width="1.6"/>
+  <!-- room doors / windows -->
+  <path d="M60 76 L84 75 L84 92 L60 93 Z M104 76 L128 75 L128 92 L104 93 Z M148 76 L172 75 L172 92 L148 93 Z M192 76 L216 75 L216 92 L192 93 Z" stroke-width="1.4"/>
+  <path d="M70 146 L70 118 L90 118 L90 146 M150 146 L150 118 L170 118 L170 146" stroke-width="1.5"/>
+  <path d="M104 158 L128 157 L128 174 L104 175 Z" stroke-width="1.4"/>
+  <circle cx="72" cy="176" r="6" fill="#FFFFFF"/>
+  <path d="M62 199 Q63 185 72 184 Q81 185 82 199" fill="#FFFFFF"/>
+  <!-- person 1 in corridor floor 2 -->
+  <circle cx="118" cy="122" r="6" fill="#FFFFFF"/>
+  <path d="M108 145 Q109 131 118 130 Q127 131 128 145" fill="#FFFFFF"/>
+  <!-- misplaced AED in floor 1 hallway -->
+  <path d="M186 180 L202 179 L202 197 L186 198 Z" fill="#FFFFFF"/>
+  <path d="M190 188 L198 188 M194 184 L194 192" stroke-width="1.4"/>
+  <!-- warehouse -->
+  <path d="M320 120 L380 88 L440 120 L440 200 L320 200 Z"/>
+  <path d="M352 200 L352 150 L408 150 L408 200" />
+  <path d="M352 162 L408 162 M352 174 L408 174 M352 186 L408 186" stroke-width="1.3"/>
+  <!-- crate near door -->
+  <path d="M418 182 L436 181 L436 198 L418 199 Z" fill="#FFFFFF" stroke-width="1.6"/>
+  <circle cx="338" cy="178" r="5" fill="#FFFFFF"/><path d="M330 198 Q331 186 338 185 Q345 186 346 198" fill="#FFFFFF"/>
+  <!-- tree -->
+  <path d="M478 200 L478 170"/>
+  <path d="M460 166 Q458 140 478 138 Q498 140 496 166 Q478 176 460 166 Z" fill="#FFFFFF"/>
+  <!-- rally flag -->
+  <path d="M560 200 L560 140"/>
+  <!-- people at rally point -->
+  <circle cx="534" cy="178" r="5" fill="#FFFFFF"/><path d="M526 198 Q527 186 534 185 Q541 186 542 198" fill="#FFFFFF"/>
+  <circle cx="586" cy="178" r="5" fill="#FFFFFF"/><path d="M578 198 Q579 186 586 185 Q593 186 594 198" fill="#FFFFFF"/>
+ </g>
+ <!-- accent strokes -->
+ <g filter="url(#cm-wobble)" fill="none" style="stroke:var(--cs-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M300 76 L458 75 L459 207 L301 208 Z" stroke-dasharray="5 5"/>
+  <path d="M150 183 Q166 176 180 186" stroke-dasharray="3 4"/>
+  <path d="M175 181 L181 186 L174 189"/>
+  <path d="M560 140 L586 147 L560 155" style="fill:var(--cs-accent)"/>
+ </g>
+</svg>
+    {roles.map((r, i) => (
+      <button
+        type="button"
+        class="cm-tag"
+        style={`left:${r.x}%;top:${r.y}%`}
+        aria-pressed={i === 0 ? 'true' : 'false'}
+        aria-controls="cm-bubble"
+        data-cursor-label="OPEN"
+        data-i={i}
+      >
+        <span class="cm-num" aria-hidden="true">{i + 1}</span>
+        <span class="cm-name">{r.name}</span>
+      </button>
+    ))}
+  </div>
+  <div class="cm-tabs" style={`--n:${roles.length}`}>
+    {roles.map((r, i) => (
+      <button
+        type="button"
+        class="cm-tab"
+        aria-pressed={i === 0 ? 'true' : 'false'}
+        aria-controls="cm-bubble"
+        data-cursor-label="OPEN"
+        data-i={i}
+      >
+        <span class="cm-tab-who"><span class="cm-num" aria-hidden="true">{i + 1}</span>{r.name}</span>
+        <span class="cm-tab-q">“{r.questions[0]}”</span>
+      </button>
+    ))}
+  </div>
+  <div id="cm-bubble" class="cm-bubble" aria-live="polite">
+    {roles.map((r, i) => (
+      <div class="cm-content" data-i={i} hidden={i !== 0}>
+        <div class="cm-head">
+          <h3 class="cm-role"><span class="cm-num" aria-hidden="true">{i + 1}</span>{r.name}</h3>
+          <p class="cm-about">{r.about}</p>
+        </div>
+        <div class="cm-row">
+          <p class="cm-label">Asks</p>
+          <ul class="cm-qs">{r.questions.map((q) => <li>“{q}”</li>)}</ul>
+        </div>
+        <div class="cm-row">
+          <p class="cm-label">In Mapping</p>
+          <p class="cm-answer">
+            {r.modes.map((m) => <span class="cm-mode">{m}</span>)}
+            <span>{r.answer}</span>
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+  <figcaption class="cm-hint">{hint}</figcaption>
+</figure>
+
+<script>
+  for (const fig of document.querySelectorAll<HTMLElement>('[data-cm]')) {
+    const bubble = fig.querySelector<HTMLElement>('.cm-bubble')!;
+    const tags = [...fig.querySelectorAll<HTMLButtonElement>('.cm-tag')];
+    const tabs = [...fig.querySelectorAll<HTMLButtonElement>('.cm-tab')];
+    const contents = [...fig.querySelectorAll<HTMLElement>('.cm-content')];
+    let current = 0;
+
+    const place = () => {
+      const b = bubble.getBoundingClientRect();
+      const t = tabs[current].getBoundingClientRect();
+      bubble.style.setProperty('--tail', `${t.left + t.width / 2 - b.left}px`);
+    };
+
+    const show = (i: number) => {
+      current = i;
+      [tags, tabs].forEach((group) => group.forEach((el, j) => el.setAttribute('aria-pressed', String(j === i))));
+      contents.forEach((c, j) => (c.hidden = j !== i));
+      place();
+    };
+
+    [tags, tabs].forEach((group) =>
+      group.forEach((el, i) => {
+        el.addEventListener('click', () => show(i));
+        el.addEventListener('keydown', (e) => {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          e.preventDefault();
+          const n = (i + (e.key === 'ArrowRight' ? 1 : group.length - 1)) % group.length;
+          group[n].focus();
+          show(n);
+        });
+      }),
+    );
+    new ResizeObserver(place).observe(fig);
+    show(0);
+  }
+</script>
+
+<style>
+  .cm { margin: 0; }
+  .cm-canvas { position: relative; }
+  .cm-art { display: block; width: 100%; height: auto; overflow: visible; }
+
+  .cm-tag {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px 5px 5px;
+    border: 1.5px solid var(--cs-accent);
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--cs-accent);
+    font: 600 15px/1 Inter, system-ui, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(17, 17, 17, 0.06);
+    transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+  }
+  .cm-tag .cm-num { background: var(--cs-accent); color: #FFFFFF; }
+  .cm-tag:hover { box-shadow: 0 0 0 5px color-mix(in srgb, var(--cs-accent) 14%, transparent); }
+  .cm-tag[aria-pressed='true'] { background: var(--cs-accent); color: #FFFFFF; box-shadow: 0 0 0 6px color-mix(in srgb, var(--cs-accent) 18%, transparent); }
+  .cm-tag[aria-pressed='true'] .cm-num { background: #FFFFFF; color: var(--cs-accent); }
+  .cm-tag:focus-visible { outline: 2px solid #111111; outline-offset: 3px; }
+
+  .cm-num {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--cs-accent);
+    color: #FFFFFF;
+    font: 700 12px/1 Inter, system-ui, sans-serif;
+  }
+
+  .cm-tabs { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+  .cm-tab {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    padding: 12px 14px;
+    border: 1px solid #E6E6E4;
+    border-radius: 12px;
+    background: #FFFFFF;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease;
+  }
+  .cm-tab:hover { border-color: var(--cs-accent); }
+  .cm-tab[aria-pressed='true'] { border-color: var(--cs-accent); background: var(--cs-accent-tint, #F0FDFA); }
+  .cm-tab:focus-visible { outline: 2px solid #111111; outline-offset: 2px; }
+  .cm-tab-who { display: flex; align-items: center; gap: 8px; font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: #6E6E6E; }
+  .cm-tab-who .cm-num { width: 18px; height: 18px; font-size: 11px; letter-spacing: 0; }
+  .cm-tab-q { font: 600 15px/1.35 Inter, system-ui, sans-serif; color: #111111; }
+
+  .cm-bubble {
+    position: relative;
+    margin-top: 16px;
+    min-height: 220px;
+    padding: 22px 24px;
+    background: #FFFFFF;
+    border: 1px solid var(--cs-accent-border, #E6E6E4);
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(17, 17, 17, 0.08);
+  }
+  .cm-bubble::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: calc(var(--tail, 50%) - 8px);
+    width: 14px;
+    height: 14px;
+    background: #FFFFFF;
+    border: 1px solid var(--cs-accent-border, #E6E6E4);
+    border-right: 0;
+    border-bottom: 0;
+    transform: rotate(45deg);
+  }
+
+  .cm-content { display: grid; gap: 16px; }
+  .cm-content[hidden] { display: none; }
+  .cm-head { display: grid; gap: 6px; }
+  .cm-role { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 600; line-height: 1.2; color: #111111; }
+  .cm-role .cm-num { width: 26px; height: 26px; font-size: 13px; }
+  .cm-about { margin: 0; font-size: 15px; line-height: 1.5; color: #3A3A3A; }
+  .cm-row { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding-top: 14px; border-top: 1px solid #EFEFED; }
+  .cm-label { margin: 2px 0 0; font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: #8A8A8A; }
+  .cm-qs { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: 17px; font-weight: 600; line-height: 1.35; color: #111111; }
+  .cm-answer { margin: 0; font-size: 15px; line-height: 1.55; color: #111111; }
+  .cm-mode { display: inline-block; margin: 0 6px 4px 0; padding: 2px 10px; border-radius: 999px; background: var(--cs-accent-tint, #F0FDFA); border: 1px solid var(--cs-accent); color: var(--cs-accent-text, var(--cs-accent)); font-size: 12px; font-weight: 600; line-height: 1.6; }
+  .cm-hint { margin-top: 12px; font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #8A8A8A; }
+
+  @media (max-width: 900px) {
+    .cm-tag { padding: 4px; gap: 0; }
+    .cm-tag .cm-name { display: none; }
+  }
+  @media (max-width: 900px) { .cm-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) {
+    .cm-tabs { grid-template-columns: 1fr; gap: 8px; }
+    .cm-bubble { min-height: 0; padding: 18px; }
+    .cm-row { grid-template-columns: 1fr; gap: 6px; }
+    .cm-role { font-size: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .cm-tag, .cm-tab { transition: none; } }
+</style>

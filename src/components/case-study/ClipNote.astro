@@ -1,0 +1,20 @@
+---
+/** A phone clip with a short title and note beside it (final round of a decision). */
+import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
+interface Props { src: string; label: string; title: string; note: string; tag?: string }
+const { src, label, title, note, tag = 'Final round' } = Astro.props;
+---
+<figure class="cn">
+  <div class="cn-phone"><ClipPlayer src={src} label={label} width={780} height={1688} /></div>
+  <figcaption><span>{tag}</span><b>{title}</b>{note}</figcaption>
+</figure>
+<style>
+  .cn { margin: 32px 0 0; display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 40px; align-items: center; }
+  .cn-phone { aspect-ratio: 780 / 1688; border-radius: 28px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 10px 28px rgba(17,24,39,.08); }
+  .cn-phone :global(.clip) { height: 100%; }
+  .cn-phone :global(video) { width: 100%; height: 100%; object-fit: cover; display: block; }
+  figcaption { max-width: 420px; font-size: 15px; line-height: 1.55; color: #555; padding-left: 14px; border-left: 2px solid var(--cs-accent, #0F766E); }
+  figcaption span { display: block; font: 500 11px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; text-transform: uppercase; color: var(--cs-accent-text, #115E59); }
+  figcaption b { display: block; margin: 4px 0 2px; font-size: 16px; color: #111; }
+  @media (max-width: 760px) { .cn { grid-template-columns: 1fr; justify-items: center; } .cn-phone { width: min(260px, 75vw); } }
+</style>

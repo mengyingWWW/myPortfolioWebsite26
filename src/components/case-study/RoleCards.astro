@@ -5,9 +5,12 @@ interface Props {
 }
 
 const { roles } = Astro.props;
+// One column per card; below 1280px at most 3, and 4 cards go 2 × 2 rather than 3 + 1.
+const cols = roles.length;
+const colsMid = cols === 4 ? 2 : Math.min(cols, 3);
 ---
 
-<ul class="role-cards">
+<ul class="role-cards" style={`--role-cols:${cols};--role-cols-mid:${colsMid}`}>
   {
     roles.map(({ name, tag, text, accent }) => (
       <li class:list={['role-card', { 'is-accent': accent }]}>
@@ -22,7 +25,7 @@ const { roles } = Astro.props;
 <style>
   .role-cards {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--role-cols, 5), minmax(0, 1fr));
     gap: 16px;
   }
   .role-card {
@@ -63,7 +66,7 @@ const { roles } = Astro.props;
 
   @media (max-width: 1279px) {
     .role-cards {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(var(--role-cols-mid, 3), minmax(0, 1fr));
     }
   }
   @media (max-width: 900px) {

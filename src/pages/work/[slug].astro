@@ -8,6 +8,7 @@ import NextProject from '@/components/project/NextProject.astro';
 import TableOfContents from '@/components/case-study/TableOfContents.astro';
 import BackToTop from '@/components/case-study/BackToTop.astro';
 import AtAGlance from '@/components/case-study/AtAGlance.astro';
+import ScreenWall from '@/components/case-study/ScreenWall.astro';
 import { mdxComponents } from '@/components/mdx';
 import { getSortedWork, type WorkEntry } from '@/lib/work';
 
@@ -65,6 +66,13 @@ const accentTokens = {
         <MetaPanel project={project} />
       </div>
     </Container>
+    {
+      project.data.screenWall && (
+        <Container class="pt-32">
+          <ScreenWall {...project.data.screenWall} />
+        </Container>
+      )
+    }
     <Container class="grid grid-cols-[200px_minmax(0,1fr)] gap-x-16 pt-8 max-[900px]:grid-cols-1">
       <aside class="max-[900px]:hidden">
         <TableOfContents />

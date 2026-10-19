@@ -1,0 +1,55 @@
+---
+/**
+ * Before / after for one key decision on a phone: the internship-era prototype screen (still image)
+ * beside the final design (a looping clip, or a still). Same phone size on both sides.
+ */
+import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
+
+interface Side {
+  /** Still image path (before) — or, for after, a clip path without extension when `clip` is true. */
+  src: string;
+  alt: string;
+  caption: string;
+  clip?: boolean;
+}
+interface Props {
+  before: Side;
+  after: Side;
+}
+const { before, after } = Astro.props;
+---
+
+<div class="pp">
+  <figure class="pp-side is-before">
+    <div class="pp-phone"><img src={before.src} alt={before.alt} width="597" height="1298" loading="lazy" decoding="async" /></div>
+    <figcaption><span class="pp-tag">Before</span>{before.caption}</figcaption>
+  </figure>
+  <span class="pp-arrow" aria-hidden="true">→</span>
+  <figure class="pp-side is-after">
+    <div class="pp-phone">
+      {after.clip ? (
+        <ClipPlayer src={after.src} label={after.alt} width={780} height={1688} />
+      ) : (
+        <img src={after.src} alt={after.alt} width="780" height="1688" loading="lazy" decoding="async" />
+      )}
+    </div>
+    <figcaption><span class="pp-tag">After</span>{after.caption}</figcaption>
+  </figure>
+</div>
+
+<style>
+  /* Top-aligned, so a caption that wraps on one side never shifts that phone. */
+  .pp { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; gap: 16px; }
+  .pp-arrow { align-self: center; }
+  .pp-side { margin: 0; display: grid; gap: 12px; }
+  /* One frame ratio for both sides (the final screens'), so before and after are always the same height. */
+  .pp-phone { aspect-ratio: 780 / 1688; border-radius: 28px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06); background: #FFFFFF; }
+  .pp-phone :global(.clip) { height: 100%; }
+  .pp-phone :global(img), .pp-phone :global(video) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .is-before .pp-phone { opacity: 0.92; }
+  figcaption { font-size: 13px; line-height: 1.45; color: #6E6E6E; }
+  .pp-tag { display: block; margin-bottom: 2px; font: 500 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: #8A8A8A; }
+  .is-after .pp-tag { color: var(--cs-accent-text, var(--cs-accent)); }
+  .pp-arrow { font-size: 20px; color: #B4B4B2; }
+  @media (max-width: 560px) { .pp { gap: 8px; } .pp-phone { border-radius: 18px; } }
+</style>

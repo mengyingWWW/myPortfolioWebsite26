@@ -1,0 +1,105 @@
+---
+/**
+ * Screen wall: a static, straight masonry of key screens right after the Overview, so readers
+ * see the finished product before the story starts. White background, no motion, no tilt.
+ * Screens are dealt round-robin into columns; each column starts at a different height so the
+ * wall reads as a staggered grid that runs off the top and bottom edges. Each column repeats its
+ * screens once so short columns never leave a gap at the bottom.
+ * Phone screens (default): 5 columns desktop · 3 at ≤1000 px · 2 at ≤560 px.
+ * Desktop screens (landscape): 3 columns · 2 at ≤1000 px · 2 at ≤560 px. Extra columns hide.
+ */
+interface Props {
+  /** Image paths under public/, portrait phone screens. */
+  screens: string[];
+  /** Small tag in the corner, e.g. "Final design". Pass "" to hide. */
+  label?: string;
+  /** Read by screen readers instead of the images. */
+  ariaLabel?: string;
+  /** "portrait" for phone screens, "landscape" for desktop screens. */
+  orientation?: 'portrait' | 'landscape';
+}
+const {
+  screens,
+  label = 'Final design',
+  ariaLabel = 'Key screens of the final design',
+  orientation = 'portrait',
+} = Astro.props;
+const LAYOUT = {
+  // columns at desktop / ≤1000 px / ≤560 px, and how far each column is pulled up (in column widths)
+  portrait: { cols: [5, 3, 2], shift: [0.3, 0.9, 0.1, 0.65, 1.1] },
+  landscape: { cols: [3, 2, 2], shift: [0.12, 0.42, 0.24] },
+}[orientation];
+const [COLS, MD, SM] = LAYOUT.cols;
+const SHIFT = LAYOUT.shift;
+const cols = Array.from({ length: COLS }, (_, c) => screens.filter((_, i) => i % COLS === c));
+---
+
+<figure class:list={['sw', `is-${orientation}`]} role="img" aria-label={ariaLabel} style={`--cols:${COLS};--md:${MD};--sm:${SM}`}>
+  <div class="sw-grid" aria-hidden="true">
+    {cols.map((col, c) => (
+      <div class:list={['sw-col', { 'sw-hide-md': c >= MD, 'sw-hide-sm': c >= SM }]} style={`--shift:${SHIFT[c]}`}>
+        {[...col, ...col].map((src) => (
+          <img src={src} alt="" loading="lazy" decoding="async" />
+        ))}
+      </div>
+    ))}
+  </div>
+  {label && <figcaption class="sw-label">{label}</figcaption>}
+</figure>
+
+<style>
+  .sw {
+    position: relative;
+    margin: 0;
+    height: clamp(560px, 92vh, 980px);
+    overflow: hidden;
+    background: #FFFFFF;
+  }
+  .sw-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    gap: 32px;
+    align-items: start;
+  }
+  /* margin-top in % is relative to the column width, so the stagger scales with the layout. */
+  .sw-col { display: grid; gap: 32px; margin-top: calc(var(--shift, 0) * -100%); }
+  .sw-col img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Phone screenshots carry their own 1 px frame and rounded corners (≈46 px at 480 px wide).
+       Clip to that same curve and add no extra border, so no grey corner shows. % scales with width. */
+    border-radius: 9.6% / 4.45%;
+    box-shadow: 0 6px 20px rgba(17, 24, 39, 0.06);
+    background: #FFFFFF;
+  }
+  .sw-label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #E6E6E4;
+    font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6E6E6E;
+  }
+
+  /* Desktop screenshots come in slightly different heights: crop them all to one ratio, keeping the top. */
+  /* Desktop screens are 1440×900 recorder shots (16:10); the ratio keeps any odd one the same size. */
+  .is-landscape .sw-col img { border: 1px solid #E6E6E4; border-radius: 10px; aspect-ratio: 16 / 10; object-fit: cover; object-position: left top; }
+
+  @media (max-width: 1000px) {
+    .sw-grid { grid-template-columns: repeat(var(--md), minmax(0, 1fr)); }
+    .sw-hide-md { display: none; }
+  }
+  @media (max-width: 560px) {
+    .sw { height: 80vh; min-height: 480px; }
+    .sw-grid, .sw-col { gap: 10px; }
+    .sw-grid { grid-template-columns: repeat(var(--sm), minmax(0, 1fr)); }
+    .sw-hide-sm { display: none; }
+    .is-landscape .sw-col img { border-radius: 6px; }
+  }
+</style>

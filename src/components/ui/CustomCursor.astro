@@ -293,7 +293,7 @@ const { label = 'VIEW' } = Astro.props;
   const TEXT_FIELD =
     'input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="file"], [type="color"]), textarea, [contenteditable]:not([contenteditable="false"])';
   const CLICKABLE =
-    'a[href], button, [role="button"], summary, label[for], [data-cursor="view"], [data-cursor="icon"], [onclick], input[type="button"], input[type="submit"], input[type="reset"], input[type="range"]';
+    'a[href], button, [role="button"], summary, label[for], [data-cursor="view"], [data-cursor="icon"], [data-cursor-label], [onclick], input[type="button"], input[type="submit"], input[type="reset"], input[type="range"]';
   const LINK = 'a[href], [data-cursor="view"]';
   /** Nav and footer text links use an On-style underline; the cursor stays a small dot. */
   const CHROME_LINK = 'header.nav a[href], footer a[href]';

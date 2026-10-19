@@ -1,0 +1,53 @@
+---
+/**
+ * An earlier design round next to the final round (rounds of one iteration, not two products):
+ * grey panel → teal panel, each with a one-line reason. Media: still (src with extension) or clip (src without, clip: true).
+ */
+import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
+interface Side { src: string; alt: string; title: string; note: string; clip?: boolean }
+interface Props { before: Side; after: Side; beforeLabel?: string; afterLabel?: string }
+const { before, after, beforeLabel = 'Earlier round', afterLabel = 'Final round' } = Astro.props;
+const sides = [
+  { ...before, label: beforeLabel, cls: 'is-before' },
+  { ...after, label: afterLabel, cls: 'is-after' },
+];
+---
+<div class="rp">
+  {sides.map((s, i) => (
+    <>
+      {i === 1 && <span class="rp-arrow" aria-hidden="true">→</span>}
+      <figure class:list={['rp-side', s.cls]}>
+        <span class="rp-pill">{s.label}</span>
+        <div class="rp-phone">
+          {s.clip
+            ? <ClipPlayer src={s.src} label={s.alt} width={780} height={1688} />
+            : <img src={s.src} alt={s.alt} loading="lazy" decoding="async" />}
+        </div>
+        <figcaption><b>{s.title}</b>{s.note}</figcaption>
+      </figure>
+    </>
+  ))}
+</div>
+<style>
+  .rp { margin-top: 32px; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 14px; }
+  .rp-arrow { font-size: 22px; color: var(--cs-accent, #0F766E); }
+  .rp-side { margin: 0; align-self: stretch; border-radius: 20px; padding: 24px 24px 26px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .is-before { background: #F3F3F2; }
+  .is-after { background: var(--cs-accent-tint, #F0FDFA); box-shadow: inset 0 0 0 1px var(--cs-accent-border, #99F6E4); }
+  .rp-pill { align-self: flex-start; height: 28px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .is-before .rp-pill { background: #E2E2E0; color: #555; }
+  .is-after .rp-pill { background: var(--cs-accent, #0F766E); color: #fff; }
+  .rp-phone { width: min(100%, 250px); aspect-ratio: 780 / 1688; border-radius: 26px; overflow: hidden; background: #fff; border: 1px solid #E6E6E4; box-shadow: 0 10px 28px rgba(17, 24, 39, .08); }
+  .rp-phone :global(.clip) { height: 100%; }
+  .rp-phone :global(img), .rp-phone :global(video) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .is-before .rp-phone { filter: grayscale(.35); opacity: .9; box-shadow: none; }
+  figcaption { align-self: stretch; font-size: 15px; line-height: 1.5; color: #555; }
+  figcaption b { display: block; margin-bottom: 2px; font-weight: 600; color: #111; }
+  @media (max-width: 640px) {
+    .rp { gap: 6px; }
+    .rp-arrow { font-size: 16px; }
+    .rp-side { padding: 14px 12px 16px; gap: 14px; border-radius: 16px; }
+    .rp-phone { border-radius: 16px; }
+    figcaption { font-size: 13px; }
+  }
+</style>

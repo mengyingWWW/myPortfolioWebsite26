@@ -1,0 +1,12 @@
+---
+/** One-line trade-off card that closes a decision. */
+interface Props { text: string }
+const { text } = Astro.props;
+---
+<div class="to"><span class="to-k">Trade-off</span><p>{text}</p></div>
+<style>
+  .to { margin-top: 24px; display: flex; align-items: center; gap: 14px; padding: 15px 20px; border: 1px solid #E6E6E4; border-radius: 14px; background: #fff; }
+  .to-k { flex: none; height: 26px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 999px; background: #F3F3F2; font-size: 12px; font-weight: 600; color: #555; }
+  .to p { margin: 0; font-size: 15px; line-height: 1.5; color: #3a3a3a; }
+  @media (max-width: 640px) { .to { flex-direction: column; align-items: flex-start; gap: 8px; } }
+</style>

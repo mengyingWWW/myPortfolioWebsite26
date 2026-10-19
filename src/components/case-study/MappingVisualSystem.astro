@@ -1,0 +1,402 @@
+---
+/**
+ * "Visual System" for idea-mapping, in the format of Puzzle AI's visual system: a row of spec boards
+ * you drag (or arrow) through. Each board has a one-line "why" under it.
+ * Values are measured from the Figma Make prototype (computed styles), not invented.
+ * Screenshot crops live in /work/idea-mapping/vs/.
+ */
+const icons: Record<string, string> = {
+  person: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  asset: '<path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/>',
+  location: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+  shelter: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  wo: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+};
+const ico = (k: string, size = 15, stroke = '#fff') =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[k]}</svg>`;
+
+const pins = [
+  { k: 'person', name: 'Person', hex: '#7C5CFC', note: 'Moves' },
+  { k: 'asset', name: 'Asset', hex: '#2B9A66', note: 'Moves' },
+  { k: 'wo', name: 'Work order', hex: '#E8590C', note: 'Moves' },
+  { k: 'event', name: 'Event', hex: '#DC3E42', note: 'Happens' },
+  { k: 'location', name: 'Location', hex: '#4B5563', note: 'Stays put' },
+];
+const ui = [
+  { name: 'Primary', hex: '#2563EB', dark: true },
+  { name: 'Primary tint', hex: '#EFF4FF' },
+  { name: 'Text', hex: '#111827', dark: true },
+  { name: 'Muted', hex: '#6B7280', dark: true },
+  { name: 'Subtle', hex: '#9CA3AF', dark: true },
+  { name: 'Border', hex: '#E5E7EB' },
+  { name: 'Surface 2', hex: '#F3F4F6' },
+  { name: 'Surface', hex: '#FFFFFF' },
+];
+const map = [
+  { name: 'Land', hex: '#F5F6F7' },
+  { name: 'Buildings', hex: '#EAECEF' },
+  { name: 'Roads', hex: '#FFFFFF' },
+  { name: 'Park', hex: '#E4F1E6' },
+  { name: 'Water', hex: '#DCE9F5' },
+  { name: 'Labels', hex: '#A0A5AB' },
+];
+const tri = (fill: string) =>
+  `<svg width="34" height="32" viewBox="0 0 34 32"><path d="M14.4 3.5a3 3 0 0 1 5.2 0l11.6 20.2a3 3 0 0 1-2.6 4.5H5.4a3 3 0 0 1-2.6-4.5z" fill="${fill}" stroke="#fff" stroke-width="2"/><text x="17" y="24" text-anchor="middle" font-size="15" font-weight="600" fill="#fff">!</text></svg>`;
+
+const boards = [
+  { id: 'colour', title: 'Pin colours', why: 'Things that move get a colour. Fixed places stay graphite, and red is kept for events. Person started out blue; I moved it to violet so a person pin never reads as a button.' },
+  { id: 'neutral', title: 'Neutrals & base map', why: 'The base map stays quiet so the pins carry the colour. Blue only marks actions and what is selected.' },
+  { id: 'markers', title: 'Markers', why: 'Each shape has one job: a circle is one thing, a pill is a group with a count, a triangle is an event.' },
+  { id: 'fresh', title: 'Last seen', why: 'A location is only as good as its last sighting, so every record shows its age. Old ones turn grey with a question mark, and Map options can hide anything not seen in 7 days.' },
+  { id: 'base', title: 'Type · Radius · Shadow', why: 'Corners sort the layers: anything floating on the map is fully round, content blocks use 14, and the sheet uses 20.' },
+  { id: 'sheet', title: 'Bottom sheet', why: 'Every pin type opens the same sheet, in the same order: what it is, where it is, the details, then one or two actions.' },
+  { id: 'floors', title: 'Floor picker', why: 'Floors scroll like elevator buttons, with search for tall buildings. When a sheet opens, the stack shrinks to one pill with the current floor.' },
+  { id: 'modes', title: 'Modes & buttons', why: 'Emergency is the only chip with colour at rest. When it is on, the chip fills red and a banner names the building and floor.' },
+];
+---
+
+<figure class="vs" data-vs>
+  <div class="vs-track" data-vs-track data-cursor-label="DRAG" aria-label="Visual system boards. They scroll on their own; drag to move faster.">
+   <div class="vs-rail" data-vs-rail>
+    {[...boards, ...boards].map((b, n) => { const i = n % boards.length; const dup = n >= boards.length; return (
+      <section class="vs-item" aria-label={dup ? undefined : b.title} aria-hidden={dup ? 'true' : undefined} data-dup={dup ? '' : undefined}>
+        <div class="vs-board">
+          <p class="vs-title"><span>{String(i + 1).padStart(2, '0')}</span>{b.title}</p>
+
+          {b.id === 'colour' && (
+            <div class="b-colour">
+              {pins.map((p) => (
+                <div class="sw">
+                  <div class="sw-chip" style={`background:${p.hex}`}>
+                    {p.k === 'event'
+                      ? <Fragment set:html={tri('#DC3E42')} />
+                      : <span class="pin" style={`background:${p.hex}`}><Fragment set:html={ico(p.k)} /></span>}
+                  </div>
+                  <p class="sw-name">{p.name}</p>
+                  <p class="sw-hex">{p.hex}</p>
+                  <p class="sw-note">{p.note}</p>
+                </div>
+              ))}
+              <div class="b-colour-note">
+                <span class="pin sm" style="background:#2563EB"><Fragment set:html={ico('person', 12)} /></span>
+                <span class="arrow">→</span>
+                <span class="pin sm" style="background:#7C5CFC"><Fragment set:html={ico('person', 12)} /></span>
+                <span>Person moved off the primary blue</span>
+              </div>
+            </div>
+          )}
+
+          {b.id === 'neutral' && (
+            <div class="b-neutral">
+              <div>
+                <p class="lbl">UI</p>
+                <div class="strip">
+                  {ui.map((c) => (
+                    <div class="cell" style={`background:${c.hex};color:${c.dark ? '#fff' : '#111827'}`}>
+                      <span>{c.name}</span><span class="mono">{c.hex}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p class="lbl">Base map</p>
+                <div class="strip">
+                  {map.map((c) => (
+                    <div class="cell" style={`background:${c.hex};color:#111827`}>
+                      <span>{c.name}</span><span class="mono">{c.hex}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {b.id === 'markers' && (
+            <div class="b-markers">
+              <div class="mk">
+                <div class="mk-stage"><span class="pin lg" style="background:#2B9A66"><Fragment set:html={ico('asset')} /></span></div>
+                <p class="mk-name">Single</p>
+                <p class="mk-spec">30 px circle · 2.5 px white ring · 15 px icon</p>
+              </div>
+              <div class="mk">
+                <div class="mk-stage">
+                  <span class="halo" style="background:rgba(124,92,252,.22)"><span class="pin lg" style="background:#7C5CFC"><Fragment set:html={ico('person')} /></span></span>
+                  <span class="mk-tag">M. Chen</span>
+                </div>
+                <p class="mk-name">Selected</p>
+                <p class="mk-spec">Soft halo in the pin colour · name label</p>
+              </div>
+              <div class="mk">
+                <div class="mk-stage"><span class="cluster"><span class="dot" style="background:#2B9A66"><Fragment set:html={ico('asset', 12)} /></span>50+</span></div>
+                <p class="mk-name">Cluster</p>
+                <p class="mk-spec">White pill · type dot · count 15 / 600</p>
+              </div>
+              <div class="mk">
+                <div class="mk-stage"><span class="tri-lg"><Fragment set:html={tri('#DC3E42')} /></span></div>
+                <p class="mk-name">Event</p>
+                <p class="mk-spec">Rounded triangle · 34 × 32</p>
+              </div>
+            </div>
+          )}
+
+          {b.id === 'fresh' && (
+            <div class="b-fresh">
+              <div class="fr-rows">
+                <div class="fr"><span class="d" style="background:#2B9A66"></span><b>2 min ago</b><span>· Tracker</span></div>
+                <div class="fr"><span class="d" style="background:#D97706"></span><b>26 h ago</b><span>· Tracker</span></div>
+                <div class="fr"><span class="d" style="background:#9CA3AF"></span><b>9 days ago</b><span>· Scanned by J. Rivera</span></div>
+              </div>
+              <div class="fr-pins">
+                <div class="mk">
+                  <div class="mk-stage"><span class="pin lg" style="background:#2B9A66"><Fragment set:html={ico('asset')} /></span></div>
+                  <p class="mk-name">Seen recently</p>
+                </div>
+                <div class="mk">
+                  <div class="mk-stage"><span class="pin lg stale" style="background:#9CA3AF"><Fragment set:html={ico('asset')} /><i>?</i></span></div>
+                  <p class="mk-name">Not seen for a while</p>
+                </div>
+                <div class="toggle"><span>Hide items not seen in 7 days</span><span class="sw-t"><span></span></span></div>
+              </div>
+            </div>
+          )}
+
+          {b.id === 'base' && (
+            <div class="b-base">
+              <div class="type">
+                <p class="lbl">Inter</p>
+                <p style="font-size:17px;font-weight:600">Sheet title <em>17 / 600</em></p>
+                <p style="font-size:15px;font-weight:600">Emphasis, buttons <em>15 / 600</em></p>
+                <p style="font-size:15px;font-weight:500">Chips <em>15 / 500</em></p>
+                <p style="font-size:15px">Body, values <em>15 / 400</em></p>
+                <p style="font-size:13px;color:#6B7280">Field labels <em>13 / 400</em></p>
+                <p style="font-size:12px;color:#6B7280">Captions, map labels <em>12</em></p>
+              </div>
+              <div class="shapes">
+                <p class="lbl">Radius</p>
+                <div class="rad-row">
+                  <div><span class="r" style="border-radius:999px;width:64px;height:28px"></span><small>Full · search, chips, floating controls</small></div>
+                  <div><span class="r" style="border-radius:14px"></span><small>14 · cards, buttons</small></div>
+                  <div><span class="r" style="border-radius:20px 20px 0 0"></span><small>20 · sheet top</small></div>
+                </div>
+                <p class="lbl">Shadow</p>
+                <div class="sh-row">
+                  <div><span class="s" style="box-shadow:0 4px 16px rgba(16,24,40,.10)"></span><small>Float · 0 4 16 / 10%</small></div>
+                  <div><span class="s" style="box-shadow:0 -6px 24px rgba(16,24,40,.10)"></span><small>Sheet · 0 −6 24 / 10%</small></div>
+                </div>
+                <p class="lbl">Spacing</p>
+                <p class="sp">16 side margin · 8 between chips · 12 inside cards</p>
+              </div>
+            </div>
+          )}
+
+          {b.id === 'sheet' && (
+            <div class="b-sheet">
+              <img src="/work/idea-mapping/vs/sheet.webp" alt="Asset bottom sheet for Forklift-2" width="774" height="860" loading="lazy" />
+              <ol class="ann">
+                <li><b>Header</b> Type icon · name 17 / 600 · status</li>
+                <li><b>Where it is</b> Tinted card, opens the floor</li>
+                <li><b>Details</b> Label 13 muted · value 15</li>
+                <li><b>Last seen</b> Age dot · source</li>
+                <li><b>Actions</b> 47 px, radius 14 · secondary grey, primary blue</li>
+                <li><b>Height</b> Opens with its top at 346 of 844</li>
+              </ol>
+            </div>
+          )}
+
+          {b.id === 'floors' && (
+            <div class="b-floors">
+              <figure><img src="/work/idea-mapping/vs/floor-stack.webp" alt="Floor stack with B1 selected and a search button" width="96" height="700" loading="lazy" style="height:400px;width:auto" /><figcaption>Stack · current floor in blue · search at the end</figcaption></figure>
+              <figure><img src="/work/idea-mapping/vs/floor-pill.webp" alt="Floor picker collapsed to a B1 pill" width="96" height="180" loading="lazy" style="height:103px;width:auto" /><figcaption>Pill · while a sheet is open</figcaption></figure>
+            </div>
+          )}
+
+          {b.id === 'modes' && (
+            <div class="b-modes">
+              <p class="lbl">Mode chips · 36 px · 15 / 500 · 8 apart</p>
+              <div class="chips">
+                <span class="chip on">All</span><span class="chip">Geofence</span><span class="chip">Relocate</span><span class="chip em">Emergency</span>
+              </div>
+              <div class="chips">
+                <span class="chip">All</span><span class="chip">Geofence</span><span class="chip">Relocate</span><span class="chip em on">Emergency</span>
+              </div>
+              <div class="banner"><span class="bd"></span>Emergency · Main Building B1 · 7 min ago</div>
+              <p class="lbl">Buttons · 47 px · radius 14</p>
+              <div class="btns"><span class="btn sec">Relocate</span><span class="btn pri">Set geofence</span></div>
+            </div>
+          )}
+        </div>
+        <p class="vs-why"><span>Why</span>{b.why}</p>
+      </section>
+    ); })}
+   </div>
+  </div>
+  <p class="vs-hint">Drag to move faster · hover to pause</p>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-vs]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-vs-track]')!;
+    const rail = root.querySelector<HTMLElement>('[data-vs-rail]')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const SPEED = 36; // px per second
+    let x = 0, v = 0, half = 0, last = performance.now();
+    let dragging = false, hover = false, visible = true, moved = 0, px = 0, pt = 0;
+
+    const measure = () => {
+      const first = rail.querySelector<HTMLElement>('[data-dup]');
+      half = first ? first.offsetLeft : rail.scrollWidth / 2;
+    };
+    const wrap = () => { if (half > 0) { x = x % half; if (x > 0) x -= half; } };
+
+    function tick(now: number) {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      if (!dragging) {
+        if (Math.abs(v) > 0.05) { x += v; v *= 0.94; }            // glide after a flick
+        else if (!hover && !reduce && visible) x -= SPEED * dt;  // auto-scroll
+      }
+      wrap();
+      rail.style.transform = `translate3d(${x}px,0,0)`;
+      requestAnimationFrame(tick);
+    }
+
+    track.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hover = true; });
+    track.addEventListener('pointerleave', () => { hover = false; });
+    track.addEventListener('pointerdown', (e) => {
+      dragging = true; moved = 0; v = 0; px = e.clientX; pt = performance.now();
+      track.setPointerCapture(e.pointerId); track.classList.add('is-drag');
+    });
+    track.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - px, now = performance.now();
+      x += dx; moved += Math.abs(dx);
+      v = dx * Math.min(1, 16 / Math.max(1, now - pt)); // per-frame velocity for the glide
+      px = e.clientX; pt = now;
+    });
+    const end = () => { dragging = false; track.classList.remove('is-drag'); if (performance.now() - pt > 80) v = 0; };
+    track.addEventListener('pointerup', end);
+    track.addEventListener('pointercancel', end);
+    track.addEventListener('click', (e) => { if (moved > 5) { e.preventDefault(); e.stopPropagation(); } }, true);
+
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(track);
+    new ResizeObserver(measure).observe(rail);
+    measure();
+    requestAnimationFrame(tick);
+  });
+</script>
+
+<style>
+  .vs { margin: 2.5rem 0; }
+  .vs-track { overflow: hidden; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .vs-track.is-drag { cursor: grabbing; }
+  .vs-track img { pointer-events: none; -webkit-user-drag: none; }
+  .vs-rail { display: flex; gap: 24px; width: max-content; will-change: transform; }
+  .vs-item { flex: 0 0 auto; width: min(820px, 86vw); }
+  .vs-board {
+    background: #F7F7F8; border-radius: 16px; padding: 28px 32px; height: 520px; box-sizing: border-box;
+    display: flex; flex-direction: column; overflow: hidden; color: #111827;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .vs-title { margin: 0 0 22px; font-size: 18px; font-weight: 600; display: flex; gap: 10px; align-items: baseline; }
+  .vs-title span { font-size: 12px; color: #9CA3AF; font-weight: 500; }
+  .vs-why { margin: 14px 4px 0; font-size: 14px; line-height: 1.55; color: #4B5563; max-width: 680px; }
+  .vs-why span { display: inline-block; margin-right: 8px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--cs-accent-text, #115E59); }
+  .vs-hint { margin: 16px 0 0; font-size: 12px; color: #9CA3AF; }
+
+  .lbl { margin: 0 0 8px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #9CA3AF; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+  .pin { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 999px; border: 2.5px solid #fff; box-shadow: 0 4px 16px rgba(16,24,40,.10); box-sizing: border-box; position: relative; }
+  .pin.lg { transform: scale(1.6); }
+  .pin.sm { width: 24px; height: 24px; border-width: 2px; }
+
+  /* 01 colour */
+  .b-colour { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; flex: 1; align-content: start; }
+  .sw-chip { height: 210px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .sw-chip .pin { transform: scale(1.7); box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+  .sw-name { margin: 12px 0 0; font-weight: 600; font-size: 14px; }
+  .sw-hex { margin: 2px 0 0; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #6B7280; }
+  .sw-note { margin: 6px 0 0; font-size: 12px; color: #9CA3AF; }
+  .b-colour-note { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin-top: 18px; font-size: 13px; color: #4B5563; }
+  .b-colour-note .arrow { color: #9CA3AF; }
+
+  /* 02 neutral */
+  .b-neutral { display: grid; gap: 26px; }
+  .strip { display: flex; border-radius: 12px; overflow: hidden; border: 1px solid #E5E7EB; }
+  .cell { flex: 1; height: 132px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; font-size: 12px; box-sizing: border-box; }
+
+  /* 03 markers */
+  .b-markers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; flex: 1; }
+  .mk { background: #fff; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; }
+  .mk-stage { flex: 1; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: #F5F6F7; border-radius: 8px; }
+  .mk-name { margin: 12px 0 2px; font-weight: 600; font-size: 14px; }
+  .mk-spec { margin: 0; font-size: 12px; color: #6B7280; line-height: 1.45; }
+  .tri-lg { display: inline-flex; transform: scale(1.6); }
+  .halo { width: 84px; height: 84px; border-radius: 999px; display: flex; align-items: center; justify-content: center; }
+  .mk-tag { background: #fff; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 500; box-shadow: 0 4px 16px rgba(16,24,40,.10); }
+  .cluster { display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 999px; padding: 4px 14px 4px 4px; font-size: 15px; font-weight: 600; box-shadow: 0 4px 16px rgba(16,24,40,.10); transform: scale(1.3); }
+  .cluster .dot { width: 24px; height: 24px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; }
+
+  /* 04 fresh */
+  .b-fresh { display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; flex: 1; }
+  .fr-rows { background: #fff; border-radius: 12px; padding: 8px 20px; display: flex; flex-direction: column; justify-content: center; }
+  .fr { display: flex; align-items: center; gap: 8px; padding: 18px 0; font-size: 15px; border-bottom: 1px solid #E5E7EB; }
+  .fr:last-child { border-bottom: 0; }
+  .fr b { font-weight: 400; }
+  .fr span:last-child { color: #6B7280; }
+  .d { width: 9px; height: 9px; border-radius: 999px; }
+  .fr-pins { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; grid-template-rows: 1fr auto; }
+  .stale i { position: absolute; top: -7px; right: -7px; width: 13px; height: 13px; border-radius: 999px; background: #fff; color: #6B7280; font-size: 9px; font-weight: 700; font-style: normal; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  .toggle { grid-column: 1 / -1; background: #fff; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 500; }
+  .sw-t { width: 40px; height: 24px; border-radius: 999px; background: #E5E7EB; position: relative; }
+  .sw-t span { position: absolute; left: 2px; top: 2px; width: 20px; height: 20px; border-radius: 999px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+
+  /* 05 base */
+  .b-base { display: grid; grid-template-columns: 1fr 1.1fr; gap: 18px; flex: 1; }
+  .type, .shapes { background: #fff; border-radius: 12px; padding: 18px 20px; }
+  .type p:not(.lbl) { margin: 0 0 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .type em { font-style: normal; font-size: 11px; font-weight: 500; color: #9CA3AF; font-family: ui-monospace, Menlo, monospace; }
+  .rad-row, .sh-row { display: flex; gap: 18px; margin-bottom: 18px; align-items: flex-end; }
+  .rad-row > div, .sh-row > div { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+  .rad-row small, .sh-row small { font-size: 11px; color: #6B7280; max-width: 110px; line-height: 1.35; }
+  .r { display: block; width: 52px; height: 52px; border: 1.5px solid #111827; box-sizing: border-box; }
+  .s { display: block; width: 64px; height: 40px; border-radius: 10px; background: #fff; border: 1px solid #F3F4F6; }
+  .sh-row { background: #F3F4F6; border-radius: 10px; padding: 14px 16px; }
+  .sp { margin: 0; font-size: 13px; color: #374151; }
+
+  /* 06 sheet */
+  .b-sheet { display: grid; grid-template-columns: 330px 1fr; gap: 26px; flex: 1; min-height: 0; }
+  .b-sheet img { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 -6px 24px rgba(16,24,40,.10); align-self: start; }
+  .ann { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 14px; font-size: 13px; color: #4B5563; }
+  .ann b { display: block; color: #111827; font-size: 14px; }
+
+  /* 07 floors */
+  .b-floors { display: flex; gap: 48px; flex: 1; align-items: flex-start; justify-content: center; }
+  .b-floors figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .b-floors img { width: auto; height: 340px; border-radius: 10px; }
+  .b-floors figure:last-child img { height: 88px; }
+  .b-floors figcaption { font-size: 12px; color: #6B7280; max-width: 150px; text-align: center; }
+
+  /* 08 modes */
+  .b-modes { display: flex; flex-direction: column; gap: 12px; }
+  .chips { display: flex; gap: 8px; }
+  .chip { height: 36px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 999px; background: #fff; color: #111827; font-size: 15px; font-weight: 500; box-shadow: 0 4px 16px rgba(16,24,40,.10); }
+  .chip.on { background: #2563EB; color: #fff; }
+  .chip.em { color: #DC3E42; border: 1px solid #DC3E42; }
+  .chip.em.on { background: #DC3E42; color: #fff; }
+  .banner { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; background: #DC3E42; color: #fff; border-radius: 999px; padding: 6px 14px 6px 10px; font-size: 14px; font-weight: 500; margin-bottom: 14px; }
+  .bd { width: 10px; height: 10px; border-radius: 999px; background: #fff; }
+  .btns { display: flex; gap: 8px; max-width: 360px; }
+  .btn { flex: 1; height: 47px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; }
+  .btn.sec { background: #F3F4F6; color: #111827; }
+  .btn.pri { background: #2563EB; color: #fff; }
+
+  @media (max-width: 720px) {
+    .vs-item { width: 88vw; }
+    .vs-board { height: auto; min-height: 460px; padding: 20px; }
+    .b-colour { grid-template-columns: repeat(3, 1fr); }
+    .sw-chip { height: 110px; }
+    .b-markers, .b-fresh, .b-base, .b-sheet { grid-template-columns: 1fr 1fr; }
+    .b-sheet img { width: 100%; }
+    .strip { flex-wrap: wrap; }
+    .cell { flex: 1 0 25%; height: 80px; }
+  }
+</style>

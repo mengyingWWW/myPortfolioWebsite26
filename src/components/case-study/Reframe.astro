@@ -1,0 +1,11 @@
+---
+/** The question a decision was judged against, set as a pull quote: accent rule on the left, no box. */
+interface Props { text: string }
+const { text } = Astro.props;
+---
+<blockquote class="rf"><p>{text}</p></blockquote>
+<style>
+  .rf { margin: 32px 0 0; padding: 2px 0 2px 22px; border-left: 3px solid var(--cs-accent, #0F766E); max-width: 640px; }
+  .rf p { margin: 0; font-size: 24px; line-height: 1.35; font-weight: 500; letter-spacing: -0.01em; color: #111; }
+  @media (max-width: 640px) { .rf { padding-left: 16px; } .rf p { font-size: 20px; } }
+</style>

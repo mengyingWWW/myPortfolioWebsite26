@@ -1,0 +1,34 @@
+---
+/** D4: what an admin and everyone else can see and do in an emergency, around the clip that switches between them. */
+import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
+const admin = { see: ['Incident: building, floor, time', 'People, first aid, rally points, shelters'], act: ['Notify people', 'Auto-refresh'] };
+const viewer = { see: ['Incident: building, floor, time', 'People, first aid, rally points, shelters'], act: ['Report an emergency'] };
+---
+<div class="er">
+  <div class="er-col">
+    <p class="er-who">Admin</p>
+    <p class="er-k">Sees</p><ul>{admin.see.map((s) => <li>{s}</li>)}</ul>
+    <p class="er-k">Can do</p><ul class="act">{admin.act.map((s) => <li>{s}</li>)}</ul>
+  </div>
+  <div class="er-phone"><ClipPlayer src="/work/idea-mapping/clips/clip-d4-viewer" label="Emergency screen switching between admin view and view-only" width={780} height={1688} /></div>
+  <div class="er-col">
+    <p class="er-who">Everyone else <em>view-only</em></p>
+    <p class="er-k">Sees</p><ul>{viewer.see.map((s) => <li>{s}</li>)}</ul>
+    <p class="er-k">Can do</p><ul class="act">{viewer.act.map((s) => <li>{s}</li>)}</ul>
+  </div>
+</div>
+<style>
+  .er { margin-top: 32px; display: grid; grid-template-columns: minmax(0, 1fr) 260px minmax(0, 1fr); gap: 32px; align-items: center; }
+  .er-col { border-top: 1px solid #111; padding-top: 14px; }
+  .er-who em { font-style: normal; font-size: 13px; font-weight: 400; color: #8A8A8A; margin-left: 6px; }
+  .er-who { margin: 0 0 14px; font-size: 18px; font-weight: 600; color: #111; }
+  .er-k { margin: 14px 0 6px; font: 500 11px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; text-transform: uppercase; color: #8A8A8A; }
+  .er ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .er li { font-size: 15px; line-height: 1.45; color: #3a3a3a; }
+  .er ul.act { display: flex; flex-wrap: wrap; gap: 6px; }
+  .er ul.act li { display: inline-flex; padding: 5px 12px; border-radius: 999px; background: #FEE2E2; color: #B42318; font-weight: 600; font-size: 14px; }
+  .er-phone { aspect-ratio: 780 / 1688; border-radius: 28px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 10px 28px rgba(17,24,39,.08); }
+  .er-phone :global(.clip) { height: 100%; }
+  .er-phone :global(video) { width: 100%; height: 100%; object-fit: cover; display: block; }
+  @media (max-width: 760px) { .er { grid-template-columns: 1fr 1fr; } .er-phone { grid-column: 1 / -1; grid-row: 1; justify-self: center; width: min(260px, 75vw); } }
+</style>

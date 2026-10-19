@@ -1,0 +1,51 @@
+---
+/**
+ * Smaller details that came together without many rounds, laid out like AKOOL's "Other Designs":
+ * title + short text on the left, a large soft panel with the screen on the right.
+ * Items that move use a looping clip (ClipPlayer); the rest use a still.
+ */
+import ClipPlayer from '@/components/case-study/ClipPlayer.astro';
+interface Item { t: string; d: string; clip?: string; src?: string; alt: string }
+const items: Item[] = [
+  { t: 'How old a location is', d: 'Every record shows when it was last seen. Recent sightings get a green dot and older ones an orange dot. A pin not seen for days turns grey with a question mark.', clip: '/work/idea-mapping/clips/clip-freshness', alt: 'Opening a person seen 2 minutes ago and an asset seen 26 hours ago' },
+  { t: 'A room at a glance', d: 'Tapping a room lists what is inside it. Assets, people and open work orders each show their last-seen time.', clip: '/work/idea-mapping/clips/clip-rooms', alt: 'Opening the Mechanical B1-04 room sheet' },
+  { t: 'What’s near you', d: 'Before you type, search lists the closest people, assets and work orders. Each row shows the building, floor and distance.', src: '/work/idea-mapping/wall/02-search.webp', alt: 'Search showing a Near you list with distances' },
+  { t: 'A suggested new spot', d: 'Relocate starts from where the tracker last saw the asset. You can drag the pin, tap the map or search a room.', src: '/work/idea-mapping/wall/11-new-location.webp', alt: 'Set new location step with a suggested position' },
+  { t: 'One place for filters', d: 'Map options holds the view switch and the five pin types. A switch there hides anything not seen in 7 days.', src: '/work/idea-mapping/wall/08-map-options.webp', alt: 'Map options sheet with pin type filters' },
+];
+---
+<div class="od">
+  {items.map((i) => (
+    <section class="od-row">
+      <div class="od-text">
+        <h3>{i.t}</h3>
+        <p>{i.d}</p>
+      </div>
+      <div class="od-panel">
+        <div class="od-phone">
+          {i.clip
+            ? <ClipPlayer src={i.clip} label={i.alt} width={780} height={1688} />
+            : <img src={i.src} alt={i.alt} loading="lazy" decoding="async" />}
+        </div>
+      </div>
+    </section>
+  ))}
+</div>
+<style>
+  .od { margin-top: 40px; display: grid; gap: 96px; }
+  .od-row { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 48px; align-items: start; }
+  .od-text h3 { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 500; color: #111; }
+  .od-text p { margin: 16px 0 0; font-size: 18px; line-height: 1.6; color: #6E6E6E; }
+  .od-panel { display: flex; justify-content: center; }
+  .od-phone { width: min(260px, 100%); aspect-ratio: 780 / 1688; border-radius: 28px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 14px 34px rgba(17,24,39,.10); background: #fff; }
+  .od-phone :global(.clip) { height: 100%; }
+  .od-phone img, .od-phone :global(video) { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  @media (max-width: 860px) {
+    .od { gap: 64px; }
+    .od-row { grid-template-columns: 1fr; gap: 20px; }
+    .od-text h3 { font-size: 23px; }
+    .od-text p { font-size: 16px; }
+    .od-panel { padding: 0; }
+    .od-phone { width: min(230px, 70vw); }
+  }
+</style>

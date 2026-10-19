@@ -1,0 +1,251 @@
+---
+/**
+ * Final design, one task at a time.
+ * - The clip plays under a thin progress bar (ticks = steps, larger mark = key frame; click or drag to scrub)
+ *   and a row of numbered step pills (the step on screen lights up).
+ * - Clicking a pill jumps to that step, pauses, and shows that one callout (dot + line + note). It plays on after a few seconds.
+ *   A step's dot uses sx / sy when the element sits elsewhere at that moment; otherwise x / y.
+ * - At `hold` (the frame that matches the still) every callout comes in one by one, then the clip plays on and loops.
+ * - A step without x / y has no dot; when clicked, its note shows under the pills.
+ * - Hover keeps a paused frame. Reduced motion or no clip: the still with every callout.
+ * - At 760px and below: no lines or pills; a numbered list under the phone.
+ */
+interface Pin { x?: number; y?: number; sx?: number; sy?: number; side?: 'l' | 'r'; at?: number; t: string; d?: string }
+interface Task { title: string; note: string; src: string; alt: string; clip?: string; hold?: number; pins: Pin[] }
+interface Props { tasks: Task[] }
+const { tasks } = Astro.props;
+const placed = (p: Pin) => p.x !== undefined && p.y !== undefined && p.side;
+const vars = (p: Pin, i: number) =>
+  `--i:${i};--x:${p.x}%;--y:${p.y}%;--sx:${p.sx ?? p.x}%;--sy:${p.sy ?? p.y}%`;
+---
+<div class="tc">
+  {tasks.map((task, ti) => (
+    <section class="tc-task">
+      <header class="tc-head">
+        <span class="tc-n">{String(ti + 1).padStart(2, '0')}</span>
+        <h3>{task.title}</h3>
+        <p>{task.note}</p>
+      </header>
+      <figure class:list={['tc-fig', { 'has-clip': task.clip, 'show-pins': !task.clip, 'no-video': !task.clip }]} data-tc data-hold={task.hold ?? ''}>
+        <div class="tc-col l">
+          {task.pins.map((p, i) => placed(p) && p.side === 'l' && (
+            <div class="tc-note tc-c" data-i={i} style={vars(p, i)}><b>{p.t}</b>{p.d && <span>{p.d}</span>}</div>
+          ))}
+        </div>
+        <div class="tc-phone">
+          <div class="tc-screen">
+            <img src={task.src} alt={task.alt} loading="lazy" decoding="async" />
+            {task.clip && <video muted playsinline preload="none" poster={`${task.clip}.jpg`} aria-label={`${task.title} walkthrough`}><source src={`${task.clip}.mp4`} type="video/mp4" /></video>}
+          </div>
+          {task.pins.map((p, i) => placed(p) && (
+            <>
+              <span class:list={['tc-line', 'tc-c', p.side]} data-i={i} style={vars(p, i)} aria-hidden="true"></span>
+              <span class="tc-dot tc-c" data-i={i} style={vars(p, i)} aria-hidden="true">{i + 1}</span>
+            </>
+          ))}
+        </div>
+        <div class="tc-col r">
+          {task.pins.map((p, i) => placed(p) && p.side === 'r' && (
+            <div class="tc-note tc-c" data-i={i} style={vars(p, i)}><b>{p.t}</b>{p.d && <span>{p.d}</span>}</div>
+          ))}
+        </div>
+        {task.clip && (
+          <div class="tc-bar" role="slider" tabindex="0" aria-label={`${task.title} clip position`} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-cursor-label="DRAG">
+            <div class="tc-track"><div class="tc-fill"></div></div>
+            {task.pins.map((p, i) => p.at !== undefined && <span class="tc-tick" data-at={p.at} title={`${i + 1} · ${p.t}`}></span>)}
+            {task.hold !== undefined && <span class="tc-key" data-at={task.hold} title="All callouts"></span>}
+          </div>
+        )}
+        <div class="tc-steps">
+          {task.clip && <button type="button" class="tc-toggle" aria-label="Pause" data-cursor-label="PAUSE"><svg class="i-pause" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor"/></svg><svg class="i-play" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"/></svg></button>}
+          <ol>
+            {task.pins.map((p, i) => (
+              <li><button type="button" class="tc-step" data-at={p.at ?? ''} data-placed={placed(p) ? '1' : ''} data-note={p.d ?? ''} disabled={!task.clip || p.at === undefined}><i>{i + 1}</i>{p.t}</button></li>
+            ))}
+          </ol>
+        </div>
+        <p class="tc-caption" aria-live="polite"></p>
+        <ol class="tc-list">
+          {task.pins.map((p) => <li><b>{p.t}</b>{p.d && <span> {p.d}</span>}</li>)}
+        </ol>
+      </figure>
+    </section>
+  ))}
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HOLD_MS = 4500, STEP_MS = 3500;
+  document.querySelectorAll<HTMLElement>('[data-tc].has-clip').forEach((fig) => {
+    const video = fig.querySelector('video')!;
+    const btn = fig.querySelector<HTMLButtonElement>('.tc-toggle')!;
+    const bar = fig.querySelector<HTMLElement>('.tc-bar')!;
+    const fill = fig.querySelector<HTMLElement>('.tc-fill')!;
+    const caption = fig.querySelector<HTMLElement>('.tc-caption')!;
+    const steps = [...fig.querySelectorAll<HTMLButtonElement>('.tc-step')];
+    const ats = steps.map((s) => parseFloat(s.dataset.at || ''));
+    const callouts = [...fig.querySelectorAll<HTMLElement>('.tc-c')];
+    const hold = parseFloat(fig.dataset.hold || '');
+    const fallback = () => { fig.classList.add('no-video', 'show-pins'); steps.forEach((s) => s.classList.add('is-done')); };
+    if (reduce || isNaN(hold)) { fallback(); return; }
+
+    let inView = false, userPaused = false, hovering = false, dragging = false;
+    let mode: 'play' | 'hold' | 'step' = 'play', shown = false, timer = 0, raf = 0, stepIdx = -1;
+
+    const placeMarks = () => {
+      const d = video.duration;
+      if (!d) return;
+      fig.querySelectorAll<HTMLElement>('.tc-tick, .tc-key').forEach((m) => { m.style.left = `${(parseFloat(m.dataset.at!) / d) * 100}%`; });
+    };
+    const setBtn = () => {
+      btn.setAttribute('aria-label', userPaused ? 'Play' : 'Pause');
+      btn.dataset.cursorLabel = userPaused ? 'PLAY' : 'PAUSE';
+      fig.classList.toggle('is-paused', userPaused);
+    };
+    const setMode = (m: typeof mode, i = -1) => {
+      mode = m; stepIdx = i;
+      fig.classList.toggle('show-pins', m === 'hold');
+      fig.classList.toggle('show-step', m === 'step');
+      callouts.forEach((c) => c.classList.toggle('is-on', m === 'step' && Number(c.dataset.i) === i));
+      const s = steps[i];
+      caption.textContent = m === 'step' && s && !s.dataset.placed ? `${s.textContent?.trim()}: ${s.dataset.note}` : '';
+    };
+    const play = () => { if (inView && !userPaused && !dragging) video.play().catch(fallback); };
+    const resume = () => {
+      clearTimeout(timer);
+      if (hovering || userPaused) return;
+      setMode('play'); play();
+    };
+    const mark = () => {
+      const t = video.currentTime, d = video.duration || 1;
+      fill.style.width = `${(t / d) * 100}%`;
+      bar.setAttribute('aria-valuenow', String(Math.round((t / d) * 100)));
+      let cur = -1;
+      ats.forEach((a, i) => { if (!isNaN(a) && t >= a - 0.05) cur = i; });
+      if (mode === 'step') cur = stepIdx;
+      steps.forEach((s, i) => { s.classList.toggle('is-current', i === cur); s.classList.toggle('is-done', i < cur || mode === 'hold'); });
+    };
+    const watch = () => {
+      if (mode === 'play' && !shown && !dragging && !video.paused && video.currentTime >= hold && video.currentTime < hold + 0.6) {
+        shown = true; video.pause(); setMode('hold');
+        timer = window.setTimeout(resume, HOLD_MS);
+      }
+      mark();
+      raf = requestAnimationFrame(watch);
+    };
+    const seek = (t: number) => { video.currentTime = Math.max(0, Math.min(t, (video.duration || t) - 0.05)); shown = video.currentTime > hold; };
+
+    video.addEventListener('loadedmetadata', placeMarks);
+    video.addEventListener('ended', () => { setMode('play'); shown = false; video.currentTime = 0; play(); });
+    video.addEventListener('error', fallback);
+    fig.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hovering = true; });
+    fig.addEventListener('pointerleave', () => { hovering = false; if (mode !== 'play') timer = window.setTimeout(resume, 1200); });
+    btn.addEventListener('click', () => {
+      userPaused = !userPaused; setBtn();
+      if (userPaused) { video.pause(); clearTimeout(timer); }
+      else if (mode !== 'play') resume(); else play();
+    });
+    steps.forEach((s, i) => s.addEventListener('click', () => {
+      if (isNaN(ats[i])) return;
+      clearTimeout(timer);
+      video.pause(); seek(ats[i] + 0.15);
+      setMode('step', i);
+      userPaused = false; setBtn();
+      timer = window.setTimeout(resume, STEP_MS);
+    }));
+
+    // scrub: click or drag on the bar
+    const toTime = (e: PointerEvent) => { const r = bar.getBoundingClientRect(); return ((e.clientX - r.left) / r.width) * (video.duration || 0); };
+    bar.addEventListener('pointerdown', (e) => {
+      dragging = true; bar.setPointerCapture(e.pointerId); clearTimeout(timer);
+      video.pause(); setMode('play'); seek(toTime(e)); fig.classList.add('is-scrub');
+    });
+    bar.addEventListener('pointermove', (e) => { if (dragging) seek(toTime(e)); });
+    const endDrag = () => { if (!dragging) return; dragging = false; fig.classList.remove('is-scrub'); play(); };
+    bar.addEventListener('pointerup', endDrag);
+    bar.addEventListener('pointercancel', endDrag);
+    bar.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault(); clearTimeout(timer); setMode('play');
+      seek(video.currentTime + (e.key === 'ArrowRight' ? 1 : -1)); play();
+    });
+
+    new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting;
+      if (inView) { video.preload = 'auto'; if (mode === 'play') play(); cancelAnimationFrame(raf); raf = requestAnimationFrame(watch); }
+      else { video.pause(); cancelAnimationFrame(raf); }
+    }, { threshold: 0.4 }).observe(fig);
+    if (video.readyState >= 1) placeMarks();
+    setBtn();
+  });
+</script>
+
+<style>
+  .tc { display: grid; gap: 120px; margin-top: 40px; }
+  .tc-head { max-width: 60ch; }
+  .tc-n { font: 500 12px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; color: var(--cs-accent-text, #115E59); }
+  .tc-head h3 { margin: 6px 0 0; font-size: 24px; font-weight: 600; color: #111; }
+  .tc-head p { margin: 8px 0 0; font-size: 17px; line-height: 1.6; color: #3a3a3a; }
+
+  .tc-fig { --gap: 40px; margin: 40px 0 0; display: grid; grid-template-columns: minmax(0, 1fr) 300px minmax(0, 1fr); column-gap: var(--gap); row-gap: 16px; }
+  .tc-col { position: relative; }
+  .tc-phone { position: relative; aspect-ratio: 390 / 844; }
+  .tc-screen { position: absolute; inset: 0; border-radius: 30px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 10px 28px rgba(17,24,39,.08); background: #fff; }
+  .tc-screen img, .tc-screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .no-video .tc-screen video { display: none; }
+
+  /* callouts: x / y on the key frame, sx / sy when one step is shown */
+  .tc-c { --cx: var(--x); --cy: var(--y); }
+  .show-step .tc-c { --cx: var(--sx); --cy: var(--sy); }
+  .tc-line { position: absolute; top: var(--cy); height: 0; border-top: 1px solid var(--cs-accent, #0F766E); z-index: 1; }
+  .tc-line.l { left: calc(-1 * var(--gap)); width: calc(var(--gap) + var(--cx)); }
+  .tc-line.r { left: var(--cx); right: calc(-1 * var(--gap)); }
+  .tc-dot { position: absolute; left: var(--cx); top: var(--cy); z-index: 2; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 999px; background: var(--cs-accent, #0F766E); color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 3px #fff; }
+  .tc-note { position: absolute; top: var(--cy); transform: translateY(-11px); width: min(100%, 230px); font-size: 14px; line-height: 1.45; color: #555; }
+  .tc-col.l .tc-note { right: 0; text-align: right; }
+  .tc-col.r .tc-note { left: 0; }
+  .tc-note b { display: block; font-size: 15px; font-weight: 600; color: #111; }
+  .tc-note span { display: block; margin-top: 2px; }
+
+  .tc-c { opacity: 0; transition: opacity .3s ease; }
+  .show-pins .tc-c { opacity: 1; transition-delay: calc(var(--i) * .3s + .15s); }
+  .show-step .tc-c.is-on { opacity: 1; transition-delay: .1s; }
+
+  /* progress bar */
+  .tc-bar { grid-column: 2; position: relative; height: 18px; margin-top: 4px; cursor: pointer; touch-action: none; outline: none; }
+  .tc-track { position: absolute; left: 0; right: 0; top: 8px; height: 2px; border-radius: 2px; background: #E6E6E4; overflow: hidden; }
+  .tc-fill { height: 100%; width: 0; background: var(--cs-accent, #0F766E); }
+  .tc-bar:hover .tc-track, .is-scrub .tc-track { top: 7px; height: 4px; }
+  .tc-tick { position: absolute; top: 5px; width: 2px; height: 8px; margin-left: -1px; border-radius: 1px; background: #9CA3AF; pointer-events: none; }
+  .tc-key { position: absolute; top: 4px; width: 10px; height: 10px; margin-left: -5px; border-radius: 999px; background: #fff; border: 2px solid var(--cs-accent, #0F766E); box-sizing: border-box; pointer-events: none; }
+  .tc-bar:focus-visible { outline: 2px solid var(--cs-accent, #0F766E); outline-offset: 2px; border-radius: 4px; }
+
+  /* step pills */
+  .tc-steps { grid-column: 1 / -1; display: flex; justify-content: center; align-items: center; gap: 12px; }
+  .tc-steps ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .tc-step { height: 32px; padding: 0 12px 0 6px; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #E6E6E4; background: #fff; font-size: 13px; color: #9A9A98; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+  .tc-step i { width: 20px; height: 20px; border-radius: 999px; background: #EFEFED; color: #8A8A8A; font-size: 11px; font-style: normal; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: background .2s, color .2s; }
+  .tc-step.is-done { color: #3a3a3a; }
+  .tc-step.is-done i { background: #D7EFEA; color: var(--cs-accent-text, #115E59); }
+  .tc-step.is-current { color: #111; border-color: var(--cs-accent, #0F766E); background: var(--cs-accent-tint, #F0FDFA); }
+  .tc-step.is-current i { background: var(--cs-accent, #0F766E); color: #fff; }
+  .tc-step:disabled { cursor: default; }
+  .tc-step:not(:disabled):hover { border-color: #9CA3AF; }
+  .tc-toggle { flex: none; width: 32px; height: 32px; border-radius: 999px; border: 1px solid #E6E6E4; background: #fff; color: #555; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .tc-toggle:hover { border-color: #9CA3AF; color: #111; }
+  .tc-toggle .i-play, .is-paused .tc-toggle .i-pause { display: none; }
+  .is-paused .tc-toggle .i-play { display: block; }
+  .tc-caption { grid-column: 1 / -1; margin: 0; min-height: 21px; text-align: center; font-size: 14px; color: #555; }
+  .tc-list { display: none; }
+
+  @media (max-width: 760px) {
+    .tc { gap: 80px; }
+    .tc-fig { grid-template-columns: 1fr; justify-items: center; row-gap: 14px; }
+    .tc-col, .tc-line { display: none; }
+    .tc-phone { width: min(280px, 78vw); }
+    .tc-bar { grid-column: 1; width: min(280px, 78vw); }
+    .tc-steps ol, .tc-caption { display: none; }
+    .tc-list { display: grid; gap: 12px; margin: 0; padding-left: 22px; width: 100%; max-width: 420px; font-size: 14px; line-height: 1.5; color: #555; }
+    .tc-list b { color: #111; }
+  }
+</style>

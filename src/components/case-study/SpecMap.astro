@@ -1,0 +1,89 @@
+---
+/**
+ * "03 Scope" for idea-mapping: each line of the engineering spec (left) next to what it became
+ * in the design (right), with a status chip. Chips that point to a key decision link to it.
+ * Desktop: three columns per row. ≤760 px: each row stacks.
+ */
+type Status = 'designed' | 'answered' | 'partly' | 'later';
+interface Row {
+  spec: string;      // what the spec said (paraphrased)
+  design: string;    // what it became
+  status: Status;
+  ref?: string;      // e.g. "D2", shown on the chip
+  href?: string;     // e.g. "#decisions"
+}
+interface Props { rows: Row[] }
+const { rows } = Astro.props;
+const LABEL: Record<Status, string> = {
+  designed: 'Designed',
+  answered: 'Answered',
+  partly: 'Partly',
+  later: 'Not in v1',
+};
+---
+
+<div class="sm" role="table" aria-label="From the engineering spec to the design">
+  <div class="sm-head" role="row">
+    <span role="columnheader">In the spec</span>
+    <span role="columnheader">In the design</span>
+    <span role="columnheader" class="sm-sr">Status</span>
+  </div>
+  {rows.map((r) => (
+    <div class:list={['sm-row', `is-${r.status}`]} role="row">
+      <p class="sm-spec" role="cell">{r.spec}</p>
+      <p class="sm-design" role="cell">{r.design}</p>
+      <p class="sm-status" role="cell">
+        {r.href ? (
+          <a class="sm-chip" href={r.href}>{LABEL[r.status]}{r.ref && <span class="sm-ref"> · {r.ref}</span>} <span aria-hidden="true">↓</span></a>
+        ) : (
+          <span class="sm-chip">{LABEL[r.status]}</span>
+        )}
+      </p>
+    </div>
+  ))}
+</div>
+
+<style>
+  .sm { display: grid; border-top: 1px solid #E6E6E4; }
+  .sm-head, .sm-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) 150px;
+    gap: 24px;
+    align-items: start;
+    padding: 16px 0;
+    border-bottom: 1px solid #E6E6E4;
+  }
+  .sm-head { padding: 12px 0; font: 500 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: #8A8A8A; }
+  .sm-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .sm-spec { margin: 0; font-size: 15px; line-height: 1.5; color: #6E6E6E; }
+  .sm-design { margin: 0; font-size: 15px; line-height: 1.5; color: #111111; }
+  .sm-status { margin: 0; justify-self: end; }
+  .sm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--cs-accent);
+    color: var(--cs-accent-text, var(--cs-accent));
+    background: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .is-answered .sm-chip { background: var(--cs-accent); border-color: var(--cs-accent); color: #FFFFFF; }
+  a.sm-chip:hover { box-shadow: 0 0 0 4px color-mix(in srgb, var(--cs-accent) 16%, transparent); }
+  a.sm-chip:focus-visible { outline: 2px solid #111111; outline-offset: 2px; }
+  .is-partly .sm-chip { background: var(--cs-accent-tint, #F0FDFA); }
+  .is-later .sm-chip { border-color: #D4D4D2; color: #6E6E6E; }
+  .is-later .sm-design { color: #6E6E6E; }
+
+  @media (max-width: 760px) {
+    .sm-head { display: none; }
+    .sm-row { grid-template-columns: 1fr; gap: 6px; }
+    .sm-spec::before { content: 'Spec · '; font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.06em; text-transform: uppercase; color: #8A8A8A; }
+    .sm-status { justify-self: start; margin-top: 4px; }
+  }
+</style>

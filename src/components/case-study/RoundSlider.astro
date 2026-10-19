@@ -1,0 +1,53 @@
+---
+/**
+ * Drag-to-compare an earlier design round with the final round on one phone frame (780×1688 ratio).
+ * Range input for keyboard / screen readers; a note for each side sits under the phone.
+ */
+interface Side { src: string; alt: string; title: string; note: string }
+interface Props { before: Side; after: Side; beforeLabel?: string; afterLabel?: string }
+const { before, after, beforeLabel = 'Earlier round', afterLabel = 'Final round' } = Astro.props;
+---
+<figure class="rs" data-rs>
+  <div class="rs-frame" style="--pos:50%">
+    <img class="rs-img" src={before.src} alt={before.alt} loading="lazy" decoding="async" />
+    <div class="rs-after"><img class="rs-img" src={after.src} alt={after.alt} loading="lazy" decoding="async" /></div>
+    <div class="rs-line" aria-hidden="true"><span>‹ ›</span></div>
+    <span class="rs-tag l">{beforeLabel}</span>
+    <span class="rs-tag r">{afterLabel}</span>
+    <input class="rs-range" type="range" min="0" max="100" value="50" data-cursor-label="DRAG" aria-label={`Compare ${beforeLabel.toLowerCase()} and ${afterLabel.toLowerCase()}`} />
+  </div>
+  <div class="rs-notes">
+    <p><span>{beforeLabel}</span><b>{before.title}</b>{before.note}</p>
+    <p class="r"><span>{afterLabel}</span><b>{after.title}</b>{after.note}</p>
+  </div>
+</figure>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-rs]').forEach((fig) => {
+    const frame = fig.querySelector<HTMLElement>('.rs-frame')!;
+    const range = fig.querySelector<HTMLInputElement>('.rs-range')!;
+    const set = () => frame.style.setProperty('--pos', `${range.value}%`);
+    range.addEventListener('input', set); set();
+  });
+</script>
+<style>
+  .rs { margin: 32px 0 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 40px; align-items: center; }
+  .rs-frame { position: relative; aspect-ratio: 780 / 1688; border-radius: 30px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 10px 28px rgba(17,24,39,.08); background: #fff; }
+  .rs-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+  .rs-frame > .rs-img { filter: grayscale(.35); }
+  .rs-after { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+  .rs-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--cs-accent, #0F766E); pointer-events: none; }
+  .rs-line span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 36px; height: 36px; border-radius: 999px; background: var(--cs-accent, #0F766E); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+  .rs-tag { position: absolute; bottom: 12px; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 11.5px; font-weight: 600; display: inline-flex; align-items: center; pointer-events: none; }
+  .rs-tag.l { left: 12px; background: rgba(255,255,255,.92); color: #555; }
+  .rs-tag.r { right: 12px; background: var(--cs-accent, #0F766E); color: #fff; }
+  .rs-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+  .rs-range:focus-visible + * { outline: none; }
+  .rs-frame:has(.rs-range:focus-visible) { outline: 2px solid var(--cs-accent, #0F766E); outline-offset: 3px; }
+  .rs-notes { display: grid; gap: 22px; max-width: 420px; }
+  .rs-notes p { margin: 0; font-size: 15px; line-height: 1.55; color: #555; padding-left: 14px; border-left: 2px solid #D9D9D7; }
+  .rs-notes p.r { border-left-color: var(--cs-accent, #0F766E); }
+  .rs-notes span { display: block; font: 500 11px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; text-transform: uppercase; color: #8A8A8A; }
+  .rs-notes p.r span { color: var(--cs-accent-text, #115E59); }
+  .rs-notes b { display: block; margin: 4px 0 2px; font-size: 16px; font-weight: 600; color: #111; }
+  @media (max-width: 760px) { .rs { grid-template-columns: 1fr; justify-items: center; gap: 24px; } .rs-frame { width: min(300px, 80vw); } }
+</style>
