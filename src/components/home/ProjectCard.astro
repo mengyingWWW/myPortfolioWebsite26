@@ -1,8 +1,9 @@
 ---
 /**
  * Work grid card: a meta row (status | domains | role | platform) above a 16:9 cover,
- * then the title and year below it. The cover sits in grayscale and turns full color on hover / keyboard focus.
- * A cover with coverVideo also plays that clip over coverScreen while hovered (see CoverVideo).
+ * then the title and year below it. Covers are always in full colour.
+ * A cover with coverVideo plays that clip over coverScreen: on hover / keyboard focus with a mouse, or while
+ * mostly in view on touch screens (see CoverVideo). Covers without one zoom slightly on hover / focus instead.
  */
 import { Image } from 'astro:assets';
 import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
@@ -17,6 +18,7 @@ const { project } = Astro.props;
 const { title, year, status, domains, role, platform, cover, coverAlt } = project.data;
 const { coverScale, coverFocusX, coverFocusY, coverBackground, coverBlend, coverVideo, coverScreen } = project.data;
 const meta = [status, domains.join(', '), role, platform];
+const hasClip = Boolean(cover && coverVideo && coverScreen);
 const descriptionId = `work-card-${project.id}-description`;
 // Card width = half the container (max 1600px, 40px side padding) minus half the 40px gutter.
 // Zooming the cover changes its size on screen, so ask the browser for a proportionally sized file.
@@ -47,27 +49,25 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
       'background-color': coverBackground,
     }}
   >
-    {
-      cover ? (
-        <Image
-          src={cover}
-          alt={coverAlt ?? ''}
-          class="work-card-image"
-          style={coverBlend && { 'mix-blend-mode': coverBlend }}
-          widths={[800, 1200, 1600, 2400]}
-          sizes={coverSizes}
-          quality={90}
-          format="webp"
-        />
-      ) : (
-        <CoverPlaceholder title={title} class="work-card-placeholder absolute inset-0" />
-      )
-    }
-    {
-      cover && coverVideo && coverScreen && (
-        <CoverVideo src={coverVideo} screen={coverScreen} mode="hover" blend={coverBlend} />
-      )
-    }
+    <div class:list={['work-card-still', { 'is-zoom': !hasClip }]} style={{ 'background-color': coverBackground }}>
+      {
+        cover ? (
+          <Image
+            src={cover}
+            alt={coverAlt ?? ''}
+            class="work-card-image"
+            style={coverBlend && { 'mix-blend-mode': coverBlend }}
+            widths={[800, 1200, 1600, 2400]}
+            sizes={coverSizes}
+            quality={90}
+            format="webp"
+          />
+        ) : (
+          <CoverPlaceholder title={title} class="work-card-placeholder absolute inset-0" />
+        )
+      }
+    </div>
+    {hasClip && <CoverVideo src={coverVideo!} screen={coverScreen!} mode="card" blend={coverBlend} />}
   </div>
   <div class="mt-4 flex items-baseline justify-between gap-6">
     <h3 class="line-clamp-2 text-[28px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]">{title}</h3>
@@ -129,14 +129,22 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
     object-fit: cover;
     transform: translate(var(--cover-shift-x, 0%), var(--cover-shift-y, 0%)) scale(var(--cover-scale, 1));
     transform-origin: 0 0;
-    filter: grayscale(1);
-    transition:
-      filter 500ms ease,
-      opacity 300ms ease;
+    transition: opacity 300ms ease;
   }
 
-  .work-card:is(:hover, :focus-visible) .work-card-image {
-    filter: grayscale(0);
+  /* Wraps the still so the hover zoom runs from the centre, apart from the image's own framing transform.
+     It repeats the cover's background so a blended cover still has the same colour to blend with. */
+  .work-card-still {
+    position: absolute;
+    inset: 0;
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .work-card-still.is-zoom {
+      transition: transform 300ms ease;
+    }
+    .work-card:is(:hover, :focus-visible) .work-card-still.is-zoom {
+      transform: scale(1.03);
+    }
   }
 
   /* A blended hover clip multiplies with whatever is under it, so the still would ghost through.

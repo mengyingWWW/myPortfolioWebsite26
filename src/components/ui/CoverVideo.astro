@@ -3,9 +3,10 @@
  * A looping clip laid over part of a cover image (e.g. a device screen). Decorative: the cover keeps its alt.
  * The layer covers the image box and repeats the card's cover transform (--cover-shift-x/y, --cover-scale),
  * so the clip stays on the screen however the cover is framed. Without those variables it sits untransformed.
- *   mode="hover":    preloads once the enclosing link comes within ~200px of the viewport (or on first
- *                    hover / keyboard focus, if sooner), plays from the start while hovered, then
- *                    pauses and fades out. Only on devices that can hover.
+ *   mode="card":     preloads once the enclosing link enters the viewport. With a mouse it plays
+ *                    from the start while the link is hovered or keyboard-focused, then pauses and fades out.
+ *                    On touch screens it plays while its card is at least 60% in view; of several such cards,
+ *                    only the most visible one plays, plus any tied with it (cards side by side in one row).
  *   mode="autoplay": loads and plays while in view.
  * With reduced motion it is removed and never loads.
  */
@@ -14,8 +15,8 @@ interface Props {
   src: string;
   /** The area to cover, in % of the cover image. */
   screen: { x: number; y: number; w: number; h: number };
-  mode: 'hover' | 'autoplay';
-  /** Match the cover image's blend (e.g. "multiply") so a full-bleed hover clip doesn't flash white. */
+  mode: 'card' | 'autoplay';
+  /** Match the cover image's blend (e.g. "multiply") so a full-bleed clip doesn't flash white. */
   blend?: string;
 }
 
@@ -42,12 +43,34 @@ const videoStyle = `left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height
 
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const canHover = window.matchMedia('(hover: hover)').matches;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  /** Touch: of the card clips ≥ 60% in view, the most visible one plays. Cards tied with it (e.g. side by
+   *  side in one row, which are always equally visible) play too. */
+  const TOUCH_MIN_RATIO = 0.6;
+  const TIE = 0.02;
+  const touchRatios = new Map<HTMLElement, number>();
+  const touchControls = new Map<HTMLElement, { start: () => void; stop: () => void }>();
+  const touchPlaying = new Set<HTMLElement>();
+  const pickTouchCards = () => {
+    const best = Math.max(0, ...touchRatios.values());
+    for (const [layer, ratio] of touchRatios) {
+      const on = best >= TOUCH_MIN_RATIO && ratio >= best - TIE;
+      if (on === touchPlaying.has(layer)) continue;
+      if (on) {
+        touchPlaying.add(layer);
+        touchControls.get(layer)!.start();
+      } else {
+        touchPlaying.delete(layer);
+        touchControls.get(layer)!.stop();
+      }
+    }
+  };
 
   for (const layer of document.querySelectorAll<HTMLElement>('[data-cover-video]')) {
     const video = layer.querySelector('video')!;
     const mode = layer.dataset.coverVideo;
-    if (reduceMotion || (mode === 'hover' && !canHover)) {
+    if (reduceMotion) {
       layer.remove();
       continue;
     }
@@ -60,7 +83,7 @@ const videoStyle = `left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height
     };
     const play = () => video.play().catch(() => {});
 
-    if (mode === 'hover') {
+    if (mode === 'card') {
       const host = layer.closest<HTMLElement>('a') ?? layer.parentElement!;
       // Shown only once a frame is actually playing, so a slow first load never fades in an empty box.
       video.addEventListener('playing', () => {
@@ -76,23 +99,34 @@ const videoStyle = `left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height
         video.pause();
         layer.classList.remove('is-on', 'is-ready');
       };
-      // Rewind once hidden, so the next hover opens on the first frame (which matches the still), not the last one shown.
+      // Rewind once hidden, so the next play opens on the first frame (which matches the still), not the last one shown.
       video.addEventListener('transitionend', () => {
         if (!layer.classList.contains('is-on')) video.currentTime = 0;
       });
-      host.addEventListener('pointerenter', start);
-      host.addEventListener('pointerleave', stop);
-      host.addEventListener('focusin', () => host.matches(':focus-visible') && start());
-      host.addEventListener('focusout', stop);
-      // Download ahead of the first hover, so playback starts at once.
-      const preload = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry.isIntersecting) return;
-          load();
-          preload.disconnect();
-        },
-        { rootMargin: '200px' },
-      );
+
+      if (finePointer) {
+        host.addEventListener('pointerenter', start);
+        host.addEventListener('pointerleave', stop);
+        host.addEventListener('focusin', () => host.matches(':focus-visible') && start());
+        host.addEventListener('focusout', stop);
+      } else {
+        touchControls.set(layer, { start, stop });
+        new IntersectionObserver(
+          ([entry]) => {
+            touchRatios.set(layer, entry.isIntersecting ? entry.intersectionRatio : 0);
+            pickTouchCards();
+          },
+          { threshold: [0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] },
+        ).observe(host);
+      }
+
+      // Download once the card is on screen, ahead of the first play. No margin: the first row sits just below
+      // the full-height hero, so any look-ahead would load it with the page.
+      const preload = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        load();
+        preload.disconnect();
+      });
       preload.observe(host);
     } else {
       new IntersectionObserver(([entry]) => {
@@ -121,11 +155,11 @@ const videoStyle = `left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height
     object-position: top;
     border-radius: 3px;
   }
-  .is-hover .cv-video {
+  .is-card .cv-video {
     opacity: 0;
     transition: opacity 300ms ease;
   }
-  .is-hover.is-on.is-ready .cv-video {
+  .is-card.is-on.is-ready .cv-video {
     opacity: 1;
   }
 </style>

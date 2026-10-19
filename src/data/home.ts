@@ -8,4 +8,6 @@ export const hero = {
   introLead: '2+ years of experience',
   introRest: 'in AI, B2B and B2C products,',
   introLine2: 'building research-driven & human-centered design.',
+  /** Quieter line under the intro; it only wraps between items. */
+  education: ['M.S. HCDE @ UW', 'B.Eng @ Tsinghua'],
 };
