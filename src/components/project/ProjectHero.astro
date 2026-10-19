@@ -17,7 +17,7 @@ const { title, subtitle, type, cover, coverAlt, coverVideo, coverScreen } = Astr
   <Container class="pt-32 pb-16">
     <Tag variant="solid">{type}</Tag>
     <h1 class="mt-8 max-w-5xl text-6xl leading-[1.1] font-medium tracking-tight">{title}</h1>
-    <p class="mt-6 max-w-3xl text-2xl leading-snug text-muted">{subtitle}</p>
+    {subtitle && <p class="mt-6 max-w-3xl text-2xl leading-snug text-muted">{subtitle}</p>}
   </Container>
 
   <Container>

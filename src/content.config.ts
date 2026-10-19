@@ -7,7 +7,7 @@ const work = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
-      subtitle: z.string(),
+      subtitle: z.string().optional(),
       year: z.union([z.number(), z.string()]),
       /** Short label for the project page tag, e.g. "0→1 UI/UX Design" */
       type: z.string(),

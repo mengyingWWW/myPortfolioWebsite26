@@ -19,7 +19,7 @@ const { title, subtitle, cover } = project.data;
       <p class="mt-4 text-4xl font-medium tracking-tight group-hover:underline group-hover:underline-offset-4">
         {title} <span aria-hidden="true">→</span>
       </p>
-      <p class="mt-3 text-muted">{subtitle}</p>
+      {subtitle && <p class="mt-3 text-muted">{subtitle}</p>}
     </div>
     <div class="col-span-5 aspect-[16/9] overflow-hidden">
       {

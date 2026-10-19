@@ -28,11 +28,11 @@ tools:
 team:
   - 1 CEO & PM
   - 1 Engineer
-summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its records say where every asset, person and work order should be. On site, technicians, admins and responders still walk the halls to find them. Mapping is the new mobile feature that puts those records on a map. I started from an engineering spec: five pin types, four use cases and two map layers, with open questions about floors, crowded pins and modes. As the sole designer, I answered them in an interactive prototype that served as the spec. With it, the engineer built the feature in a third of the planned time, and the core design has shipped."
+summary: "Guardian is IDEA’s AI-powered facilities-management platform. Its records say where every asset, person and work order should be. On site, people still walk the halls to find them. Mapping puts those records on a map. I started from an engineering spec with open questions about floors, crowded pins and modes. As the sole designer, I answered them in a clickable prototype that became the spec. The engineer built the feature in about 2–3 weeks instead of the planned 7–8, and it has shipped."
 glance:
-  - { value: "67%", label: "less build time" }
-  - { value: "5", label: "pin types on one map" }
-  - { value: "4", label: "use cases, one mobile map" }
+  - { value: "2–3 wks", label: "to build, planned 7–8" }
+  - { value: "3–4 wks", label: "spec to handoff" }
+  - { value: "Shipped", label: "full feature" }
 accent: { main: '#0F766E', text: '#115E59', tint: '#F0FDFA', soft: '#F7FEFC', border: '#99F6E4' }
 screenWall:
   ariaLabel: "Key screens of the final IDEA Mapping design: map, floor plans, asset and room sheets, geofence and relocate flows, barcode scan and emergency mode."
@@ -60,7 +60,6 @@ order: 2
 
 import CaseStudy from '@/components/case-study/CaseStudy.astro';
 import Section from '@/components/case-study/Section.astro';
-import Block from '@/components/case-study/Block.astro';
 import BriefCallout from '@/components/case-study/BriefCallout.astro';
 import CampusMoments from '@/components/case-study/CampusMoments.astro';
 import ClipNote from '@/components/case-study/ClipNote.astro';
@@ -77,7 +76,6 @@ import RoundPair from '@/components/case-study/RoundPair.astro';
 import SpecMap from '@/components/case-study/SpecMap.astro';
 import Statement from '@/components/case-study/Statement.astro';
 import Stats from '@/components/case-study/Stats.astro';
-import Steps from '@/components/case-study/Steps.astro';
 import Takeaway from '@/components/case-study/Takeaway.astro';
 import TaskCallouts from '@/components/case-study/TaskCallouts.astro';
 import TradeOff from '@/components/case-study/TradeOff.astro';
@@ -125,15 +123,6 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
       { spec: 'Routing, heatmaps, CCTV, work-order updates from reports.', design: 'Left for later.', status: 'later' },
     ]}
   />
-  <Block title="Principles">
-    <Steps
-      steps={[
-        { lead: 'Place first', text: 'Every record opens on its building, floor and room.' },
-        { lead: 'Colour for what moves', text: 'People, assets, work orders and events get colour. Fixed places stay grey.' },
-        { lead: 'Both directions', text: 'The map shows where a record says something is. What staff find on site can correct the record.' },
-      ]}
-    />
-  </Block>
 </Section>
 
 <Section id="structure" index="04" label="Information Architecture" title="Information Architecture">
@@ -191,117 +180,142 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
   </div>
 </Section>
 
-<Section id="outcome" index="07" label="Outcome" title="Outcome">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">The full feature has shipped. Each task below runs on the same map screen.</p>
-
-  <div class="-mt-10 [&_.tc-list]:list-decimal">
-    <TaskCallouts
-      tasks={[
-        {
-          title: "Find",
-          note: "Search “AED” and open Where it is. The map goes to the right building and floor.",
-          src: '/work/idea-mapping/screens/fd-t1-find-results.webp',
-          clip: '/work/idea-mapping/clips/clip-t1-find',
-          hold: 9.0,
-          alt: "Search for AED open on the Main Building floorplan at B1",
-          pins: [
-            { x: 5, y: 9, side: 'l', at: 2.5, t: "Search by name", d: "Results are grouped by type." },
-            { x: 5, y: 22, sx: 6, sy: 52, side: 'l', at: 6.6, t: "Into the building", d: "Where it is opens Main Building." },
-            { x: 23, y: 58, side: 'l', at: 7.2, t: "Pin in its room", d: "AED-04 sits in Mechanical B1-04." },
-            { x: 97, y: 57.5, side: 'r', at: 7.6, t: "On its floor", d: "The floor picker lands on B1." },
-          ],
-        },
-        {
-          title: "Geofence",
-          note: "Pick the assets and a boundary. Choose who gets alerted and turn the fence on.",
-          src: '/work/idea-mapping/screens/fd-t2-geofence-alerts.webp',
-          clip: '/work/idea-mapping/clips/clip-t2-geofence',
-          hold: 13.8,
-          alt: "Geofence alerts step over the floorplan",
-          pins: [
-            { x: 95, y: 46, side: 'r', at: 4.0, t: "Four steps", d: "Assets, boundary, alerts and review." },
-            { x: 10, y: 30, side: 'l', at: 12.3, t: "Boundary on the plan", d: "A saved or new boundary shows in place." },
-            { x: 3, y: 61, side: 'l', at: 13.0, t: "Alert trigger", d: "It fires when an asset leaves or enters the area." },
-            { x: 48, y: 70, side: 'r', at: 13.4, t: "Who gets told", d: "SMS or email to me, my team or anyone I add." },
-          ],
-        },
-        {
-          title: "Relocate",
-          note: "Move one or many assets. The new spot starts from the tracker’s suggestion. The move goes to the Facilities Lead as a request.",
-          src: '/work/idea-mapping/screens/fd-t3-relocate-confirm.webp',
-          clip: '/work/idea-mapping/clips/clip-t3-relocate',
-          hold: 12.2,
-          alt: "Relocate confirm step with from and to rooms",
-          pins: [
-            { x: 8, y: 69, sx: 4, sy: 62, side: 'l', at: 8.6, t: "Tracker suggestion", d: "Drag the pin, tap the map or search to correct it." },
-            { x: 26, y: 30, side: 'l', at: 9.0, t: "Old room on the pin", d: "The pin shows it is moving from B1-04." },
-            { x: 90, y: 64, side: 'r', at: 11.0, t: "From and To", d: "Each side shows building, floor and room." },
-            { x: 96, y: 87, side: 'r', at: 11.6, t: "A request", d: "The Facilities Lead approves the move." },
-          ],
-        },
-        {
-          title: "Emergency",
-          note: "An admin sees the incident by building and floor. People and first-aid points are counted for them. One button alerts everyone.",
-          src: '/work/idea-mapping/screens/fd-t4-incident.webp',
-          clip: '/work/idea-mapping/clips/clip-t4-emergency',
-          hold: 5.5,
-          alt: "Incident sheet with notify and mark resolved",
-          pins: [
-            { x: 83, y: 21, side: 'r', at: 2.0, t: "Banner on top", d: "It names the building, floor and time." },
-            { x: 37, y: 33, side: 'l', at: 4.4, t: "Where it started", d: "The pin marks where it was detected at 9:31 AM." },
-            { x: 95, y: 63, side: 'r', at: 4.8, t: "Details for responders", d: "Source, alert sent, people nearby and the nearest AED." },
-            { x: 5, y: 87, side: 'l', at: 5.2, t: "Act from the sheet", d: "Admins notify people and mark it resolved." },
-          ],
-        },
-        {
-          title: "Scan",
-          note: "Scan an asset’s label. If the record names another place, update the location on the spot.",
-          src: '/work/idea-mapping/screens/fd-t5-scan-mismatch.webp',
-          clip: '/work/idea-mapping/clips/clip-t5-scan',
-          hold: 5.0,
-          alt: "Scanned asset sheet showing a location mismatch",
-          pins: [
-            { at: 2.0, t: "Scan the label", d: "Point the camera at the asset’s barcode." },
-            { x: 4, y: 53, side: 'l', at: 4.0, t: "Record vs. reality", d: "The record says B1. You are on floor 1." },
-            { x: 96, y: 71, side: 'r', at: 4.4, t: "Record unchanged", d: "Where it is still shows B1." },
-            { x: 4, y: 62, side: 'l', at: 4.8, t: "Fix it here", d: "Update location starts a relocate." },
-          ],
-        },
-      ]}
-    />
-  </div>
+<Section id="final-design" index="07" label="Final Design" title="Final Design">
+  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Five tasks from the shipped feature, then a few smaller details.</p>
 
   <div>
-    <h3 id="build-time" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Built in a third of the time</h3>
-    <p class="mt-4 max-w-[65ch] text-lg leading-relaxed text-muted">I built each open question in Figma Make as a few clickable versions and reviewed them with the CEO and engineer every week. After four rounds, the engineer got the prototype code, the link and notes, and built the feature in a third of the planned time.</p>
-    <div class="mt-8">
-      <Stats
-        items={[
-          { value: '4', caption: 'weekly design rounds' },
-          { value: '3–4 wks', caption: 'from spec to handoff' },
-          { value: '67%', caption: 'less engineering build time' },
+    <h3 id="core-tasks" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Core tasks</h3>
+    <div class="-mt-4 [&_.tc-list]:list-decimal">
+      <TaskCallouts
+        tasks={[
+          {
+            title: "Find",
+            note: "Search “AED” and open Where it is. The map goes to the right building and floor.",
+            src: '/work/idea-mapping/screens/fd-t1-find-results.webp',
+            clip: '/work/idea-mapping/clips/clip-t1-find',
+            hold: 9.0,
+            alt: "Search for AED open on the Main Building floorplan at B1",
+            pins: [
+              { x: 5, y: 9, side: 'l', at: 2.5, t: "Search by name", d: "Results are grouped by type." },
+              { x: 5, y: 22, sx: 6, sy: 52, side: 'l', at: 6.6, t: "Into the building", d: "Where it is opens Main Building." },
+              { x: 23, y: 58, side: 'l', at: 7.2, t: "Pin in its room", d: "AED-04 sits in Mechanical B1-04." },
+              { x: 97, y: 57.5, side: 'r', at: 7.6, t: "On its floor", d: "The floor picker lands on B1." },
+            ],
+          },
+          {
+            title: "Geofence",
+            note: "Pick the assets and a boundary. Choose who gets alerted and turn the fence on.",
+            src: '/work/idea-mapping/screens/fd-t2-geofence-alerts.webp',
+            clip: '/work/idea-mapping/clips/clip-t2-geofence',
+            hold: 13.8,
+            alt: "Geofence alerts step over the floorplan",
+            pins: [
+              { x: 95, y: 46, side: 'r', at: 4.0, t: "Four steps", d: "Assets, boundary, alerts and review." },
+              { x: 10, y: 30, side: 'l', at: 12.3, t: "Boundary on the plan", d: "A saved or new boundary shows in place." },
+              { x: 3, y: 61, side: 'l', at: 13.0, t: "Alert trigger", d: "It fires when an asset leaves or enters the area." },
+              { x: 48, y: 70, side: 'r', at: 13.4, t: "Who gets told", d: "SMS or email to me, my team or anyone I add." },
+            ],
+          },
+          {
+            title: "Relocate",
+            note: "Move one or many assets. The new spot starts from the tracker’s suggestion. The move goes to the Facilities Lead as a request.",
+            src: '/work/idea-mapping/screens/fd-t3-relocate-confirm.webp',
+            clip: '/work/idea-mapping/clips/clip-t3-relocate',
+            hold: 12.2,
+            alt: "Relocate confirm step with from and to rooms",
+            pins: [
+              { x: 8, y: 69, sx: 4, sy: 62, side: 'l', at: 8.6, t: "Tracker suggestion", d: "Drag the pin, tap the map or search to correct it." },
+              { x: 26, y: 30, side: 'l', at: 9.0, t: "Old room on the pin", d: "The pin shows it is moving from B1-04." },
+              { x: 90, y: 64, side: 'r', at: 11.0, t: "From and To", d: "Each side shows building, floor and room." },
+              { x: 96, y: 87, side: 'r', at: 11.6, t: "A request", d: "The Facilities Lead approves the move." },
+            ],
+          },
+          {
+            title: "Emergency",
+            note: "An admin sees the incident by building and floor. People and first-aid points are counted for them. One button alerts everyone.",
+            src: '/work/idea-mapping/screens/fd-t4-incident.webp',
+            clip: '/work/idea-mapping/clips/clip-t4-emergency',
+            hold: 5.5,
+            alt: "Incident sheet with notify and mark resolved",
+            pins: [
+              { x: 83, y: 21, side: 'r', at: 2.0, t: "Banner on top", d: "It names the building, floor and time." },
+              { x: 37, y: 33, side: 'l', at: 4.4, t: "Where it started", d: "The pin marks where it was detected at 9:31 AM." },
+              { x: 95, y: 63, side: 'r', at: 4.8, t: "Details for responders", d: "Source, alert sent, people nearby and the nearest AED." },
+              { x: 5, y: 87, side: 'l', at: 5.2, t: "Act from the sheet", d: "Admins notify people and mark it resolved." },
+            ],
+          },
+          {
+            title: "Scan",
+            note: "Scan an asset’s label. If the record names another place, update the location on the spot.",
+            src: '/work/idea-mapping/screens/fd-t5-scan-mismatch.webp',
+            clip: '/work/idea-mapping/clips/clip-t5-scan',
+            hold: 5.0,
+            alt: "Scanned asset sheet showing a location mismatch",
+            pins: [
+              { at: 2.0, t: "Scan the label", d: "Point the camera at the asset’s barcode." },
+              { x: 4, y: 53, side: 'l', at: 4.0, t: "Record vs. reality", d: "The record says B1. You are on floor 1." },
+              { x: 96, y: 71, side: 'r', at: 4.4, t: "Record unchanged", d: "Where it is still shows B1." },
+              { x: 4, y: 62, side: 'l', at: 4.8, t: "Fix it here", d: "Update location starts a relocate." },
+            ],
+          },
         ]}
       />
     </div>
   </div>
 
   <div>
-    <h3 id="next" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Next</h3>
-    <p class="mt-4 max-w-[65ch] text-lg leading-relaxed text-muted">Routing and a work-order queue are planned for the next phase.</p>
+    <h3 id="other-designs" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Other details</h3>
+    <p class="mt-3 max-w-[65ch] text-base leading-relaxed text-muted">Details that came together without many rounds.</p>
+    <OtherDesigns />
   </div>
 </Section>
 
-<Section id="takeaways" index="08" label="Takeaways" title="Takeaways">
+<Section id="outcome" index="08" label="Outcome" title="Outcome">
+  <div class="[&_.value]:text-[52px]!">
+    <Stats
+      items={[
+        { value: '7–8 → 2–3', caption: 'weeks of engineering, planned vs. actual' },
+        { value: '3–4 wks', caption: 'from spec to handoff' },
+        { value: 'Shipped', caption: 'the full feature' },
+      ]}
+    />
+  </div>
+
+  <div>
+    <h3 id="team" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">What the team said</h3>
+    <p class="mt-2 font-mono text-[12px] tracking-[0.04em] text-meta uppercase">Paraphrased from conversations</p>
+    <div class="mt-6 grid grid-cols-2 gap-6 max-[761px]:grid-cols-1">
+      <figure class="m-0 border-l-2 border-[var(--cs-accent)] pl-5">
+        <p class="text-lg leading-relaxed text-[#111]">Before this role existed, shipping a new feature took a long time. This workflow made engineering on new features much faster.</p>
+        <figcaption class="mt-3 text-sm text-muted">CEO &amp; PM</figcaption>
+      </figure>
+      <figure class="m-0 border-l-2 border-[var(--cs-accent)] pl-5">
+        <p class="text-lg leading-relaxed text-[#111]">The prototype worked like an answer key. The open questions were already settled in design, along with the visuals and interaction patterns, so I could focus on engineering problems.</p>
+        <figcaption class="mt-3 text-sm text-muted">Engineer</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div>
+    <h3 id="reviews" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">What the reviews changed</h3>
+    <ul class="mt-6 grid gap-4 max-w-[65ch] text-base leading-relaxed text-muted">
+      <li><strong class="text-[#111]">“Pin loading”</strong> — the CEO raised it at the 8/3 review. I worked through it in the prototype over the next rounds, and it became clusters that split as you zoom. <a class="underline underline-offset-[3px]" href="#d1">D1</a></li>
+      <li><strong class="text-[#111]">“Mode clarity”</strong> — the CEO raised it at the same review. Over the next rounds, Emergency moved out of the tabs into its own red chip. <a class="underline underline-offset-[3px]" href="#d3">D3</a></li>
+    </ul>
+  </div>
+
+  <div>
+    <h3 id="next" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Next</h3>
+    <p class="mt-4 max-w-[65ch] text-lg leading-relaxed text-muted">Routing and a work-order queue are planned for the next phase. No one had used Mapping on site when I handed it off. Next, I’d watch two or three technicians find and relocate assets with it, and track how long a search takes and how often a scan disagrees with the record.</p>
+  </div>
+</Section>
+
+<Section id="takeaways" index="09" label="Takeaways" title="Takeaways">
   <ol>
     <Takeaway n={1} title="Rethinking my role and workflow with AI">Working with AI changed what my job looked like. I skipped a full set of wireframes. I sketched the base frame by hand, and Figma Make turned it into a hi-fi prototype. That hi-fi was far from done. My time went into the rounds after it, judging each change and refining details until it was ready to hand off. I didn’t go back and redraw it as static mockups, because the clickable prototype already served as the spec. Most of my value was in deciding what stays.</Takeaway>
     <Takeaway n={2} title="Comparing options at a startup’s pace">AI prototyping made it fast to build two or three versions of an open question. I put them side by side in the weekly review, and the CEO and engineer chose between things they could click. That kept decisions moving at a startup’s pace.</Takeaway>
     <Takeaway n={3} title="Learning from proven patterns">Mature products already solve parts of this problem. Airbnb groups crowded listings into clusters, and indoor maps let people switch floors. I studied why each pattern works and what it assumes about the people using it. The real work was fitting it to a school campus, where one room can hold dozens of assets and floors have names like B1 or M.</Takeaway>
   </ol>
-</Section>
-
-<Section id="other-designs" index="09" label="Other Designs" title="Other Designs">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Smaller details that came together without many rounds.</p>
-  <OtherDesigns />
 </Section>
 
 </CaseStudy>
