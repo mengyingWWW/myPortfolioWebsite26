@@ -8,6 +8,8 @@ const work = defineCollection({
     z.object({
       title: z.string(),
       subtitle: z.string().optional(),
+      /** Keep this case study out of search results and the sitemap (remove once the content is written). */
+      noindex: z.boolean().optional(),
       year: z.union([z.number(), z.string()]),
       /** Short label for the project page tag, e.g. "0→1 UI/UX Design" */
       type: z.string(),

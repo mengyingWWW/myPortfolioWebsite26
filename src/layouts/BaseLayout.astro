@@ -16,10 +16,24 @@ interface Props {
   overlayNav?: boolean;
   /** Fade the nav in on load (home page hero entrance). */
   animateNav?: boolean;
+  /** Keep the page out of search results (e.g. a case study that's still a placeholder). */
+  noindex?: boolean;
+  /** Leave out the canonical link (e.g. the 404 page, which is served for any missing URL). */
+  noCanonical?: boolean;
 }
 
-const { title, description = site.description, overlayNav = false, animateNav = false } = Astro.props;
-const pageTitle = title ? `${title} — ${site.name}` : site.title;
+const {
+  title,
+  description = site.description,
+  overlayNav = false,
+  animateNav = false,
+  noindex = false,
+  noCanonical = false,
+} = Astro.props;
+const pageTitle = title ? `${title} — ${site.fullName}` : site.title;
+// Always with a trailing slash, matching the sitemap's URLs.
+const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const canonical = Astro.site && !noCanonical ? new URL(path, Astro.site).href : undefined;
 ---
 
 <!doctype html>
@@ -32,6 +46,8 @@ const pageTitle = title ? `${title} — ${site.name}` : site.title;
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
     <slot name="head" />
   </head>
   <body class="flex min-h-screen flex-col">

@@ -45,7 +45,7 @@ const accentTokens = {
 };
 ---
 
-<BaseLayout title={project.data.title} description={project.data.summary}>
+<BaseLayout title={project.data.title} description={project.data.summary} noindex={project.data.noindex}>
   <article style={accentTokens}>
     <ProjectHero project={project} />
     <Container class="pt-20">

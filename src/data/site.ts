@@ -1,7 +1,8 @@
 export const site = {
   name: 'Mengying',
-  fullName: 'Mengying',
-  title: 'Mengying — UX/Product Designer & Researcher',
+  /** Used in page titles: "{page title} — Mengying Wang". */
+  fullName: 'Mengying Wang',
+  title: 'Mengying Wang — UX/Product Designer & Researcher',
   description:
     'UX/Product Designer & Researcher. MS in Human Centered Design & Engineering at the University of Washington, based in Seattle.',
   email: 'mengyingwww712@gmail.com',
