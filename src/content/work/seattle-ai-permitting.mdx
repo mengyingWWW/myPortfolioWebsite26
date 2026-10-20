@@ -2,15 +2,17 @@
 title: AI Permitting for the City of Seattle
 subtitle: "Where should AI help in a permit application, and how much?"
 year: 2025
-type: "Civic AI Design + Research"
+type: "Civic AI UX Design + Research"
 method: "Between-subjects study"
 status: "Concept Tested"
 domains: ["AI", "Civic Tech"]
 platform: "Web"
 cover: ../../assets/work/seattle-ai-permitting/cover.png
-coverAlt: "A desktop showing the City of Seattle permit dashboard with an AI estimate of review time (78 days) broken into review stages, and a laptop showing an AI review report flagging issues in a residential reroofing permit application."
+coverAlt: "A desktop showing the AI time tracker for a reroofing permit (78 days of plan review, 92 days in total) with the basis of the estimate open, in front of it a laptop showing the AI review report with a flag expanded to the municipal code it cites."
 coverBackground: "#f4f4f5"
 coverBlend: multiply
+coverVideo: "/work/seattle-ai-permitting/clips/cover-loop.mp4"
+coverScreen: { x: 0, y: 0, w: 100, h: 100 }
 role: "UX Design + Research"
 skills:
   - AI interaction design
@@ -34,6 +36,23 @@ glance:
   - { value: "+39%", label: "trust, partial AI vs. none" }
   - { value: "V2 = V3", label: "full AI added no significant gain" }
 accent: { main: '#4F46E5', text: '#4338CA', tint: '#EEF2FF', soft: '#F7F8FF', border: '#C7D2FE' }
+screenWall:
+  orientation: landscape
+  label: "Three versions"
+  ariaLabel: "Screens from the three prototype versions. Full AI: the personal time tracker and its basis, the form before and after AI autofill, the AI review report and a flag citing the municipal code. Partial AI: an estimate from similar cases, the form with a chatbot, and an AI review without sources. No AI: the standard processing-time table, a blank form and a self-check checklist."
+  screens:
+    - /work/seattle-ai-permitting/wall/s01-v3-time-tracker.webp
+    - /work/seattle-ai-permitting/wall/s02-v3-basis.webp
+    - /work/seattle-ai-permitting/wall/s03-v3-form-ready.webp
+    - /work/seattle-ai-permitting/wall/s04-v3-autofilled.webp
+    - /work/seattle-ai-permitting/wall/s05-v3-review.webp
+    - /work/seattle-ai-permitting/wall/s06-v3-flag-code.webp
+    - /work/seattle-ai-permitting/wall/s07-v2-similar-cases.webp
+    - /work/seattle-ai-permitting/wall/s08-v2-chatbot.webp
+    - /work/seattle-ai-permitting/wall/s09-v2-ai-review.webp
+    - /work/seattle-ai-permitting/wall/s10-v1-processing-times.webp
+    - /work/seattle-ai-permitting/wall/s11-v1-manual-form.webp
+    - /work/seattle-ai-permitting/wall/s12-v1-checklist.webp
 order: 4
 noindex: true
 ---
@@ -63,7 +82,7 @@ import design from '@/data/seattle-ai-permitting/tasks.json';
   <SeattleProblemScenes />
   <figure>
     <img src="/work/seattle-ai-permitting/problem-permit-timeline.webp" width="2477" height="960" loading="lazy" decoding="async" class="w-full rounded-lg border border-[#E6E6E4]" alt="The City’s Construction Permit Timeline for permit 6395770-CN: from late 2020 to early 2024, the application switches between City control and applicant control again and again, and most review teams return corrections in each round before approving." />
-    <figcaption class="mt-3 max-w-[680px] text-sm leading-[1.5] text-meta">A real case from the City’s own dashboard: permit 6395770-CN, a new apartment building. Plan review took 1,276 days. The outlined rows show it passing back and forth between the City and the applicant for more than three years. Source: Seattle SDCI, Construction Permit Timeline.</figcaption>
+    <figcaption class="mt-3 max-w-[680px] text-sm leading-[1.5] text-meta">A real case from the City’s own dashboard: permit 6395770-CN, a new apartment building. Plan review took 1,276 days. The City held it for 360 of them. The rest sat with the applicant fixing corrections, 388 days after the first round and 311 after the second. In the first round, 7 of 11 reviews asked for corrections. Source: Seattle SDCI, Construction Permit Timeline.</figcaption>
   </figure>
   <div>
     <Statement>One small mistake can cost weeks. AI could help. The first question was <em>where</em>.</Statement>
