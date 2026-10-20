@@ -2,8 +2,8 @@
 /**
  * About hero as a two-act, scroll-driven sequence inside a sticky stage:
  *   Act 1 — portrait + large headline.
- *   Act 2 — the headline fades away and the portrait flies down into the "me" dot of the
- *           latitude sundial, while the bio and the sundial fade in.
+ *   Act 2 — the headline fades away and the portrait shrinks and flies into the sun of the
+ *           hand-drawn sundial, its photo fading to solid black, while the bio and the sundial fade in.
  * Everything is scrubbed by scroll progress p (0 → 1 over the first 100vh of the section).
  * The stage is 80px shorter than the viewport, so the next section peeks in once it releases.
  * With reduced motion it's a plain static layout instead.
@@ -12,7 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import Emphasis from '@/components/ui/Emphasis.astro';
 import ScrollHint from '@/components/home/ScrollHint.astro';
-import LatitudeSundial from './LatitudeSundial.astro';
+import SketchSundial from './SketchSundial.astro';
 import { aboutHero } from '@/data/about';
 
 const { portrait } = aboutHero;
@@ -66,7 +66,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
         }
       </p>
       <div class="about-sundial-block" data-sundial-block>
-        <LatitudeSundial />
+        <SketchSundial awaitLanding />
       </div>
     </div>
 
@@ -108,7 +108,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     text-align: center;
   }
 
-  /* Above Act 2, so once it has landed it reads as the "me" dot. */
+  /* Above Act 2, so on its way down it passes over the sundial into the sun. */
   .about-portrait {
     position: relative;
     z-index: 2;
@@ -213,11 +213,8 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
 </style>
 
 <script>
-  /** The portrait has landed on the "me" dot. */
-  const LAND_AT = 0.5;
-  /** The sundial is fully shown, so the real SVG dot takes over from the portrait. */
-  const SWAP_AT = 0.9;
-  const AUTOPLAY_AT = 0.8;
+  /** The portrait has shrunk into the sun; the real sun takes over (and the sundial's tour can start). */
+  const LAND_AT = 0.85;
   /** Scrolling this far past the end of the sequence hides the bottom hint. */
   const NEXT_HINT_SCROLL_OFF = 40;
 
@@ -234,8 +231,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     const bio = q<HTMLElement>('[data-bio]');
     const block = q<HTMLElement>('[data-sundial-block]');
     const sundial = q<HTMLElement>('[data-sundial]');
-    const svg = q<SVGSVGElement>('[data-sundial] svg');
-    const meDot = q<SVGCircleElement>('[data-me-dot]');
+    const sunDot = q<SVGCircleElement>('[data-sun-dot]');
     const [moreHint, nextHint] = [...seq.querySelectorAll<HTMLElement>('[data-scroll-hint]')].map((a) => a.parentElement!);
     const end = q<HTMLElement>('#about-more');
 
@@ -246,9 +242,6 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     const from = { x: 0, y: 0, size: 140 };
     let p = -1;
     let queued = false;
-    let started = false;
-    /** The real "me" dot has taken over from the portrait stand-in (until scrolled back above LAND_AT). */
-    let handedOff = false;
 
     // The portrait's layout box (stage coordinates), unaffected by the transforms applied below.
     function measure() {
@@ -257,18 +250,13 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
       from.y = portrait.offsetTop + from.size / 2;
     }
 
-    // Where the "me" dot currently is on screen, including Act 2's own transform.
-    function meDotOnStage() {
-      const m = svg.getScreenCTM();
-      if (!m) return null;
-      const pt = new DOMPoint(meDot.cx.baseVal.value, meDot.cy.baseVal.value).matrixTransform(m);
+    // Where the sun's dot currently is on screen, including Act 2's own transform.
+    function sunOnStage() {
+      const r = sunDot.getBoundingClientRect();
+      if (!r.width) return null;
       const s = stage.getBoundingClientRect();
-      return { x: pt.x - s.left, y: pt.y - s.top, size: meDot.r.baseVal.value * 2 * m.a };
+      return { x: r.left + r.width / 2 - s.left, y: r.top + r.height / 2 - s.top, size: r.width };
     }
-
-    // Done autoplaying, or the visitor has picked a stop.
-    const sundialSettled = () =>
-      !sundial.hasAttribute('data-autoplay-pending') && !sundial.hasAttribute('data-autoplaying');
 
     function render() {
       queued = false;
@@ -286,52 +274,32 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
       moreHint.style.opacity = String(moreOpacity);
       moreHint.style.visibility = moreOpacity ? '' : 'hidden';
 
-      const bioIn = smooth(range(p, 0.4, 0.6));
+      const bioIn = smooth(range(p, 0.35, 0.55));
       bio.style.opacity = String(bioIn);
       bio.style.transform = `translateY(${16 * (1 - bioIn)}px)`;
 
-      const sundialIn = smooth(range(p, 0.55, 0.9));
+      const sundialIn = smooth(range(p, 0.45, 0.8));
       block.style.opacity = String(sundialIn);
       block.style.transform = `translateY(${16 * (1 - sundialIn)}px)`;
 
-      // While the portrait is in flight the sundial (still hidden) rewinds to Benxi.
-      if (p < LAND_AT && (sundial.dataset.active !== '0' || sundial.hasAttribute('data-autoplaying'))) {
-        sundial.removeAttribute('data-play');
-        sundial.dispatchEvent(new CustomEvent('sundial:reset'));
-      }
-      if (p < LAND_AT) started = false;
-
-      // The portrait stands in for the dot until the sundial is fully shown, or until the dot
-      // first leaves Benxi; from then on only the real dot can travel between scenes.
-      if (p < LAND_AT) handedOff = false;
-      else if (p >= SWAP_AT || sundial.dataset.active !== '0') handedOff = true;
-
-      // FLIP: the portrait keeps its Act 1 layout box and is transformed onto the "me" dot.
-      const dot = meDotOnStage();
-      const standIn = !!dot && !handedOff;
-      if (standIn) {
+      // FLIP: the portrait keeps its Act 1 layout box and is transformed onto the sun, shrinking to its size.
+      const landed = p >= LAND_AT;
+      const sun = sunOnStage();
+      if (sun && !landed) {
         const fly = smooth(range(p, 0, LAND_AT));
-        const scale = 1 + (dot.size / from.size - 1) * fly;
-        portrait.style.transform = `translate(${(dot.x - from.x) * fly}px, ${(dot.y - from.y) * fly}px) scale(${scale})`;
+        const scale = 1 + (sun.size / from.size - 1) * fly;
+        portrait.style.transform = `translate(${(sun.x - from.x) * fly}px, ${(sun.y - from.y) * fly}px) scale(${scale})`;
         portrait.style.visibility = '';
       } else {
-        portrait.style.visibility = 'hidden';
+        portrait.style.visibility = landed ? 'hidden' : '';
       }
-      ink.style.opacity = String(smooth(range(p, 0.1, 0.45)));
-      meDot.style.opacity = standIn ? '0' : '1';
+      ink.style.opacity = String(smooth(range(p, 0.3, 0.7)));
+      sundial.toggleAttribute('data-landed', landed);
 
       // Act 2 only takes pointer/keyboard input once it's mostly visible.
-      const awake = sundialIn > 0.5;
-      act2.style.pointerEvents = awake ? '' : 'none';
-      sundial.toggleAttribute('data-dormant', !awake);
+      act2.style.pointerEvents = sundialIn > 0.5 ? '' : 'none';
 
-      if (!started && p >= AUTOPLAY_AT) {
-        started = true;
-        sundial.setAttribute('data-play', '');
-        sundial.dispatchEvent(new CustomEvent('sundial:play'));
-      }
-
-      const showNext = sundialSettled() && p >= AUTOPLAY_AT && scrolled - total < NEXT_HINT_SCROLL_OFF;
+      const showNext = landed && !sundial.hasAttribute('data-touring') && scrolled - total < NEXT_HINT_SCROLL_OFF;
       nextHint.toggleAttribute('data-visible', showNext);
     }
 
@@ -350,14 +318,11 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     window.addEventListener('scroll', queue, { passive: true });
     window.addEventListener('resize', remeasure);
     document.fonts?.ready.then(remeasure);
-    new MutationObserver(queue).observe(sundial, {
-      attributes: true,
-      attributeFilter: ['data-active', 'data-autoplay-pending', 'data-autoplaying'],
-    });
+    new MutationObserver(queue).observe(sundial, { attributes: true, attributeFilter: ['data-touring'] });
 
     // Tabbing into Act 2 before it's shown jumps to where it's fully visible.
     act2.addEventListener('focusin', () => {
-      if (p < SWAP_AT) end.scrollIntoView({ behavior: 'auto' });
+      if (p < LAND_AT) end.scrollIntoView({ behavior: 'auto' });
     });
   }
 </script>

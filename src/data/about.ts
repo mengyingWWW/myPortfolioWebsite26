@@ -1,3 +1,5 @@
+import type { CityKey } from './citySketches';
+
 /**
  * All copy for the About page. Wrap words in *asterisks* to set them in italic serif.
  */
@@ -20,81 +22,53 @@ export const aboutHero = {
   nextHint: 'Education · Experience · Skills',
 };
 
-/** Object drawn at each stop of the latitude sundial (see LatitudeSundial.astro). */
-export type SundialObject = 'stick' | 'building' | 'floating' | 'monitor';
-
 export type SundialStop = {
-  /** Button label, first line. */
-  lat: string;
-  /** Noon sun altitude at the equinox, in degrees (90 − latitude). */
-  altitude: number;
-  /** Button label, second line. */
+  /** Sketch drawn for this place (see src/data/citySketches.ts). */
+  key: CityKey;
   place: string;
-  /** Shown under the controls; two or three lines at most. */
+  /** Degrees north; sets the height of the sun's day arc. */
+  latitude: number;
+  /** Shown under the city selector; two or three lines at most. */
   caption: string;
-  object: SundialObject;
-  /** Height of the object's top above the ground, in SVG units (where the light ray grazes it). */
-  height: number;
-  /** The object hovers, so it casts a detached ground shadow instead of a projected one. */
-  floating?: boolean;
-  /** Where "me" (the dot) stands in this scene, in SVG units (viewBox 1000×400, ground y = 330). Keep it off the light ray. */
-  meAnchor: { x: number; y: number };
-  /** Time stands still here: no idle drift of the sun, unlike the other stops. */
-  still?: boolean;
 };
 
 export const sundial = {
-  ariaLabel: 'The noon sun and the shadows it casts at the four latitudes I have lived at',
-  controlsLabel: 'Choose a latitude',
-  /** Annotation next to the sun; fades out once a latitude is chosen. */
-  hint: 'follow the sun ↓',
-  /** Played in this order, ending on the last stop. */
+  ariaLabel: 'Hand-drawn sundial: a sketch of each place I have lived casts a shadow from the sun',
+  citiesLabel: 'Places I have lived',
+  sunLabel: 'Sun position (time of day)',
+  /** Screen readers only: the scene's taps have no keyboard equivalent of their own. */
+  sceneHint: 'Use the place buttons below to switch cities.',
+  /** Handwritten note beside the sun until it is first moved. */
+  hint: 'drag the sun',
+  /** Played in this order by the story tour. */
   stops: [
     {
-      lat: '41.3°N',
-      altitude: 48.7,
+      key: 'benxi',
       place: 'Benxi',
+      latitude: 41.3,
       caption:
         'Home, where time seems to pause. A quiet place I carry with me, and the reason I design for people, not just products.',
-      object: 'stick',
-      // Above the stick (its top is at 176), so the ray clears "me" standing on it.
-      height: 174,
-      meAnchor: { x: 400, y: 170 },
-      still: true,
     },
     {
-      lat: '39.9°N',
-      altitude: 50.1,
+      key: 'beijing',
       place: 'Beijing',
+      latitude: 39.9,
       caption:
         'In architecture, I kept looking past the walls, to the people moving between them. Their stories drew me into human factors research, and then to HCI.',
-      object: 'building',
-      height: 180,
-      // In the doorway.
-      meAnchor: { x: 400, y: 316 },
     },
     {
-      lat: '1.3°N',
-      altitude: 88.7,
+      key: 'singapore',
       place: 'Singapore',
+      latitude: 1.3,
       caption:
         'Under an almost vertical sun, I designed a space that never touches the ground, and began to imagine spaces that need no ground at all.',
-      object: 'floating',
-      height: 176,
-      floating: true,
-      // On the ground under the building, inside its shadow, clear of the ray, the angle arc and its label.
-      meAnchor: { x: 470, y: 327 },
     },
     {
-      lat: '47.6°N',
-      altitude: 42.4,
+      key: 'seattle',
       place: 'Seattle',
+      latitude: 47.6,
       caption:
         'Leaf shadows drift across my window as I learn to design the spaces people now spend their days in: the ones on their screens.',
-      object: 'monitor',
-      height: 162,
-      // On the screen, like a button.
-      meAnchor: { x: 440, y: 270 },
     },
   ] satisfies SundialStop[],
 };

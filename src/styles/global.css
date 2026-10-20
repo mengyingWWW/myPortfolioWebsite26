@@ -24,6 +24,31 @@
   --container-site: 1600px;
 }
 
+/*
+ * Spacing tokens for case-study pages. Use the variables in CSS and the matching utilities in markup
+ * (mt-section, gap-block, mt-para, mt-heading, mt-caption...).
+ */
+:root {
+  /* Between sections. */
+  --space-section: 112px;
+  /* Between blocks inside a section: text ↔ image, image ↔ image. */
+  --space-block: 48px;
+  /* Between paragraphs. */
+  --space-para: 20px;
+  /* Section label / heading → first content. */
+  --space-heading: 20px;
+  /* Image → its caption. */
+  --space-caption: 8px;
+}
+
+@theme inline {
+  --spacing-section: var(--space-section);
+  --spacing-block: var(--space-block);
+  --spacing-para: var(--space-para);
+  --spacing-heading: var(--space-heading);
+  --spacing-caption: var(--space-caption);
+}
+
 @layer base {
   html {
     @apply bg-paper text-ink antialiased;
@@ -84,15 +109,19 @@
 /* Long-form typography for MDX project bodies. */
 @layer components {
   .prose-body {
-    @apply text-lg leading-relaxed text-ink;
+    @apply text-lg leading-[1.6] text-ink;
   }
 
   .prose-body > * + * {
-    @apply mt-6;
+    @apply mt-para;
   }
 
+  /* The first one sits 96px under the hero. */
   .prose-body h2 {
-    @apply mt-24 text-3xl font-medium tracking-tight;
+    @apply mt-section text-3xl font-medium tracking-tight;
+  }
+  .prose-body > h2:first-child {
+    @apply mt-24;
   }
 
   .prose-body h3 {
@@ -101,14 +130,14 @@
 
   .prose-body h2 + *,
   .prose-body h3 + * {
-    @apply mt-4;
+    @apply mt-heading;
   }
 
   .prose-body p,
   .prose-body ul,
   .prose-body ol,
   .prose-body blockquote {
-    @apply max-w-3xl;
+    @apply max-w-[680px];
   }
 
   .prose-body p {

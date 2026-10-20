@@ -128,7 +128,7 @@ const options = [
   .do-result { padding-top: 10px; border-top: 1px solid #E6E6E4; }
   .do-label { color: #6E6E6E; text-transform: uppercase; }
   .do-row p { margin: 0; font-size: 14px; line-height: 1.4; color: #111111; }
-  .do figcaption { margin-top: 12px; font-size: 14px; color: #6E6E6E; }
+  .do figcaption { margin-top: var(--space-caption); font-size: 14px; color: #6E6E6E; }
   @media (max-width: 760px) { .do-grid { grid-template-columns: 1fr; } }
   @supports not (grid-template-rows: subgrid) { .do-card { display: flex; flex-direction: column; } .do-result { margin-top: auto; } }
 </style>

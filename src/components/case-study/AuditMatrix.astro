@@ -109,6 +109,6 @@ const rowTotal = (r) => Object.values(r.cells).reduce((n, c) => n + c.length, 0)
   tr.is-accent .am-row { color: var(--cs-accent-text); }
   tr.is-accent td { background: var(--cs-accent-tint); }
   tr.is-accent li::before { background: var(--cs-accent); }
-  .am figcaption { margin-top: 12px; font-size: 14px; color: #6E6E6E; }
+  .am figcaption { margin-top: var(--space-caption); font-size: 14px; color: #6E6E6E; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>

@@ -64,7 +64,7 @@ const style = capped ? `width:${Math.round((width * maxHeight) / height)}px` : u
     gap: 56px;
   }
   .dr + .dr {
-    margin-top: 80px;
+    margin-top: var(--space-block);
   }
   .dr:nth-child(even) {
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);

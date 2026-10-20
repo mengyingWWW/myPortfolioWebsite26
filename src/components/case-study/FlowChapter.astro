@@ -28,10 +28,9 @@ const { n, id, name, goal } = Astro.props;
   .chapter {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 40px;
-    margin-top: 40px;
+    row-gap: var(--space-block);
     border-top: 1px solid var(--color-line);
-    padding-top: 40px;
+    padding-top: var(--space-block);
     scroll-margin-top: calc(5rem + 24px);
   }
   .eyebrow {
@@ -49,7 +48,7 @@ const { n, id, name, goal } = Astro.props;
     letter-spacing: -0.01em;
   }
   .goal {
-    max-width: 65ch;
+    max-width: 680px;
     margin-top: 12px;
     font-size: 18px;
     line-height: 1.6;

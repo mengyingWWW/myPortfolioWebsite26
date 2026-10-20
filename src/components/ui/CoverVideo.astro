@@ -3,10 +3,9 @@
  * A looping clip laid over part of a cover image (e.g. a device screen). Decorative: the cover keeps its alt.
  * The layer covers the image box and repeats the card's cover transform (--cover-shift-x/y, --cover-scale),
  * so the clip stays on the screen however the cover is framed. Without those variables it sits untransformed.
- *   mode="card":     preloads once the enclosing link enters the viewport. With a mouse it plays
- *                    from the start while the link is hovered or keyboard-focused, then pauses and fades out.
- *                    On touch screens it plays while its card is at least 60% in view; of several such cards,
- *                    only the most visible one plays, plus any tied with it (cards side by side in one row).
+ *   mode="card":     preloads once the enclosing link enters the viewport, plays from the start (fading in
+ *                    over the still) while the link is at least 40% in view, and pauses and fades out when it
+ *                    leaves. On every device; several cards can play at once.
  *   mode="autoplay": loads and plays while in view.
  * With reduced motion it is removed and never loads.
  */
@@ -43,29 +42,8 @@ const videoStyle = `left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height
 
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-  /** Touch: of the card clips ≥ 60% in view, the most visible one plays. Cards tied with it (e.g. side by
-   *  side in one row, which are always equally visible) play too. */
-  const TOUCH_MIN_RATIO = 0.6;
-  const TIE = 0.02;
-  const touchRatios = new Map<HTMLElement, number>();
-  const touchControls = new Map<HTMLElement, { start: () => void; stop: () => void }>();
-  const touchPlaying = new Set<HTMLElement>();
-  const pickTouchCards = () => {
-    const best = Math.max(0, ...touchRatios.values());
-    for (const [layer, ratio] of touchRatios) {
-      const on = best >= TOUCH_MIN_RATIO && ratio >= best - TIE;
-      if (on === touchPlaying.has(layer)) continue;
-      if (on) {
-        touchPlaying.add(layer);
-        touchControls.get(layer)!.start();
-      } else {
-        touchPlaying.delete(layer);
-        touchControls.get(layer)!.stop();
-      }
-    }
-  };
+  /** Share of a card that must be on screen for its clip to play. */
+  const CARD_IN_VIEW = 0.4;
 
   for (const layer of document.querySelectorAll<HTMLElement>('[data-cover-video]')) {
     const video = layer.querySelector('video')!;
@@ -104,21 +82,15 @@ const videoStyle = `left:${screen.x}%;top:${screen.y}%;width:${screen.w}%;height
         if (!layer.classList.contains('is-on')) video.currentTime = 0;
       });
 
-      if (finePointer) {
-        host.addEventListener('pointerenter', start);
-        host.addEventListener('pointerleave', stop);
-        host.addEventListener('focusin', () => host.matches(':focus-visible') && start());
-        host.addEventListener('focusout', stop);
-      } else {
-        touchControls.set(layer, { start, stop });
-        new IntersectionObserver(
-          ([entry]) => {
-            touchRatios.set(layer, entry.isIntersecting ? entry.intersectionRatio : 0);
-            pickTouchCards();
-          },
-          { threshold: [0, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] },
-        ).observe(host);
-      }
+      new IntersectionObserver(
+        ([entry]) => {
+          const inView = entry.isIntersecting && entry.intersectionRatio >= CARD_IN_VIEW;
+          if (inView === layer.classList.contains('is-on')) return;
+          if (inView) start();
+          else stop();
+        },
+        { threshold: [0, CARD_IN_VIEW] },
+      ).observe(host);
 
       // Download once the card is on screen, ahead of the first play. No margin: the first row sits just below
       // the full-height hero, so any look-ahead would load it with the page.

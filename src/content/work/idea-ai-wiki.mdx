@@ -86,7 +86,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 <CaseStudy>
 
 <Section id="problem" index="01" label="Problem" title="Problem">
-  <p class="max-w-[60ch] text-base leading-relaxed text-meta">Facilities know-how lives in technicians’ heads, old PDFs and shared drives. IDEA asked for an AI Wiki that captures it in a form frontline staff can write, and AI agents can later answer from.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-meta">Facilities know-how lives in technicians’ heads, old PDFs and shared drives. IDEA asked for an AI Wiki that captures it in a form frontline staff can write, and AI agents can later answer from.</p>
   <ProblemScenes />
   <div>
     <Statement>The core challenge was getting knowledge written in a shape both people and AI can use. In the previous design, most pages ended up <em>unstructured, untraceable and uncategorized.</em></Statement>
@@ -95,12 +95,12 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       ariaLabel="Brief from the CEO & PM"
       text="Get technicians up to speed fast. Let anyone, including hands-on technicians, upload and share a work guide. Cut the learning load for first-time users."
     />
-    <p class="max-w-[60ch] text-base leading-relaxed text-meta"><a class="underline underline-offset-[3px] hover:text-[#111]" href="#audit">The audit below</a> shows where each gap sits.</p>
+    <p class="max-w-[680px] text-lg leading-[1.6] text-meta"><a class="underline underline-offset-[3px] hover:text-[#111]" href="#audit">The audit below</a> shows where each gap sits.</p>
   </div>
 </Section>
 
 <Section id="users" index="02" label="Users" title="Users">
-  <div class="grid max-w-[65ch] gap-4 text-lg leading-relaxed text-muted">
+  <div class="grid max-w-[680px] gap-para text-lg leading-[1.6] text-muted">
     <p>Everyone in this chain uses the wiki: the technician who writes a procedure, the lead who reviews it, the admin who decides who sees it, the requester who needs help. Many of them have a GED-level education and spend most of their day on site, not at a computer.</p>
     <p>That was the barrier this project set out to remove. If any step feels like paperwork, knowledge stops moving, and in phase 2 the AI agent has nothing reliable to answer from.</p>
   </div>
@@ -138,7 +138,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 </Section>
 
 <Section id="audit" index="03" label="Audit" title="Audit">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I audited the prototype the way its users would meet it: four flows, each walked as the person who does that job. On every screen I logged what got in the way, which line of the brief it missed, and a direction for the fix. The audit turned up 15 gaps.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">I audited the prototype the way its users would meet it: four flows, each walked as the person who does that job. On every screen I logged what got in the way, which line of the brief it missed, and a direction for the fix. The audit turned up 15 gaps.</p>
   <Block title="Method">
     <Steps
       steps={[
@@ -156,7 +156,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
         },
       ]}
     />
-    <div class="mt-12">
+    <div class="mt-block">
       <p id="worked-from" class="font-mono text-[13px] tracking-[0.04em] text-meta uppercase">What I worked from</p>
       <ul aria-labelledby="worked-from" class="mt-4 grid grid-cols-4 gap-x-6 gap-y-6 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
         <li class="border-t border-[#e6e6e4] pt-4">
@@ -179,7 +179,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
     </div>
   </Block>
   <AuditMatrix />
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Here is where each gap sits in the prototype. Pins match the list beside each screen; every gap links to its fix.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Here is where each gap sits in the prototype. Pins match the list beside each screen; every gap links to its fix.</p>
   <TabGroup
     id="audit-tabs"
     label="Audit by flow"
@@ -194,7 +194,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 </Section>
 
 <Section id="insights" index="04" label="Insights" title="Insights">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">The 15 gaps came from three causes.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">The 15 gaps came from three causes.</p>
   <ol>
     <InsightRow
       cause="Unstructured"
@@ -219,11 +219,11 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       accent
     />
   </ol>
-  <p class="text-base leading-relaxed text-meta">I fixed the structure first and worked through the flows one by one.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-meta">I fixed the structure first and worked through the flows one by one.</p>
 </Section>
 
 <Section id="information-architecture" index="05" label="Information Architecture" title="Information Architecture">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">The new structure gives each job its own place.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">The new structure gives each job its own place.</p>
   <IAComparison />
   <div class="grid grid-cols-2 gap-10 max-[900px]:grid-cols-1">
     <div>
@@ -246,7 +246,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 </Section>
 
 <Section id="redesign" index="06" label="Redesign" title="Redesign">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Each flow below opens with a side-by-side comparison and walks through its key decisions. Tags link back to the gaps they fix.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Each flow below opens with a side-by-side comparison and walks through its key decisions. Tags link back to the gaps they fix.</p>
 
   <FlowChapter n={1} id="fix-find" name="Find" goal="Help technicians find the right procedure quickly and trust that it’s the latest version.">
     <BeforeAfterSlider
@@ -259,7 +259,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       afterAlt="Redesigned Wiki list: a tag cloud with counts, scope tabs, visibility badges, and versions grouped under one title"
       caption="Drag to compare the original list with the redesign."
     />
-    <div class="mb-10 grid grid-cols-2 gap-x-14 gap-y-12 max-[901px]:mb-2 max-[901px]:grid-cols-1">
+    <div class="grid grid-cols-2 gap-x-14 gap-y-block max-[901px]:grid-cols-1">
       <div>
         <p class="font-mono text-xs leading-[1.5] text-meta">Owned at a glance · Fixes{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-F4"><span class="sr-only">issue </span>F4</a></p>
         <h4 class="mt-3 text-xl leading-[1.3] font-semibold text-[#111]">Consistent filter states</h4>
@@ -314,7 +314,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       afterAlt="Redesigned editor: category chips, an Import Word / PDF bar, numbered steps, a Before you start list, and a settings panel for content type, page type and visibility"
       caption="Drag to compare the original editor with the redesign."
     />
-    <div class="mb-10 grid grid-cols-2 gap-x-14 gap-y-12 max-[901px]:mb-2 max-[901px]:grid-cols-1">
+    <div class="grid grid-cols-2 gap-x-14 gap-y-block max-[901px]:grid-cols-1">
       <div>
         <p class="font-mono text-xs leading-[1.5] text-meta">Shape first · Fixes{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-C1"><span class="sr-only">issue </span>C1</a></p>
         <h4 class="mt-3 text-xl leading-[1.3] font-semibold text-[#111]">Guided step editor</h4>
@@ -343,7 +343,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       >
         <ClipPlayer src="/work/idea-ai-wiki/clips/clip-2a-ai-tags" label="Typing a procedure title while AI-suggested categories Facilities and HVAC highlight" />
       </DecisionRow>
-      <div class="my-20 max-[901px]:my-12">
+      <div class="my-block">
         <DecisionOptions />
       </div>
       <DecisionRow
@@ -436,7 +436,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       afterAlt="Redesigned review editor: every changed step marked in red and green, a commenting mode, and a comment thread beside the document"
       caption="Drag to compare the original inbox with the review editor."
     />
-    <div class="grid grid-cols-2 gap-x-14 gap-y-12 max-[901px]:grid-cols-1">
+    <div class="grid grid-cols-2 gap-x-14 gap-y-block max-[901px]:grid-cols-1">
       <div>
         <p class="font-mono text-xs leading-[1.5] text-meta">Owned at a glance · Fixes{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#issue-G2"><span class="sr-only">issue </span>G2</a></p>
         <h4 class="mt-3 text-xl leading-[1.3] font-semibold text-[#111]">Full before-and-after view</h4>
@@ -470,7 +470,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 </Section>
 
 <Section id="ai-readiness" index="07" label="AI Readiness" title="AI Readiness">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">In phase 2, the AI agent answers work-order help requests with what people wrote in the wiki. The fields authors already fill in tell it where to look, what to show and where it helped.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">In phase 2, the AI agent answers work-order help requests with what people wrote in the wiki. The fields authors already fill in tell it where to look, what to show and where it helped.</p>
   <AIFieldMap />
   <div>
     <DecisionRow
@@ -492,7 +492,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
       maxHeight={520}
       alt="Admin-only Automation settings: private content set to Never surface, team content to Summary only, site-wide content to Full text"
     />
-    <div class="mt-20 max-[901px]:mt-12">
+    <div class="mt-block">
       <h3 class="text-xl leading-[1.3] font-semibold text-[#111]">Tracking</h3>
       <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">Each page shows how often the agent used it and for which work order. Authors can test how a question matches their page.</p>
       <p class="mt-2 max-w-[48ch] text-base leading-[1.6] text-[#3a3a3a]">The usage bar and AI summary are shown on each procedure page (see{' '}<a class="underline underline-offset-[3px] hover:text-[#111]" href="#fix-use">Use</a>).</p>
@@ -501,7 +501,7 @@ import Takeaway from '@/components/case-study/Takeaway.astro';
 </Section>
 
 <Section id="outcome" index="08" label="Outcome" title="Outcome">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">10 of the 15 fixes have shipped, 6 in full and 4 in part. Two of my proposals beyond the audit also shipped: job roles and related wikis.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">10 of the 15 fixes have shipped, 6 in full and 4 in part. Two of my proposals beyond the audit also shipped: job roles and related wikis.</p>
   <TabGroup
     id="outcome-tabs"
     label="What shipped, by screen"

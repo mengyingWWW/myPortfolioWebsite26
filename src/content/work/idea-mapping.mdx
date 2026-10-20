@@ -83,7 +83,7 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 <CaseStudy>
 
 <Section id="problem" index="01" label="Problem" title="Problem">
-  <p class="max-w-[60ch] text-base leading-relaxed text-meta">For K-12 districts, Guardian covers work orders, assets, IT, projects, visitors and safety, so it holds a record for nearly everything and everyone on campus. On a phone, all of that lived in lists. A work order could say Room 214, and nothing showed where Room 214 was or what else was in it.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-meta">For K-12 districts, Guardian covers work orders, assets, IT, projects, visitors and safety, so it holds a record for nearly everything and everyone on campus. On a phone, all of that lived in lists. A work order could say Room 214, and nothing showed where Room 214 was or what else was in it.</p>
   <MappingProblemScenes />
   <div>
     <Statement>Every record in Guardian knew where it belonged, but no one on site could see it. Mapping connects <em>Guardian’s AI-powered CMMS to what’s really on site.</em></Statement>
@@ -96,7 +96,7 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 </Section>
 
 <Section id="users" index="02" label="Users" title="Users">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Technicians, managers and everyone else on campus use the same map. Each of them opens it with a different question.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Technicians, managers and everyone else on campus use the same map. Each of them opens it with a different question.</p>
   <CampusMoments
     roles={[
       { name: 'Technician', about: 'Fixes things on site, often in buildings they don’t know well.', questions: ['Where is it?', 'It’s not where the record says.'], modes: ['All', 'Relocate'], answer: 'Search an asset and tap Where it is to land on its floor and room. If it turned up somewhere else, scan its label to fix the location.', x: 18.4, y: 28.4 },
@@ -108,7 +108,7 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 </Section>
 
 <Section id="scope" index="03" label="Scope" title="Scope">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Mapping started from an engineering spec: a list of features and a few open questions, with no screens. Each row below is one line of it, next to what it became.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Mapping started from an engineering spec: a list of features and a few open questions, with no screens. Each row below is one line of it, next to what it became.</p>
   <SpecMap
     rows={[
       { spec: 'A mobile app for iOS and Android.', design: 'One mobile app, in a light theme that stays readable in daylight on site.', status: 'designed' },
@@ -126,16 +126,16 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 </Section>
 
 <Section id="structure" index="04" label="Information Architecture" title="Information Architecture">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I started from All, the map everyone opens first, and worked out pins, floors and the bottom sheet there. The three modes and search run on that same screen and add only the steps their task needs.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">I started from All, the map everyone opens first, and worked out pins, floors and the bottom sheet there. The three modes and search run on that same screen and add only the steps their task needs.</p>
   <div class="-my-10">
     <MappingStructure />
   </div>
 </Section>
 
 <Section id="decisions" index="05" label="Key Decisions" title="Key Decisions">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">The spec left a few questions open, and each took several rounds to settle.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">The spec left a few questions open, and each took several rounds to settle.</p>
 
-  <div class="mt-12 grid gap-24 max-[640px]:gap-16">
+  <div class="grid gap-block">
 
     <div>
       <DecisionHead id="d1" n="D1" title="Clusters keep crowded spots readable" lead="At the 8/3 review, the team flagged pin loading. One room can hold dozens of assets, and zoomed out, every pin lands on the same spot." />
@@ -174,14 +174,14 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 </Section>
 
 <Section id="visual-system" index="06" label="Visual System" title="Visual System">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">I built this visual system from scratch for Mapping, and other Guardian features can build on it. Every value below is taken from the prototype.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">I built this visual system from scratch for Mapping, and other Guardian features can build on it. Every value below is taken from the prototype.</p>
   <div class="-my-10">
     <MappingVisualSystem />
   </div>
 </Section>
 
 <Section id="final-design" index="07" label="Final Design" title="Final Design">
-  <p class="max-w-[65ch] text-lg leading-relaxed text-muted">Five tasks from the shipped feature, then a few smaller details.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Five tasks from the shipped feature, then a few smaller details.</p>
 
   <div>
     <h3 id="core-tasks" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Core tasks</h3>
@@ -265,7 +265,7 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 
   <div>
     <h3 id="other-designs" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Other details</h3>
-    <p class="mt-3 max-w-[65ch] text-base leading-relaxed text-muted">Details that came together without many rounds.</p>
+    <p class="mt-heading max-w-[680px] text-lg leading-[1.6] text-muted">Details that came together without many rounds.</p>
     <OtherDesigns />
   </div>
 </Section>
@@ -298,7 +298,7 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 
   <div>
     <h3 id="reviews" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">What the reviews changed</h3>
-    <ul class="mt-6 grid gap-4 max-w-[65ch] text-base leading-relaxed text-muted">
+    <ul class="mt-6 grid gap-4 max-w-[680px] text-base leading-[1.6] text-muted">
       <li><strong class="text-[#111]">“Pin loading”</strong> — the CEO raised it at the 8/3 review. I worked through it in the prototype over the next rounds, and it became clusters that split as you zoom. <a class="underline underline-offset-[3px]" href="#d1">D1</a></li>
       <li><strong class="text-[#111]">“Mode clarity”</strong> — the CEO raised it at the same review. Over the next rounds, Emergency moved out of the tabs into its own red chip. <a class="underline underline-offset-[3px]" href="#d3">D3</a></li>
     </ul>
@@ -306,7 +306,7 @@ import TradeOff from '@/components/case-study/TradeOff.astro';
 
   <div>
     <h3 id="next" data-toc-sub class="mt-4 scroll-mt-[120px] text-[22px] font-semibold text-[#111]">Next</h3>
-    <p class="mt-4 max-w-[65ch] text-lg leading-relaxed text-muted">Routing and a work-order queue are planned for the next phase. No one had used Mapping on site when I handed it off. Next, I’d watch two or three technicians find and relocate assets with it, and track how long a search takes and how often a scan disagrees with the record.</p>
+    <p class="mt-heading max-w-[680px] text-lg leading-[1.6] text-muted">Routing and a work-order queue are planned for the next phase. No one had used Mapping on site when I handed it off. Next, I’d watch two or three technicians find and relocate assets with it, and track how long a search takes and how often a scan disagrees with the record.</p>
   </div>
 </Section>
 

@@ -153,7 +153,7 @@ const options = [
   .ro-result { padding-top: 10px; border-top: 1px solid #E6E6E4; }
   .ro-label { color: #6E6E6E; text-transform: uppercase; }
   .ro-row p { margin: 0; font-size: 14px; line-height: 1.4; color: #111111; }
-  .ro figcaption { margin-top: 12px; font-size: 14px; color: #6E6E6E; }
+  .ro figcaption { margin-top: var(--space-caption); font-size: 14px; color: #6E6E6E; }
   @media (max-width: 760px) { .ro-grid { grid-template-columns: 1fr; } }
   @supports not (grid-template-rows: subgrid) { .ro-card { display: flex; flex-direction: column; } .ro-result { margin-top: auto; } }
 </style>

@@ -181,7 +181,7 @@ const vars = (p: Pin, i: number) =>
 </script>
 
 <style>
-  .tc { display: grid; gap: 120px; margin-top: 40px; }
+  .tc { display: grid; gap: var(--space-block); margin-top: 40px; }
   .tc-head { max-width: 60ch; }
   .tc-n { font: 500 12px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; color: var(--cs-accent-text, #115E59); }
   .tc-head h3 { margin: 6px 0 0; font-size: 24px; font-weight: 600; color: #111; }
@@ -239,7 +239,6 @@ const vars = (p: Pin, i: number) =>
   .tc-list { display: none; }
 
   @media (max-width: 760px) {
-    .tc { gap: 80px; }
     .tc-fig { grid-template-columns: 1fr; justify-items: center; row-gap: 14px; }
     .tc-col, .tc-line { display: none; }
     .tc-phone { width: min(280px, 78vw); }
