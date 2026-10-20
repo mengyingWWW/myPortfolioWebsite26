@@ -5,12 +5,18 @@
  *
  * Every stroke casts a shadow, unless it is marked `noShadow` (sky, smoke, rain, far background, or detail
  * drawn on a surface such as windows and doors). To use your own drawing, paste its path data here.
+ *
+ * The sun sits behind the drawing. A stroke can hide it (`cover`: a closed silhouette filled with the page
+ * background) or cross in front of it (`knockout`: drawn over a wider background-coloured line).
  */
 export type SketchStroke = {
   d: string;
   /** `thin`: a finer detail line. `light`: a grey background line. Default: the main ink line. */
   weight?: 'thin' | 'light';
   noShadow?: boolean;
+  /** A closed outline of the shape this stroke draws, filled with the page background. */
+  cover?: string;
+  knockout?: boolean;
 };
 
 export type CityKey = 'benxi' | 'beijing' | 'singapore' | 'seattle';
@@ -26,8 +32,8 @@ export const citySketches: Record<CityKey, SketchStroke[]> = {
     { d: 'M100 118 L100 92 L110 86 L120 92 L130 86 L140 92 L150 86 L150 118' },
     { d: 'M154 118 L154 62 L162 62 L162 118' },
     { d: 'M168 118 L168 70 L175 70 L175 118' },
-    { d: 'M158 60 C154 52 162 48 158 40 C155 34 162 30 160 24', weight: 'thin', noShadow: true },
-    { d: 'M171 68 C167 60 175 56 171 48 C168 42 174 38 172 32', weight: 'thin', noShadow: true },
+    { d: 'M158 60 C154 52 162 48 158 40 C155 34 162 30 160 24', weight: 'thin', noShadow: true, knockout: true },
+    { d: 'M171 68 C167 60 175 56 171 48 C168 42 174 38 172 32', weight: 'thin', noShadow: true, knockout: true },
     { d: 'M108 104 L116 104 M124 104 L132 104 M140 104 L146 104', weight: 'thin', noShadow: true },
   ],
   beijing: [
@@ -69,6 +75,7 @@ export const citySketches: Record<CityKey, SketchStroke[]> = {
       d: 'M10 96 C40 80 62 52 84 40 C92 36 98 34 104 40 C122 56 150 76 192 94',
       weight: 'light',
       noShadow: true,
+      cover: 'M10 96 C40 80 62 52 84 40 C92 36 98 34 104 40 C122 56 150 76 192 94 L192 118 L10 118 Z',
     },
     {
       d: 'M74 50 C80 54 86 48 92 54 C96 50 102 54 108 50 C112 54 118 54 120 56',

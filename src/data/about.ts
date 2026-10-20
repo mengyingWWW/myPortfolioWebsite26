@@ -28,10 +28,11 @@ export type SundialStop = {
   place: string;
   /** Degrees north; sets the height of the sun's day arc. */
   latitude: number;
-  /** This place's light moment: where the sun sits on the equinox day arc (solar time, hours). */
+  /**
+   * Where the sun sits left–right, as a time of day on the arc (12 = centre, earlier = left). Its height is
+   * always the place's noon sun altitude, 90° − latitude.
+   */
   hour: number;
-  /** Shown under the caption as "{lat}°N · {moment}". */
-  moment: string;
   /** Shown under the city selector; two or three lines at most. */
   caption: string;
 };
@@ -45,8 +46,8 @@ export const sundial = {
       key: 'benxi',
       place: 'Benxi',
       latitude: 41.3,
-      hour: 13.4,
-      moment: 'Sun in the chimney haze',
+      // Behind the first chimney's smoke.
+      hour: 13.57,
       caption:
         'Home, where time seems to pause. A quiet place I carry with me, and the reason I design for people, not just products.',
     },
@@ -54,8 +55,7 @@ export const sundial = {
       key: 'beijing',
       place: 'Beijing',
       latitude: 39.9,
-      hour: 9.2,
-      moment: 'Morning over the courtyard',
+      hour: 12,
       caption:
         'In architecture, I kept looking past the walls, to the people moving between them. Their stories drew me into human factors research, and then to HCI.',
     },
@@ -64,7 +64,6 @@ export const sundial = {
       place: 'Singapore',
       latitude: 1.3,
       hour: 12.0,
-      moment: 'Sun overhead · almost no shadow',
       caption:
         'Under an almost vertical sun, I designed a space that never touches the ground, and began to imagine spaces that need no ground at all.',
     },
@@ -72,8 +71,8 @@ export const sundial = {
       key: 'seattle',
       place: 'Seattle',
       latitude: 47.6,
-      hour: 16.7,
-      moment: 'Low sun · long shadows',
+      // On the mountain's peak.
+      hour: 11.92,
       caption:
         'Leaf shadows drift across my window as I learn to design the spaces people now spend their days in: the ones on their screens.',
     },

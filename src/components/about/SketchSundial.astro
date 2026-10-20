@@ -23,12 +23,12 @@ interface Props {
 
 const { class: className, awaitLanding = false } = Astro.props;
 const { stops } = sundial;
-const momentLine = (stop: (typeof stops)[number]) => `${stop.latitude.toFixed(1)}°N · ${stop.moment}`;
+const latLine = (stop: (typeof stops)[number]) => `${stop.latitude.toFixed(1)}°N`;
 const clientStops = stops.map((stop) => ({
   place: stop.place,
   latitude: stop.latitude,
   hour: stop.hour,
-  moment: momentLine(stop),
+  latLine: latLine(stop),
   caption: stop.caption,
   strokes: citySketches[stop.key],
 }));
@@ -75,15 +75,17 @@ const clientStops = stops.map((stop) => ({
           <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" />
         </filter>
       </defs>
-      <path class="sks-arc" data-arc></path>
       <g class="sks-shadow" filter="url(#sks-hatch-ink)" data-shadow></g>
-      <g filter="url(#sks-ink)" data-art></g>
-      <g filter="url(#sks-ink)" data-ground></g>
+      <!-- The sun, behind the drawing: white-filled silhouettes hide it and knocked-out lines cross it. In screen
+           px (the group is scaled to cancel the drawing's scale); the dot is in the scene's ink, with the same
+           ink filter, so its edge isn't a perfect vector circle. -->
       <g class="sks-sun" data-sun>
         <circle r="18" fill="none" stroke="#E6E6E6" stroke-width="1" data-halo2></circle>
         <circle r="11" fill="none" stroke="#CFCFCF" stroke-width="1" data-halo></circle>
-        <circle r="6" fill="#111" data-sun-dot></circle>
+        <circle r="6" fill="#151515" filter="url(#sks-ink)" data-sun-dot></circle>
       </g>
+      <g filter="url(#sks-ink)" data-art></g>
+      <g filter="url(#sks-ink)" data-ground></g>
     </svg>
   </div>
 
@@ -93,13 +95,13 @@ const clientStops = stops.map((stop) => ({
       clientStops.map((stop) => (
         <div class="sks-caption-ghost" aria-hidden="true">
           <p class="sks-caption">{stop.caption}</p>
-          <p class="sks-moment">{stop.moment}</p>
+          <p class="sks-latline">{stop.latLine}</p>
         </div>
       ))
     }
     <div class="sks-caption-cell" aria-live="polite" data-caption-cell>
       <p class="sks-caption" data-caption>{clientStops[0].caption}</p>
-      <p class="sks-moment" data-moment>{clientStops[0].moment}</p>
+      <p class="sks-latline" data-latline>{clientStops[0].latLine}</p>
     </div>
   </div>
 </div>
@@ -171,14 +173,6 @@ const clientStops = stops.map((stop) => ({
     user-select: none;
   }
 
-  .sks-arc {
-    fill: none;
-    stroke: #d6d6d6;
-    stroke-width: 1;
-    stroke-dasharray: 1.5 4;
-    stroke-linecap: round;
-  }
-
   .sks-shadow {
     transition: opacity 0.4s ease;
   }
@@ -223,7 +217,7 @@ const clientStops = stops.map((stop) => ({
     text-wrap: balance;
     color: #555;
   }
-  .sks-moment {
+  .sks-latline {
     margin-top: 8px;
     font-family: var(--font-mono);
     font-size: 11px;
@@ -256,8 +250,8 @@ const clientStops = stops.map((stop) => ({
 </style>
 
 <script>
-  type Stroke = { d: string; weight?: 'thin' | 'light'; noShadow?: boolean };
-  type Stop = { place: string; latitude: number; hour: number; moment: string; caption: string; strokes: Stroke[] };
+  type Stroke = { d: string; weight?: 'thin' | 'light'; noShadow?: boolean; cover?: string; knockout?: boolean };
+  type Stop = { place: string; latitude: number; hour: number; latLine: string; caption: string; strokes: Stroke[] };
   type Pt = [number, number];
 
   const NS = 'http://www.w3.org/2000/svg';
@@ -312,7 +306,6 @@ const clientStops = stops.map((stop) => ({
     const q = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
     const svg = q<SVGSVGElement>('[data-svg]');
     const stage = q<HTMLElement>('[data-scene]');
-    const arc = q<SVGPathElement>('[data-arc]');
     const shadow = q<SVGGElement>('[data-shadow]');
     const art = q<SVGGElement>('[data-art]');
     const ground = q<SVGGElement>('[data-ground]');
@@ -321,7 +314,7 @@ const clientStops = stops.map((stop) => ({
     const halo2 = q<SVGCircleElement>('[data-halo2]');
     const captionCell = q<HTMLElement>('[data-caption-cell]');
     const caption = q<HTMLElement>('[data-caption]');
-    const moment = q<HTMLElement>('[data-moment]');
+    const latline = q<HTMLElement>('[data-latline]');
     const story = q<HTMLElement>('[data-story]');
     const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-city]')];
     const fills = buttons.map((b) => b.querySelector<HTMLElement>('[data-seg-fill]')!);
@@ -408,24 +401,14 @@ const clientStops = stops.map((stop) => ({
     const landed = () => !awaitLanding || root.hasAttribute('data-landed');
 
     // ---------- sun & shadow (equinox day, local solar time) ----------
-    const sunAlt = (h: number) => {
-      const H = ((h - 12) * 15 * Math.PI) / 180;
-      const p = (lat * Math.PI) / 180;
-      return (Math.asin(Math.cos(p) * Math.cos(H)) * 180) / Math.PI;
-    };
-    const sunXY = (h: number): Pt => [XL + ((h - 6) / 12) * (XR - XL), G - (Math.max(sunAlt(h), -4) / 90) * 200 - 8];
+    // Each place's sun stands at its noon altitude (90° − latitude); `hour` only places it left–right.
+    const sunAlt = () => 90 - lat;
+    const sunXY = (h: number): Pt => [XL + ((h - 6) / 12) * (XR - XL), G - (sunAlt() / 90) * 200 - 8];
 
     function update() {
-      let d = '';
-      for (let h = 6; h <= 18.001; h += 0.25) {
-        const [x, y] = sunXY(h);
-        d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
-      }
-      arc.setAttribute('d', d);
-
       const h = hour + drift;
       const [sx, sy] = sunXY(h);
-      const alt = sunAlt(h);
+      const alt = sunAlt();
       sun.setAttribute('transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)}) scale(${unit.toFixed(4)})`);
       // Halos widen as the sun sinks and tighten at midday.
       const low = 1 - Math.min(1, Math.max(0, alt) / 60);
@@ -486,13 +469,25 @@ const clientStops = stops.map((stop) => ({
       art.replaceChildren();
       const R = rng(i * 97 + 5);
       casters = [];
+      const covers: SVGElement[] = [];
+      const knockouts: SVGElement[] = [];
+      const ink: SVGElement[] = [];
       stops[i].strokes.forEach((stroke, j) => {
         const runs = samplePath(stroke.d, toScene);
         const light = stroke.weight === 'light';
         const w = light ? 1 : stroke.weight === 'thin' ? 1.15 : 1.8;
-        art.append(...handLine(runs, { col: light ? '#8E8E8E' : '#151515', w, anim: animate }, R, j * 0.07));
+        if (stroke.cover) {
+          const fill = document.createElementNS(NS, 'path');
+          fill.setAttribute('d', stroke.cover);
+          fill.setAttribute('transform', `translate(${CX - 100 * SC} ${G - 118 * SC}) scale(${SC})`);
+          fill.setAttribute('fill', '#fff');
+          covers.push(fill);
+        }
+        if (stroke.knockout) knockouts.push(...handLine(runs, { col: '#fff', w: w * 3, anim: animate }, rng(i * 97 + j), j * 0.07));
+        ink.push(...handLine(runs, { col: light ? '#8E8E8E' : '#151515', w, anim: animate }, R, j * 0.07));
         if (!stroke.noShadow) casters.push(...runs);
       });
+      art.append(...covers, ...knockouts, ...ink);
     }
 
     /** Cities before i are done, city i is `fill` (0–1) of the way through, later ones are empty. */
@@ -504,7 +499,7 @@ const clientStops = stops.map((stop) => ({
       window.clearTimeout(swapTimer);
       const apply = () => {
         caption.textContent = stop.caption;
-        moment.textContent = stop.moment;
+        latline.textContent = stop.latLine;
         captionCell.removeAttribute('data-swapping');
       };
       if (instant) return apply();
