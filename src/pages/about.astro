@@ -4,18 +4,11 @@ import AboutIntro from '@/components/about/AboutIntro.astro';
 import AboutSection from '@/components/about/AboutSection.astro';
 import AboutField from '@/components/about/AboutField.astro';
 import SectionProgress from '@/components/about/SectionProgress.astro';
-import { education, experience, sectionLabels, skills, sundial } from '@/data/about';
+import { education, experience, sectionLabels, skills } from '@/data/about';
 
-// Only the glyphs of the sundial's handwritten note.
-const hintFont = `https://fonts.googleapis.com/css2?family=Caveat:wght@500&text=${encodeURIComponent(sundial.hint)}&display=swap`;
 ---
 
 <BaseLayout title="About" overlayNav>
-  <Fragment slot="head">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href={hintFont} />
-  </Fragment>
   <AboutIntro />
 
   <!-- Starts just under the hero, so it peeks into the bottom of the screen when the hero releases. -->

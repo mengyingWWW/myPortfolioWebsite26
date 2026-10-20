@@ -28,24 +28,25 @@ export type SundialStop = {
   place: string;
   /** Degrees north; sets the height of the sun's day arc. */
   latitude: number;
+  /** This place's light moment: where the sun sits on the equinox day arc (solar time, hours). */
+  hour: number;
+  /** Shown under the caption as "{lat}°N · {moment}". */
+  moment: string;
   /** Shown under the city selector; two or three lines at most. */
   caption: string;
 };
 
 export const sundial = {
-  ariaLabel: 'Hand-drawn sundial: a sketch of each place I have lived casts a shadow from the sun',
-  citiesLabel: 'Places I have lived',
-  sunLabel: 'Sun position (time of day)',
-  /** Screen readers only: the scene's taps have no keyboard equivalent of their own. */
-  sceneHint: 'Use the place buttons below to switch cities.',
-  /** Handwritten note beside the sun until it is first moved. */
-  hint: 'drag the sun',
-  /** Played in this order by the story tour. */
+  ariaLabel: 'Hand-drawn sketch of the selected city with its sun and shadow',
+  storyLabel: 'Places I have lived',
+  /** Played in this order by the story. */
   stops: [
     {
       key: 'benxi',
       place: 'Benxi',
       latitude: 41.3,
+      hour: 13.4,
+      moment: 'Sun in the chimney haze',
       caption:
         'Home, where time seems to pause. A quiet place I carry with me, and the reason I design for people, not just products.',
     },
@@ -53,6 +54,8 @@ export const sundial = {
       key: 'beijing',
       place: 'Beijing',
       latitude: 39.9,
+      hour: 9.2,
+      moment: 'Morning over the courtyard',
       caption:
         'In architecture, I kept looking past the walls, to the people moving between them. Their stories drew me into human factors research, and then to HCI.',
     },
@@ -60,6 +63,8 @@ export const sundial = {
       key: 'singapore',
       place: 'Singapore',
       latitude: 1.3,
+      hour: 12.0,
+      moment: 'Sun overhead · almost no shadow',
       caption:
         'Under an almost vertical sun, I designed a space that never touches the ground, and began to imagine spaces that need no ground at all.',
     },
@@ -67,6 +72,8 @@ export const sundial = {
       key: 'seattle',
       place: 'Seattle',
       latitude: 47.6,
+      hour: 16.7,
+      moment: 'Low sun · long shadows',
       caption:
         'Leaf shadows drift across my window as I learn to design the spaces people now spend their days in: the ones on their screens.',
     },

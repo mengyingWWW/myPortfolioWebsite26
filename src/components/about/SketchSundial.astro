@@ -1,19 +1,17 @@
 ---
 /**
- * Hand-drawn sundial. A jittered ink sketch of the selected city (src/data/citySketches.ts) stands on a
- * hand-drawn ground line as the gnomon; its strokes cast a hatched shadow from a sun that can be dragged
- * along that latitude's equinox day arc (pointer, or arrow keys on the slider).
- * - The sun is always travelling: in every city it sweeps sunrise → sunset (~06:30 → 17:30) over ~7s, then
- *   fades out, starts again at sunrise and fades in. Dragging it (or arrow keys) stops the sweep for that
- *   city; switching city starts it again.
- * - Story tour, once per session (sessionStorage "tourSeen"): when the sun is first shown, each full sweep
- *   moves on to the next city while that city's segment of the progress line under the caption fills. After
- *   Seattle it stops moving on; the sun keeps looping. Any input (a tap, a city, a segment, the sun) ends it.
+ * Hand-drawn sundial as a tap-through story. A jittered ink sketch of each place (src/data/citySketches.ts)
+ * stands on a hand-drawn ground line; its strokes cast a hatched shadow from that place's own light moment
+ * (latitude + time of day on the equinox arc).
+ * - Story bar above the scene: one segment per city, with its name. Buttons; arrow keys move between them.
  * - Tapping the right half of the scene goes to the next city, the left half to the previous one (wrapping).
- * - A handwritten "drag the sun" note fades in ~1.2s after the tour, until the sun is first moved.
- * - awaitLanding: the sun stays hidden (and the tour waits) until the page sets data-landed, i.e. the
+ * - On a city change the sun flies along the arcs to its new spot (latitude and time together) and the
+ *   shadow follows; while on a city the light only breathes (a slow ±0.12h drift).
+ * - Auto-play once per session (sessionStorage "tourSeen"): when the sun is first shown, ~4.2s per city
+ *   while its segment fills; it stops at Seattle or on any input.
+ * - awaitLanding: the sun stays hidden (and auto-play waits) until the page sets data-landed, i.e. the
  *   portrait has flown into it.
- * Reduced motion: no sweep, tour, draw-in or tweens; the sun is shown from the start at 10:00.
+ * Reduced motion: no auto-play, drift, flight or draw-in.
  */
 import { sundial } from '@/data/about';
 import { citySketches } from '@/data/citySketches';
@@ -25,36 +23,45 @@ interface Props {
 
 const { class: className, awaitLanding = false } = Astro.props;
 const { stops } = sundial;
-const latLabel = (lat: number) => `${lat.toFixed(1)}°N`;
+const momentLine = (stop: (typeof stops)[number]) => `${stop.latitude.toFixed(1)}°N · ${stop.moment}`;
 const clientStops = stops.map((stop) => ({
   place: stop.place,
   latitude: stop.latitude,
+  hour: stop.hour,
+  moment: momentLine(stop),
   caption: stop.caption,
   strokes: citySketches[stop.key],
 }));
-
-/** Sun altitude at 10:00 on the equinox, for the readout before the script runs. */
-const restAltitude = Math.round(
-  (Math.asin(Math.cos((stops[0].latitude * Math.PI) / 180) * Math.cos((30 * Math.PI) / 180)) * 180) / Math.PI,
-);
 ---
 
 <div
   class:list={['sks', className]}
   data-sundial
   data-stops={JSON.stringify(clientStops)}
-  data-hint-text={sundial.hint}
   data-await-landing={awaitLanding ? '' : undefined}
 >
-  <div class="sks-figure" data-cursor-label="NEXT →" data-scene>
-    <svg
-      class="sks-svg"
-      viewBox="0 0 720 300"
-      role="group"
-      aria-label={sundial.ariaLabel}
-      aria-describedby="sks-scene-hint"
-      data-svg
-    >
+  <nav class="sks-story" aria-label={sundial.storyLabel} data-story>
+    {
+      stops.map((stop, i) => (
+        <button
+          type="button"
+          class="sks-story-btn"
+          aria-current={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          data-city={i}
+        >
+          <span class="sks-story-track" aria-hidden="true">
+            <span class="sks-story-fill" style={i === 0 ? '--fill: 100%' : undefined} data-seg-fill />
+          </span>
+          <span class="sks-story-name">{stop.place}</span>
+        </button>
+      ))
+    }
+  </nav>
+
+  <!-- Pointer only: the story bar is the keyboard route. -->
+  <div class="sks-stage" data-cursor-label="NEXT →" data-scene>
+    <svg class="sks-svg" viewBox="0 0 720 300" role="img" aria-label={sundial.ariaLabel} data-svg>
       <defs>
         <filter id="sks-ink" x="-5%" y="-5%" width="110%" height="110%">
           <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="4" result="n" />
@@ -69,90 +76,32 @@ const restAltitude = Math.round(
         </filter>
       </defs>
       <path class="sks-arc" data-arc></path>
-      <g class="sks-dawn"><g class="sks-shadow" filter="url(#sks-hatch-ink)" data-shadow></g></g>
+      <g class="sks-shadow" filter="url(#sks-hatch-ink)" data-shadow></g>
       <g filter="url(#sks-ink)" data-art></g>
       <g filter="url(#sks-ink)" data-ground></g>
-      <g class="sks-chevrons" aria-hidden="true">
-        <g data-chevron="-1"></g>
-        <g data-chevron="1"></g>
-      </g>
-      <g class="sks-dawn">
-      <g class="sks-hint" aria-hidden="true" data-hint><g data-hint-art></g></g>
-      <g
-        class="sks-sun"
-        tabindex="0"
-        role="slider"
-        aria-label={sundial.sunLabel}
-        aria-valuemin="6"
-        aria-valuemax="18"
-        aria-valuenow="10"
-        aria-valuetext={`10:00, sun ${restAltitude}° high`}
-        data-cursor-label="DRAG"
-        data-sun
-      >
-        <circle class="sks-sun-hit" r="22" fill="transparent"></circle>
+      <g class="sks-sun" data-sun>
         <circle r="18" fill="none" stroke="#E6E6E6" stroke-width="1" data-halo2></circle>
         <circle r="11" fill="none" stroke="#CFCFCF" stroke-width="1" data-halo></circle>
         <circle r="6" fill="#111" data-sun-dot></circle>
       </g>
-      </g>
     </svg>
-    <p id="sks-scene-hint" class="sr-only">{sundial.sceneHint}</p>
-  </div>
-
-  <p class="sks-readout" data-readout>{latLabel(stops[0].latitude)} · SUN {restAltitude}°</p>
-
-  <div class="sks-cities" role="radiogroup" aria-label={sundial.citiesLabel} data-cities>
-    {
-      stops.map((stop, i) => (
-        <>
-          {i > 0 && (
-            <span class="sks-arrow" aria-hidden="true">
-              →
-            </span>
-          )}
-          <button
-            type="button"
-            role="radio"
-            class="sks-city"
-            aria-checked={i === 0 ? 'true' : 'false'}
-            tabindex={i === 0 ? 0 : -1}
-            data-city={i}
-          >
-            <span class="sks-lat">{latLabel(stop.latitude)}</span>
-            <span class="sks-name">{stop.place}</span>
-          </button>
-        </>
-      ))
-    }
   </div>
 
   <!-- Every caption sits invisibly in the same cell, so the box always has the longest one's height. -->
   <div class="sks-captions">
     {
-      stops.map((stop) => (
-        <p class="sks-caption-ghost" aria-hidden="true">
-          {stop.caption}
-        </p>
-      ))
-    }
-    <p class="sks-caption-cell" data-caption>{stops[0].caption}</p>
-  </div>
-
-  <!-- Story-style progress, one segment per city. Pointer only: the city radiogroup is the keyboard route. -->
-  <div class="sks-segments" aria-hidden="true">
-    {
-      stops.map((_, i) => (
-        <div class="sks-seg" data-seg={i} data-cursor="icon">
-          <span class="sks-seg-track">
-            <span class="sks-seg-fill" style={i === 0 ? '--fill: 100%' : undefined} data-seg-fill />
-          </span>
+      clientStops.map((stop) => (
+        <div class="sks-caption-ghost" aria-hidden="true">
+          <p class="sks-caption">{stop.caption}</p>
+          <p class="sks-moment">{stop.moment}</p>
         </div>
       ))
     }
+    <div class="sks-caption-cell" aria-live="polite" data-caption-cell>
+      <p class="sks-caption" data-caption>{clientStops[0].caption}</p>
+      <p class="sks-moment" data-moment>{clientStops[0].moment}</p>
+    </div>
   </div>
-
-  <p class="sr-only" aria-live="polite" data-announce></p>
 </div>
 
 <style>
@@ -162,8 +111,55 @@ const restAltitude = Math.round(
     align-items: center;
   }
 
-  .sks-figure {
+  /* Story bar: segments with tiny labels, like stories. */
+  .sks-story {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    width: min(100%, 520px);
+  }
+  .sks-story-btn {
+    padding: 10px 0 0;
+    text-align: left;
+    cursor: pointer;
+  }
+  .sks-story-btn:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .sks-story-track {
+    display: block;
+    height: 2px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #e6e6e6;
+  }
+  .sks-story-fill {
+    display: block;
+    width: var(--fill, 0%);
+    height: 100%;
+    background: #111;
+  }
+  /* #767676 is the lightest grey that keeps 4.5:1 on white. */
+  .sks-story-name {
+    display: block;
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #767676;
+    transition: color 200ms ease;
+  }
+  .sks-story-btn[aria-current='true'] .sks-story-name,
+  .sks-story-btn:hover .sks-story-name {
+    color: #111;
+  }
+
+  .sks-stage {
     width: min(100%, var(--sundial-max-width, 760px));
+    margin-top: 40px;
     cursor: pointer;
   }
 
@@ -177,7 +173,7 @@ const restAltitude = Math.round(
 
   .sks-arc {
     fill: none;
-    stroke: #c8c8c8;
+    stroke: #d6d6d6;
     stroke-width: 1;
     stroke-dasharray: 1.5 4;
     stroke-linecap: round;
@@ -187,57 +183,9 @@ const restAltitude = Math.round(
     transition: opacity 0.4s ease;
   }
 
-  /* Between one sweep and the next, the sun (with its note) and the shadow fade out and back in. */
-  .sks-dawn {
-    transition: opacity 300ms ease;
-  }
-  .sks[data-dawn] .sks-dawn {
-    opacity: 0;
-  }
-
-  /* Tap targets: chevrons at both edges while a pointer is over the scene. */
-  .sks-chevrons {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 300ms ease;
-  }
-  .sks[data-pointer-in] .sks-chevrons {
-    opacity: 1;
-  }
-
-  .sks-sun {
-    cursor: grab;
-    outline: none;
-    touch-action: none;
-  }
-  .sks-sun:active {
-    cursor: grabbing;
-  }
-  .sks-sun:focus-visible .sks-sun-hit {
-    stroke: #111;
-    stroke-width: 1.2;
-    stroke-dasharray: 3 3;
-  }
-
-  .sks-hint {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.8s ease;
-  }
-  .sks[data-hint-on] .sks-hint {
-    opacity: 1;
-  }
-  /* #767676 is the lightest grey that keeps 4.5:1 on white. */
-  .sks :global(.sks-hint-text) {
-    font-family: 'Caveat', cursive;
-    font-size: 15px;
-    font-weight: 500;
-    fill: #767676;
-  }
-
-  /* Until the portrait has flown into it, the sun (and its note) isn't there. */
+  /* Until the portrait has flown into it, the sun isn't there. */
   @media (prefers-reduced-motion: no-preference) {
-    .sks[data-await-landing]:not([data-landed]) :is(.sks-sun, .sks-hint) {
+    .sks[data-await-landing]:not([data-landed]) .sks-sun {
       visibility: hidden;
     }
   }
@@ -253,79 +201,11 @@ const restAltitude = Math.round(
     }
   }
 
-  .sks-readout {
-    margin-top: 4px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--color-meta);
-  }
-
-  .sks-cities {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-top: 22px;
-  }
-
-  .sks-arrow {
-    color: #bdbdbd;
-    font-size: 13px;
-    line-height: 1;
-  }
-
-  .sks-city {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6px 4px;
-    color: var(--color-meta);
-    cursor: pointer;
-    transition: color 200ms ease;
-  }
-  .sks-city:hover,
-  .sks-city[aria-checked='true'] {
-    color: #111;
-  }
-  .sks-city:focus-visible {
-    outline: 2px solid #111;
-    outline-offset: 4px;
-    border-radius: 4px;
-  }
-
-  .sks-lat {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.4;
-    letter-spacing: 0.12em;
-  }
-
-  .sks-name {
-    position: relative;
-    margin-top: 4px;
-    padding-bottom: 6px;
-    font-size: 13px;
-    line-height: 1.3;
-  }
-  .sks-name::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background: #111;
-    opacity: 0;
-  }
-  .sks-city[aria-checked='true'] .sks-name::after {
-    opacity: 1;
-  }
-
   .sks-captions {
     display: grid;
     width: 100%;
     max-width: 600px;
-    margin-top: 18px;
+    margin-top: 22px;
     text-align: center;
   }
   .sks-caption-ghost,
@@ -335,13 +215,21 @@ const restAltitude = Math.round(
   .sks-caption-ghost {
     visibility: hidden;
   }
-  .sks-captions > p {
+  .sks-caption {
     font-family: var(--font-serif);
     font-size: 17px;
     font-style: italic;
     line-height: 1.5;
     text-wrap: balance;
     color: #555;
+  }
+  .sks-moment {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-meta);
   }
 
   .sks-caption-cell {
@@ -354,47 +242,10 @@ const restAltitude = Math.round(
     transform: translateY(6px);
   }
 
-  .sks-segments {
-    display: flex;
-    gap: 4px;
-    width: 180px;
-    /* The line itself sits 18px under the caption; the rest of the hit area overlaps the gap. */
-    margin-top: calc(18px - (24px - 1.5px) / 2);
-  }
-  /* 24px tall hit area around the 1.5px line (WCAG 2.5.8). */
-  .sks-seg {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    height: 24px;
-    cursor: pointer;
-  }
-  .sks-seg-track {
-    width: 100%;
-    height: 1.5px;
-    overflow: hidden;
-    border-radius: 1px;
-    background: #e6e6e6;
-    transition: background-color 200ms ease;
-  }
-  .sks-seg:hover .sks-seg-track {
-    background: #bdbdbd;
-  }
-  .sks-seg-fill {
-    display: block;
-    width: var(--fill, 0%);
-    height: 100%;
-    background: #111;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .sks-shadow,
-    .sks-dawn,
-    .sks-chevrons,
-    .sks-hint,
-    .sks-city,
-    .sks-caption-cell,
-    .sks-seg-track {
+    .sks-story-name,
+    .sks-caption-cell {
       transition: none;
     }
     .sks :global(.sks-draw) {
@@ -406,7 +257,7 @@ const restAltitude = Math.round(
 
 <script>
   type Stroke = { d: string; weight?: 'thin' | 'light'; noShadow?: boolean };
-  type Stop = { place: string; latitude: number; caption: string; strokes: Stroke[] };
+  type Stop = { place: string; latitude: number; hour: number; moment: string; caption: string; strokes: Stroke[] };
   type Pt = [number, number];
 
   const NS = 'http://www.w3.org/2000/svg';
@@ -416,29 +267,21 @@ const restAltitude = Math.round(
   const SC = 1.25;
   const toScene = (x: number, y: number): Pt => [CX + (x - 100) * SC, G + (y - 118) * SC];
   const GROUND = 'M30 214 C200 212 360 216 520 213 C600 212 660 215 690 214';
-  /** The day arc runs from 06:00 at XL to 18:00 at XR; the sun can be dragged between HOUR_MIN and HOUR_MAX. */
+  /** The day arc runs from 06:00 at XL to 18:00 at XR. */
   const XL = 70;
   const XR = 650;
-  const HOUR_MIN = 6.3;
-  const HOUR_MAX = 17.7;
-  const KEY_STEP = 0.25;
-  /** Where the sun sits with reduced motion. */
-  const REST_HOUR = 10;
-  /** One day: sunrise → sunset over SWEEP_MS, then the sun fades out and in again over DAWN_MS each way. */
-  const SWEEP_FROM = 6.5;
-  const SWEEP_TO = 17.5;
-  const SWEEP_MS = 7000;
-  const DAWN_MS = 300;
+  /** The sun's flight to a new city's moment. */
+  const FLY_MS = 1300;
+  /** While on a city the light breathes: ± this many hours, on a slow sine. */
+  const DRIFT_HOURS = 0.12;
+  const DRIFT_RATE = 1 / 1600;
+  const STOP_MS = 4200;
+  /** Caption fades out for this long before the text changes. */
+  const CAPTION_SWAP = 220;
   /** A tap nudges the scene this far toward the tapped side and back. */
   const NUDGE_PX = 6;
   const NUDGE_MS = 180;
-  /** Latitude eases over this long on a city switch. */
-  const TWEEN_MS = 900;
-  /** Caption fades out for this long before the text changes. */
-  const CAPTION_SWAP = 220;
-  const HINT_DELAY = 1200;
   const TOUR_KEY = 'tourSeen';
-  const HINT_KEY = 'sundialHintDone';
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const remembered = (key: string) => {
@@ -452,16 +295,10 @@ const restAltitude = Math.round(
     try {
       sessionStorage.setItem(key, '1');
     } catch {
-      // Storage blocked: the tour and hint just come back next time.
+      // Storage blocked: the story just plays again next time.
     }
   };
-  const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
   const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
-  const clampHour = (h: number) => Math.min(HOUR_MAX, Math.max(HOUR_MIN, h));
-  const clock = (h: number) => {
-    const m = Math.round(h * 60);
-    return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
-  };
 
   /** Seeded, so a city's sketch has the same wobble every time it's drawn. */
   function rng(seed: number) {
@@ -474,25 +311,20 @@ const restAltitude = Math.round(
     if (!stops.length) return;
     const q = <T extends Element>(sel: string) => root.querySelector<T>(sel)!;
     const svg = q<SVGSVGElement>('[data-svg]');
-    const scene = q<HTMLElement>('[data-scene]');
+    const stage = q<HTMLElement>('[data-scene]');
     const arc = q<SVGPathElement>('[data-arc]');
     const shadow = q<SVGGElement>('[data-shadow]');
     const art = q<SVGGElement>('[data-art]');
     const ground = q<SVGGElement>('[data-ground]');
-    const hint = q<SVGGElement>('[data-hint]');
-    const hintArt = q<SVGGElement>('[data-hint-art]');
-    const chevrons = [...root.querySelectorAll<SVGGElement>('[data-chevron]')];
     const sun = q<SVGGElement>('[data-sun]');
     const halo = q<SVGCircleElement>('[data-halo]');
     const halo2 = q<SVGCircleElement>('[data-halo2]');
-    const dot = q<SVGCircleElement>('[data-sun-dot]');
-    const readout = q<HTMLElement>('[data-readout]');
+    const captionCell = q<HTMLElement>('[data-caption-cell]');
     const caption = q<HTMLElement>('[data-caption]');
-    const announce = q<HTMLElement>('[data-announce]');
-    const cities = [...root.querySelectorAll<HTMLButtonElement>('[data-city]')];
-    const segments = [...root.querySelectorAll<HTMLElement>('[data-seg]')];
-    const fills = segments.map((seg) => seg.querySelector<HTMLElement>('[data-seg-fill]')!);
-    const hintText = root.dataset.hintText ?? '';
+    const moment = q<HTMLElement>('[data-moment]');
+    const story = q<HTMLElement>('[data-story]');
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-city]')];
+    const fills = buttons.map((b) => b.querySelector<HTMLElement>('[data-seg-fill]')!);
 
     // ---------- hand-line renderer: a jittered double stroke ----------
     /** A path's outline as runs of points (split where it jumps), mapped through tf. */
@@ -563,14 +395,14 @@ const restAltitude = Math.round(
     // ---------- state ----------
     let cur = 0;
     let lat = stops[0].latitude;
-    const tourPending = !reduceMotion && !remembered(TOUR_KEY);
-    let hour = reduceMotion ? REST_HOUR : SWEEP_FROM;
+    let hour = stops[0].hour;
+    let drift = 0;
     let casters: Pt[][] = [];
-    /** SVG units per screen px: the sun and the note stay the same size on screen at any width. */
+    /** SVG units per screen px: the sun stays the same size on screen at any width. */
     let unit = 720 / (svg.clientWidth || 720);
-    let latFrame = 0;
+    let flight = 0;
     let swapTimer = 0;
-    let queued = 0;
+    let inView = true;
 
     const awaitLanding = root.hasAttribute('data-await-landing') && !reduceMotion;
     const landed = () => !awaitLanding || root.hasAttribute('data-landed');
@@ -591,28 +423,28 @@ const restAltitude = Math.round(
       }
       arc.setAttribute('d', d);
 
-      const [sx, sy] = sunXY(hour);
-      const alt = sunAlt(hour);
+      const h = hour + drift;
+      const [sx, sy] = sunXY(h);
+      const alt = sunAlt(h);
       sun.setAttribute('transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)}) scale(${unit.toFixed(4)})`);
       // Halos widen as the sun sinks and tighten at midday.
       const low = 1 - Math.min(1, Math.max(0, alt) / 60);
       halo.setAttribute('r', (10 + low * 6).toFixed(1));
       halo2.setAttribute('r', (16 + low * 14).toFixed(1));
       halo2.setAttribute('opacity', (0.35 + low * 0.65).toFixed(2));
-      dot.setAttribute('r', (5.2 + (1 - low) * 1.6).toFixed(1));
 
       // Every caster point is projected away from the sun onto a slightly tilted ground plane.
       shadow.replaceChildren();
       if (alt > 1.5 && casters.length) {
         const k = Math.min(4.2, 1 / Math.tan((alt * Math.PI) / 180));
-        const dir = hour < 12 ? 1 : -1;
-        const horiz = Math.abs(Math.sin(((hour - 12) / 6) * (Math.PI / 2)));
+        const dir = h < 12 ? 1 : -1;
+        const horiz = Math.abs(Math.sin(((h - 12) / 6) * (Math.PI / 2)));
         let dd = '';
         for (const s of casters) {
           s.forEach(([x, y], i) => {
-            const h = Math.max(0, G - y);
-            const px = x + dir * h * k * (0.35 + 0.65 * horiz);
-            const py = G + h * Math.min(k, 2.2) * 0.42 * (1 - horiz * 0.45) + 1.5;
+            const hh = Math.max(0, G - y);
+            const px = x + dir * hh * k * (0.35 + 0.65 * horiz);
+            const py = G + hh * Math.min(k, 2.2) * 0.42 * (1 - horiz * 0.45) + 1.5;
             dd += `${i ? 'L' : 'M'}${px.toFixed(1)} ${py.toFixed(1)} `;
           });
           dd += 'Z ';
@@ -625,42 +457,28 @@ const restAltitude = Math.round(
         shadow.appendChild(e);
         shadow.style.opacity = (0.45 + 0.35 * Math.min(1, alt / 30)).toFixed(2);
       }
-
-      const shown = Math.max(0, Math.round(alt));
-      readout.textContent = `${lat.toFixed(1)}°N · SUN ${shown}°`;
-      sun.setAttribute('aria-valuenow', hour.toFixed(2));
-      sun.setAttribute('aria-valuetext', `${clock(hour)}, sun ${shown}° high`);
-      placeHint(sx, sy);
-      chevrons.forEach((g) => {
-        const x = Number(g.dataset.chevron) > 0 ? 706 : 14;
-        g.setAttribute('transform', `translate(${x} 150) scale(${unit.toFixed(4)})`);
-      });
     }
 
-    const invalidate = () => {
-      if (!queued)
-        queued = requestAnimationFrame(() => {
-          queued = 0;
-          update();
-        });
-    };
-
-    function tweenLat(to: number, instant: boolean) {
-      cancelAnimationFrame(latFrame);
-      if (instant) {
-        lat = to;
-        return invalidate();
+    /** The sun travels to the new city's moment: latitude and time of day together. */
+    function fly(to: Stop) {
+      cancelAnimationFrame(flight);
+      flight = 0;
+      if (reduceMotion) {
+        lat = to.latitude;
+        hour = to.hour;
+        return update();
       }
-      const from = lat;
+      const from = { lat, hour };
       let t0 = 0;
       const step = (now: number) => {
         t0 ||= now;
-        const t = Math.min(1, (now - t0) / TWEEN_MS);
-        lat = from + (to - from) * easeInOutCubic(t);
-        invalidate();
-        latFrame = t < 1 ? requestAnimationFrame(step) : 0;
+        const t = Math.min(1, (now - t0) / FLY_MS);
+        const e = easeInOutCubic(t);
+        lat = from.lat + (to.latitude - from.lat) * e;
+        hour = from.hour + (to.hour - from.hour) * e;
+        flight = t < 1 ? requestAnimationFrame(step) : 0;
       };
-      latFrame = requestAnimationFrame(step);
+      flight = requestAnimationFrame(step);
     }
 
     // ---------- city ----------
@@ -686,276 +504,141 @@ const restAltitude = Math.round(
       window.clearTimeout(swapTimer);
       const apply = () => {
         caption.textContent = stop.caption;
-        caption.removeAttribute('data-swapping');
+        moment.textContent = stop.moment;
+        captionCell.removeAttribute('data-swapping');
       };
       if (instant) return apply();
-      caption.setAttribute('data-swapping', '');
+      captionCell.setAttribute('data-swapping', '');
       swapTimer = window.setTimeout(apply, CAPTION_SWAP);
     }
 
-    /** init: first paint, no animation. tour: not announced. user: announced to screen readers. */
-    function select(i: number, source: 'init' | 'tour' | 'user') {
-      if (source === 'user' && i === cur) return;
+    /** init: first paint, no animation. auto: the story playing. user: a tap, a segment or an arrow key. */
+    function select(i: number, source: 'init' | 'auto' | 'user', nudge = 0) {
+      i = (i + stops.length) % stops.length;
+      if (source === 'user' && i === cur && !nudge) return;
       cur = i;
       const stop = stops[i];
       const instant = source === 'init' || reduceMotion;
       drawSketch(i, !instant);
-      tweenLat(stop.latitude, instant);
-      cities.forEach((b, j) => {
-        b.setAttribute('aria-checked', String(j === i));
+      if (source === 'init') {
+        lat = stop.latitude;
+        hour = stop.hour;
+      } else fly(stop);
+      buttons.forEach((b, j) => {
+        b.setAttribute('aria-current', String(j === i));
         b.tabIndex = j === i ? 0 : -1;
       });
-      setProgress(i, source === 'tour' ? 0 : 1);
+      setProgress(i, source === 'auto' ? 0 : 1);
       swapCaption(stop, instant);
-      if (source === 'user') announce.textContent = `${stop.place}, ${stop.latitude.toFixed(1)}°N. ${stop.caption}`;
-      // A new city starts a new day; when the visitor switches, the sun fades over to sunrise.
-      if (source !== 'init') newDay(source === 'user');
-      invalidate();
-    }
-
-    // ---------- "drag the sun" note ----------
-    let hintDone = remembered(HINT_KEY);
-    let hintOn = false;
-    let hintSide: 'l' | 'r' | '' = '';
-    let hintDrawn = false;
-    let hintTimer = 0;
-
-    /** Built around the sun at (0, 0), in screen px; on the side of the sun away from the sketch. */
-    function buildHint(side: 'l' | 'r') {
-      hintArt.replaceChildren();
-      const s = side === 'l' ? -1 : 1;
-      const text = document.createElementNS(NS, 'text');
-      text.classList.add('sks-hint-text');
-      text.setAttribute('x', String(44 * s));
-      text.setAttribute('y', '-30');
-      text.setAttribute('text-anchor', side === 'l' ? 'end' : 'start');
-      text.textContent = hintText;
-      hintArt.appendChild(text);
-      const [x0, y0, x1, y1] = [46 * s, -24, 14 * s, -6];
-      const d = `M ${x0} ${y0} Q ${(x0 + x1) / 2} ${y0 + 22} ${x1} ${y1} M ${x1} ${y1} L ${x1 + 8 * s} ${y1 - 3} M ${x1} ${y1} L ${x1 + 3 * s} ${y1 - 9}`;
-      const anim = !hintDrawn && !reduceMotion;
-      hintArt.append(...handLine(samplePath(d), { col: '#AFAFAF', w: 0.9, anim }, rng(77), 0));
-      hintDrawn = true;
-    }
-
-    function placeHint(sx: number, sy: number) {
-      if (!hintOn) return;
-      const side = sx < CX ? 'l' : 'r';
-      if (side !== hintSide) {
-        hintSide = side;
-        buildHint(side);
-      }
-      hint.setAttribute('transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)}) scale(${unit.toFixed(4)})`);
-    }
-
-    function showHint() {
-      if (hintOn || hintDone || !landed()) return;
-      hintOn = true;
-      hintSide = '';
-      update();
-      root.setAttribute('data-hint-on', '');
-    }
-
-    function scheduleHint() {
-      window.clearTimeout(hintTimer);
-      if (hintOn || hintDone) return;
-      hintTimer = window.setTimeout(showHint, reduceMotion ? 0 : HINT_DELAY);
-    }
-
-    function dismissHint() {
-      window.clearTimeout(hintTimer);
-      if (hintDone) return;
-      hintDone = true;
-      hintOn = false;
-      remember(HINT_KEY);
-      root.removeAttribute('data-hint-on');
-    }
-
-    // ---------- the sun's day ----------
-    const tour = { on: false };
-    const sweep = { on: false, elapsed: 0, last: 0, frame: 0, dawn: 0 };
-
-    /** Back to sunrise and on: faded out and in again, or at once when the sun is already faded out. */
-    function newDay(fade: boolean) {
-      if (reduceMotion) return;
-      sweep.on = true;
-      window.clearTimeout(sweep.dawn);
-      const restart = () => {
-        sweep.dawn = 0;
-        sweep.elapsed = 0;
-        sweep.last = 0;
-        hour = SWEEP_FROM;
-        root.removeAttribute('data-dawn');
-        invalidate();
-      };
-      if (fade) {
-        root.setAttribute('data-dawn', '');
-        sweep.dawn = window.setTimeout(restart, DAWN_MS);
-      } else restart();
-      if (!sweep.frame) sweep.frame = requestAnimationFrame(sweepFrame);
-    }
-
-    function stopSweep() {
-      sweep.on = false;
-      cancelAnimationFrame(sweep.frame);
-      sweep.frame = 0;
-      window.clearTimeout(sweep.dawn);
-      sweep.dawn = 0;
-      root.removeAttribute('data-dawn');
-    }
-
-    // Holds while the portrait is back in Act 1, and while fading over to the next day.
-    function sweepFrame(now: number) {
-      sweep.frame = 0;
-      if (!sweep.on) return;
-      const dt = sweep.last ? Math.min(now - sweep.last, 100) : 0;
-      sweep.last = now;
-      if (landed() && !sweep.dawn) sweep.elapsed += dt;
-      const t = Math.min(1, sweep.elapsed / SWEEP_MS);
-      hour = SWEEP_FROM + (SWEEP_TO - SWEEP_FROM) * easeInOutQuad(t);
-      if (tour.on) setProgress(cur, t);
-      invalidate();
-      if (t >= 1 && !sweep.dawn) {
-        // Sunset: fade out, then the tour's next city (or the same one again) starts at sunrise.
-        if (tour.on && cur < stops.length - 1) {
-          root.setAttribute('data-dawn', '');
-          sweep.dawn = window.setTimeout(() => select(cur + 1, 'tour'), DAWN_MS);
-        } else {
-          endTour();
-          newDay(true);
-        }
-      }
-      sweep.frame = requestAnimationFrame(sweepFrame);
-    }
-
-    function startTour() {
-      tour.on = true;
-      remember(TOUR_KEY);
-      root.setAttribute('data-touring', '');
-      select(0, 'tour');
-    }
-
-    function endTour() {
-      if (!tour.on) return;
-      tour.on = false;
-      root.removeAttribute('data-touring');
-      setProgress(cur, 1);
-      scheduleHint();
-    }
-    /** Any input takes over: the tour stops on the current city. */
-    const userAct = () => endTour();
-
-    // ---------- input ----------
-    function hourAt(e: PointerEvent) {
-      const m = svg.getScreenCTM();
-      if (!m) return hour;
-      const x = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse()).x;
-      return 6 + ((x - XL) / (XR - XL)) * 12;
-    }
-    function moveSun(to: number) {
-      userAct();
-      dismissHint();
-      stopSweep();
-      hour = clampHour(to);
-      invalidate();
-    }
-
-    let dragging = false;
-    let dragEnded = 0;
-    sun.addEventListener('pointerdown', (e) => {
-      dragging = true;
-      sun.setPointerCapture(e.pointerId);
-      moveSun(hour);
-    });
-    sun.addEventListener('pointermove', (e) => {
-      if (dragging) moveSun(hourAt(e));
-    });
-    const endDrag = () => {
-      dragging = false;
-      dragEnded = performance.now();
-    };
-    sun.addEventListener('pointerup', endDrag);
-    sun.addEventListener('pointercancel', endDrag);
-    sun.addEventListener('keydown', (e) => {
-      const step = { ArrowLeft: -KEY_STEP, ArrowDown: -KEY_STEP, ArrowRight: KEY_STEP, ArrowUp: KEY_STEP }[e.key];
-      const to = e.key === 'Home' ? HOUR_MIN : e.key === 'End' ? HOUR_MAX : step === undefined ? null : hour + step;
-      if (to === null) return;
-      e.preventDefault();
-      moveSun(to);
-    });
-
-    // Story taps: right half → next city, left half → previous; the sun itself is for dragging.
-    const sideOf = (e: MouseEvent) => {
-      const r = scene.getBoundingClientRect();
-      return e.clientX >= r.left + r.width / 2 ? 1 : -1;
-    };
-    scene.addEventListener('click', (e) => {
-      if ((e.target as Element).closest('[data-sun]') || performance.now() - dragEnded < 300) return;
-      const step = sideOf(e);
-      userAct();
-      select((cur + step + stops.length) % stops.length, 'user');
-      if (!reduceMotion)
-        scene.animate(
-          [{ transform: 'translateX(0)' }, { transform: `translateX(${NUDGE_PX * step}px)` }, { transform: 'translateX(0)' }],
+      if (nudge && !reduceMotion)
+        stage.animate(
+          [{ transform: 'translateX(0)' }, { transform: `translateX(${NUDGE_PX * nudge}px)` }, { transform: 'translateX(0)' }],
           { duration: NUDGE_MS, easing: 'ease-out' },
         );
-    });
-    const labelTap = (e: PointerEvent) => {
-      const label = sideOf(e) > 0 ? 'NEXT →' : '← PREV';
-      if (scene.dataset.cursorLabel !== label) scene.dataset.cursorLabel = label;
-    };
-    scene.addEventListener('pointermove', labelTap);
-    scene.addEventListener('pointerenter', (e) => {
-      labelTap(e);
-      if (e.pointerType !== 'touch') root.setAttribute('data-pointer-in', '');
-    });
-    scene.addEventListener('pointerleave', () => root.removeAttribute('data-pointer-in'));
+      update();
+    }
 
-    cities.forEach((b, i) =>
+    // ---------- auto-play (once per session) ----------
+    const auto = { on: false, elapsed: 0, last: 0 };
+
+    function startAuto() {
+      auto.on = true;
+      auto.elapsed = 0;
+      auto.last = 0;
+      remember(TOUR_KEY);
+      root.setAttribute('data-touring', '');
+      // The story's own changes aren't announced; the visitor's are.
+      captionCell.setAttribute('aria-live', 'off');
+      select(0, 'auto');
+    }
+
+    function stopAuto() {
+      if (!auto.on) return;
+      auto.on = false;
+      root.removeAttribute('data-touring');
+      captionCell.setAttribute('aria-live', 'polite');
+      setProgress(cur, 1);
+    }
+
+    // ---------- the loop: breathing light + story progress, only while on screen ----------
+    let frame = 0;
+    function loop(now: number) {
+      frame = 0;
+      if (!reduceMotion) drift = Math.sin(now * DRIFT_RATE) * DRIFT_HOURS;
+      if (auto.on) {
+        const dt = auto.last ? Math.min(now - auto.last, 100) : 0;
+        auto.last = now;
+        // Holds while the portrait is back in Act 1.
+        if (landed()) auto.elapsed += dt;
+        const t = Math.min(1, auto.elapsed / STOP_MS);
+        setProgress(cur, t);
+        if (t >= 1) {
+          if (cur < stops.length - 1) {
+            auto.elapsed = 0;
+            select(cur + 1, 'auto');
+          } else stopAuto();
+        }
+      }
+      update();
+      if (inView && (!reduceMotion || auto.on || flight)) frame = requestAnimationFrame(loop);
+    }
+    const run = () => {
+      if (!frame) frame = requestAnimationFrame(loop);
+    };
+
+    // ---------- input ----------
+    buttons.forEach((b, i) =>
       b.addEventListener('click', () => {
-        userAct();
+        stopAuto();
         select(i, 'user');
       }),
     );
-    q<HTMLElement>('[data-cities]').addEventListener('keydown', (e) => {
-      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-      if (!step) return;
+    story.addEventListener('keydown', (e) => {
+      const to =
+        e.key === 'ArrowRight' ? cur + 1 : e.key === 'ArrowLeft' ? cur - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? stops.length - 1 : null;
+      if (to === null) return;
       e.preventDefault();
-      userAct();
-      const n = (cur + step + stops.length) % stops.length;
-      select(n, 'user');
-      cities[n].focus();
+      stopAuto();
+      select(to, 'user');
+      buttons[cur].focus();
     });
-    segments.forEach((seg, i) =>
-      seg.addEventListener('click', () => {
-        userAct();
-        select(i, 'user');
-      }),
-    );
+
+    // Story taps: right half → next city, left half → previous.
+    const sideOf = (e: MouseEvent) => {
+      const r = stage.getBoundingClientRect();
+      return e.clientX >= r.left + r.width / 2 ? 1 : -1;
+    };
+    stage.addEventListener('click', (e) => {
+      const step = sideOf(e);
+      stopAuto();
+      select(cur + step, 'user', step);
+    });
+    stage.addEventListener('pointermove', (e) => {
+      const label = sideOf(e) > 0 ? 'NEXT →' : '← PREV';
+      if (stage.dataset.cursorLabel !== label) stage.dataset.cursorLabel = label;
+    });
 
     // ---------- landing (the portrait has flown into the sun) ----------
     function onLanding() {
-      if (!landed()) return window.clearTimeout(hintTimer);
-      if (tour.on || sweep.on) return;
-      if (tourPending && !remembered(TOUR_KEY)) return startTour();
-      newDay(false);
-      scheduleHint();
+      if (!landed() || auto.on) return;
+      if (!reduceMotion && !remembered(TOUR_KEY)) {
+        startAuto();
+        run();
+      }
     }
 
     ground.append(...handLine(samplePath(GROUND), { col: '#151515', w: 1.6, anim: false }, rng(31), 0));
-    // In screen px around (0, 0), pointing outward.
-    chevrons.forEach((g) => {
-      const s = Number(g.dataset.chevron);
-      g.append(...handLine(samplePath(`M ${-4 * s} -9 L ${4 * s} 0 L ${-4 * s} 9`), { col: '#BDBDBD', w: 1.2, anim: false }, rng(40 + s), 0));
-    });
     select(0, 'init');
-    update();
     new ResizeObserver(() => {
       const width = svg.clientWidth;
       if (!width) return;
       unit = 720 / width;
-      invalidate();
+      update();
     }).observe(svg);
+    new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView) run();
+    }).observe(root);
     new MutationObserver(onLanding).observe(root, { attributes: true, attributeFilter: ['data-landed'] });
     onLanding();
   });
