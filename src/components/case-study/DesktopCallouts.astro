@@ -1,0 +1,295 @@
+---
+/**
+ * Desktop counterpart of TaskCallouts: one task per block, a 16:10 screen clip with numbered dots,
+ * and notes in the side columns joined to their dots by elbow lines (notes push down instead of
+ * overlapping, so dense screens stay readable). Playback is click-to-play:
+ * It rests on the annotated key frame; Play runs it and it stops on that frame again at `hold`.
+ * Clicking a pill jumps to that step and shows only its callout. Reduced motion or no clip: the
+ * still with every callout. At 760px and below: no lines or columns; a numbered list under the screen.
+ * Pin x / y are % of the screen; side picks the note column.
+ */
+interface Pin { x: number; y: number; side: 'l' | 'r'; at?: number; t: string; d?: string }
+interface Task { title: string; note: string; src: string; alt: string; clip?: string; hold?: number; duration?: number; pins: Pin[] }
+interface Props { tasks: Task[]; width?: number; height?: number }
+const { tasks, width = 1440, height = 900 } = Astro.props;
+const vars = (p: Pin, i: number) => `--i:${i};--x:${p.x}%;--y:${p.y}%`;
+const mmss = (s?: number) => (s ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}` : '');
+---
+<div class="dc">
+  {tasks.map((task, ti) => (
+    <section class="dc-task">
+      <header class="dc-head">
+        <span class="dc-n">{String(ti + 1).padStart(2, '0')}</span>
+        <h3>{task.title}</h3>
+        <p>{task.note}</p>
+      </header>
+      <figure class:list={['dc-fig', { 'has-clip': task.clip, 'show-pins': !task.clip, 'no-video': !task.clip }]} data-dc data-hold={task.hold ?? ''}>
+        <div class="dc-stage">
+          <div class="dc-col l">
+            {task.pins.map((p, i) => p.side === 'l' && (
+              <div class="dc-note dc-c" data-i={i} data-y={p.y} style={vars(p, i)}><b><i>{i + 1}</i>{p.t}</b>{p.d && <span>{p.d}</span>}</div>
+            ))}
+          </div>
+          <div class="dc-screen-wrap">
+            <div class="dc-screen" style={`aspect-ratio:${width}/${height}`}>
+              <img src={task.src} alt={task.alt} loading="lazy" decoding="async" width={width} height={height} />
+              {task.clip && <video muted playsinline preload="none" poster={`${task.clip}.jpg`} aria-label={`${task.title} walkthrough`}><source src={`${task.clip}.mp4`} type="video/mp4" /></video>}
+            </div>
+            {task.clip && (
+              <button type="button" class="dc-cta" data-cursor-label="PLAY">
+                <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"/></svg>
+                <span>Play walkthrough</span>{task.duration && <span class="dc-dur">{mmss(task.duration)}</span>}
+              </button>
+            )}
+            {task.pins.map((p, i) => (
+              <span class="dc-dot dc-c" data-i={i} data-side={p.side} style={vars(p, i)} aria-hidden="true">{i + 1}</span>
+            ))}
+          </div>
+          <div class="dc-col r">
+            {task.pins.map((p, i) => p.side === 'r' && (
+              <div class="dc-note dc-c" data-i={i} data-y={p.y} style={vars(p, i)}><b><i>{i + 1}</i>{p.t}</b>{p.d && <span>{p.d}</span>}</div>
+            ))}
+          </div>
+          <svg class="dc-lines" aria-hidden="true">
+            {task.pins.map((p, i) => <path class="dc-line dc-c" data-i={i} style={vars(p, i)} />)}
+          </svg>
+        </div>
+        {task.clip && (
+          <div class="dc-bar" role="slider" tabindex="0" aria-label={`${task.title} clip position`} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-cursor-label="DRAG">
+            <div class="dc-track"><div class="dc-fill"></div></div>
+            {task.pins.map((p, i) => p.at !== undefined && <span class="dc-tick" data-at={p.at} title={`${i + 1} · ${p.t}`}></span>)}
+            {task.hold !== undefined && <span class="dc-key" data-at={task.hold} title="All callouts"></span>}
+          </div>
+        )}
+        <div class="dc-steps">
+          {task.clip && <button type="button" class="dc-toggle" aria-label="Pause" data-cursor-label="PAUSE"><svg class="i-pause" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor"/></svg><svg class="i-play" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"/></svg></button>}
+          <ol>
+            {task.pins.map((p, i) => (
+              <li><button type="button" class="dc-step" data-at={p.at ?? ''} data-placed="1" data-note={p.d ?? ''} disabled={!task.clip || p.at === undefined}><i>{i + 1}</i>{p.t}</button></li>
+            ))}
+          </ol>
+        </div>
+        <p class="dc-caption" aria-live="polite"></p>
+        <ol class="dc-list">
+          {task.pins.map((p) => <li><b>{p.t}</b>{p.d && <span> {p.d}</span>}</li>)}
+        </ol>
+      </figure>
+    </section>
+  ))}
+</div>
+
+<script>
+  // Lay out notes (push down on overlap) and draw elbow lines from each dot to its note.
+  const layout = (fig: HTMLElement) => {
+    const stage = fig.querySelector<HTMLElement>('.dc-stage')!;
+    const svg = fig.querySelector<SVGSVGElement>('.dc-lines')!;
+    const screen = fig.querySelector<HTMLElement>('.dc-screen')!;
+    const s = stage.getBoundingClientRect();
+    const sc = screen.getBoundingClientRect();
+    if (!sc.width) return;
+    // Narrow layout: columns and lines are hidden, notes become a list.
+    if (getComputedStyle(fig.querySelector('.dc-col')!).display === 'none') { stage.style.minHeight = ''; return; }
+    svg.setAttribute('viewBox', `0 0 ${s.width} ${s.height}`);
+    svg.setAttribute('width', String(s.width)); svg.setAttribute('height', String(s.height));
+    const paths = [...svg.querySelectorAll<SVGPathElement>('.dc-line')];
+    const dots = [...fig.querySelectorAll<HTMLElement>('.dc-dot')];
+    let need = 0;
+    (['l', 'r'] as const).forEach((side) => {
+      const col = fig.querySelector<HTMLElement>(`.dc-col.${side}`)!;
+      const c = col.getBoundingClientRect();
+      const notes = [...col.querySelectorAll<HTMLElement>('.dc-note')].sort((a, b) => +a.dataset.y! - +b.dataset.y!);
+      let floor = 0;
+      notes.forEach((n) => {
+        const i = Number(n.dataset.i);
+        const dot = dots[i].getBoundingClientRect();
+        const dy = dot.top + dot.height / 2 - s.top;
+        const top = Math.max(dy - 10 - (c.top - s.top), floor);
+        n.style.top = `${top}px`;
+        floor = top + n.offsetHeight + 12;
+        const ny = c.top - s.top + top + 10;
+        const dx = dot.left + dot.width / 2 - s.left;
+        const gap = side === 'l' ? (c.right - s.left + sc.left - s.left) / 2 : (sc.right - s.left + c.left - s.left) / 2;
+        const ex = side === 'l' ? c.right - s.left - 4 : c.left - s.left + 4;
+        paths[i].setAttribute('d', `M${dx},${dy} H${gap} V${ny} H${ex}`);
+      });
+      need = Math.max(need, floor);
+    });
+    // Let the row grow when pushed-down notes run past the screen.
+    stage.style.minHeight = need > sc.height ? `${need}px` : '';
+  };
+  document.querySelectorAll<HTMLElement>('[data-dc]').forEach((fig) => {
+    const run = () => layout(fig);
+    new ResizeObserver(run).observe(fig);
+    fig.querySelector('img')?.addEventListener('load', run);
+    run();
+  });
+</script>
+
+<script>
+  // Playback: each walkthrough rests on its fully annotated key frame (the still, every callout on).
+  // Play runs the clip from the start with callouts hidden; at `hold` it stops on the key frame
+  // again with every callout. Play after that finishes the clip and returns to rest.
+  // A step pill jumps to that moment, pauses, and shows only its callout.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-dc].has-clip').forEach((fig) => {
+    const video = fig.querySelector('video')!;
+    const btn = fig.querySelector<HTMLButtonElement>('.dc-toggle')!;
+    const cta = fig.querySelector<HTMLButtonElement>('.dc-cta');
+    const screenEl = fig.querySelector<HTMLElement>('.dc-screen')!;
+    const bar = fig.querySelector<HTMLElement>('.dc-bar')!;
+    const fill = fig.querySelector<HTMLElement>('.dc-fill')!;
+    const steps = [...fig.querySelectorAll<HTMLButtonElement>('.dc-step')];
+    const ats = steps.map((s) => parseFloat(s.dataset.at || ''));
+    const callouts = [...fig.querySelectorAll<HTMLElement>('.dc-c')];
+    const hold = parseFloat(fig.dataset.hold || '');
+    const rest = () => {
+      fig.classList.add('is-idle', 'show-pins'); fig.classList.remove('show-step');
+      callouts.forEach((c) => c.classList.remove('is-on'));
+      steps.forEach((s) => { s.classList.add('is-done'); s.classList.remove('is-current'); });
+      fill.style.width = '100%'; setBtn(false);
+    };
+    const setBtn = (playing: boolean) => {
+      btn.setAttribute('aria-label', playing ? 'Pause walkthrough' : 'Play walkthrough');
+      btn.dataset.cursorLabel = playing ? 'PAUSE' : 'PLAY';
+      fig.classList.toggle('is-paused', !playing);
+    };
+    if (isNaN(hold) || reduce) { fig.classList.add('no-video'); rest(); btn.hidden = !!reduce; if (cta) cta.hidden = true; return; }
+
+    let stoppedAtHold = false, dragging = false, raf = 0;
+    const placeMarks = () => {
+      const d = video.duration; if (!d) return;
+      fig.querySelectorAll<HTMLElement>('.dc-tick, .dc-key').forEach((m) => { m.style.left = `${(parseFloat(m.dataset.at!) / d) * 100}%`; });
+    };
+    const showStep = (i: number) => {
+      fig.classList.remove('show-pins', 'is-idle'); fig.classList.add('show-step');
+      callouts.forEach((c) => c.classList.toggle('is-on', Number(c.dataset.i) === i));
+    };
+    const hidePins = () => { fig.classList.remove('show-pins', 'show-step', 'is-idle'); callouts.forEach((c) => c.classList.remove('is-on')); };
+    const mark = () => {
+      const t = video.currentTime, d = video.duration || 1;
+      fill.style.width = `${(t / d) * 100}%`;
+      bar.setAttribute('aria-valuenow', String(Math.round((t / d) * 100)));
+      if (fig.classList.contains('is-idle')) return;
+      let cur = -1; ats.forEach((a, i) => { if (!isNaN(a) && t >= a - 0.05) cur = i; });
+      const all = fig.classList.contains('show-pins');
+      steps.forEach((s, i) => { s.classList.toggle('is-current', !all && i === cur); s.classList.toggle('is-done', all || i < cur); });
+    };
+    const loop = () => {
+      if (!video.paused && !stoppedAtHold && video.currentTime >= hold) {
+        video.pause(); stoppedAtHold = true;
+        fig.classList.add('show-pins'); fig.classList.remove('show-step'); setBtn(false);
+      }
+      mark(); raf = requestAnimationFrame(loop);
+    };
+    const play = () => {
+      if (fig.classList.contains('is-idle')) { video.currentTime = 0; stoppedAtHold = false; }
+      hidePins(); setBtn(true);
+      video.play().catch(() => { fig.classList.add('no-video'); rest(); });
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+    };
+    const pause = () => { video.pause(); setBtn(false); };
+    const seek = (t: number) => { video.currentTime = Math.max(0, Math.min(t, (video.duration || t) - 0.05)); stoppedAtHold = video.currentTime >= hold; };
+
+    const toggle = () => { video.preload = 'auto'; if (video.paused) play(); else pause(); };
+    btn.addEventListener('click', toggle);
+    cta?.addEventListener('click', toggle);
+    // The whole screen plays/pauses too; it shows the PLAY / PAUSE cursor label.
+    screenEl.dataset.cursorLabel = 'PLAY';
+    screenEl.addEventListener('click', toggle);
+    video.addEventListener('play', () => { screenEl.dataset.cursorLabel = 'PAUSE'; });
+    video.addEventListener('pause', () => { screenEl.dataset.cursorLabel = 'PLAY'; });
+    video.addEventListener('ended', () => { cancelAnimationFrame(raf); rest(); });
+    video.addEventListener('loadedmetadata', placeMarks);
+    video.addEventListener('error', () => { fig.classList.add('no-video'); rest(); });
+    steps.forEach((s, i) => s.addEventListener('click', () => {
+      if (isNaN(ats[i])) return;
+      video.preload = 'auto'; video.pause(); seek(ats[i] + 0.15); setBtn(false);
+      showStep(i); steps.forEach((x, j) => { x.classList.toggle('is-current', j === i); x.classList.toggle('is-done', j < i); });
+    }));
+    const toTime = (e: PointerEvent) => { const r = bar.getBoundingClientRect(); return ((e.clientX - r.left) / r.width) * (video.duration || 0); };
+    bar.addEventListener('pointerdown', (e) => { dragging = true; bar.setPointerCapture(e.pointerId); video.pause(); setBtn(false); hidePins(); seek(toTime(e)); mark(); fig.classList.add('is-scrub'); });
+    bar.addEventListener('pointermove', (e) => { if (dragging) { seek(toTime(e)); mark(); } });
+    const endDrag = () => { if (!dragging) return; dragging = false; fig.classList.remove('is-scrub'); };
+    bar.addEventListener('pointerup', endDrag);
+    bar.addEventListener('pointercancel', endDrag);
+    bar.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      e.preventDefault(); video.pause(); setBtn(false); hidePins(); seek(video.currentTime + (e.key === 'ArrowRight' ? 1 : -1)); mark();
+    });
+    new IntersectionObserver(([e]) => { if (!e.isIntersecting && !video.paused) pause(); }, { threshold: 0.2 }).observe(fig);
+    if (video.readyState >= 1) placeMarks();
+    rest();
+  });
+</script>
+
+<style>
+  .dc { display: grid; gap: var(--space-block); margin-top: 40px; }
+  .dc-head { max-width: 60ch; }
+  .dc-n { font: 500 12px/1.4 var(--font-mono, ui-monospace, monospace); letter-spacing: .06em; color: var(--cs-accent-text, #4338CA); }
+  .dc-head h3 { margin: 6px 0 0; font-size: 24px; font-weight: 600; color: #111; }
+  .dc-head p { margin: 8px 0 0; font-size: 17px; line-height: 1.6; color: #3a3a3a; }
+
+  .dc-fig { margin: 32px 0 0; display: grid; row-gap: 16px; }
+  .dc-stage { --gap: 36px; position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3.6fr) minmax(0, 1fr); column-gap: var(--gap); align-items: start; }
+  .dc-col { position: relative; z-index: 2; }
+  .dc-screen-wrap { position: relative; }
+  .dc-screen { position: relative; border-radius: 10px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 10px 28px rgba(17,24,39,.08); background: #fff; }
+  .dc-screen img, .dc-screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .no-video .dc-screen video, .is-idle .dc-screen video { visibility: hidden; }
+
+  .dc-screen { cursor: pointer; }
+  .dc-cta { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 4; display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 16px; border: 0; border-radius: 999px; background: var(--cs-accent, #4F46E5); color: #fff; font-size: 15px; font-weight: 500; white-space: nowrap; cursor: pointer; box-shadow: 0 6px 20px rgba(17,24,39,.22); transition: opacity .2s, transform .2s; }
+  .dc-cta:hover { transform: translateX(-50%) scale(1.04); }
+  .dc-cta:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
+  .dc-dur { font: 500 12px/1 var(--font-mono, ui-monospace, monospace); opacity: .8; }
+  .dc-fig:not(.is-paused) .dc-cta { opacity: 0; pointer-events: none; }
+  .is-idle .dc-bar { visibility: hidden; }
+  @media (prefers-reduced-motion: reduce) { .dc-cta { transition: none; } .dc-cta:hover { transform: translateX(-50%); } }
+  .dc-lines { position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 1; }
+  .dc-line { fill: none; stroke: var(--cs-accent, #4F46E5); stroke-width: 1.25; }
+  .dc-dot { position: absolute; left: var(--x); top: var(--y); z-index: 3; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 999px; background: var(--cs-accent, #4F46E5); color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 3px #fff; }
+  .dc-note { position: absolute; top: 0; width: 100%; font-size: 13.5px; line-height: 1.45; color: #555; }
+  .dc-col.l .dc-note { right: 0; text-align: right; }
+  .dc-col.r .dc-note { left: 0; }
+  .dc-note b { display: block; font-size: 14.5px; font-weight: 600; color: #111; }
+  .dc-note b i { font-style: normal; font: 600 11px/1 var(--font-mono, ui-monospace, monospace); color: var(--cs-accent-text, #4338CA); margin-right: 6px; }
+  .dc-note span { display: block; margin-top: 2px; }
+
+  .dc-c { opacity: 0; transition: opacity .3s ease; }
+  .show-pins .dc-c { opacity: 1; transition-delay: calc(var(--i) * .3s + .15s); }
+  .show-step .dc-c.is-on { opacity: 1; transition-delay: .1s; }
+
+  .dc-bar { width: calc(3.6 / 5.6 * (100% - 72px)); justify-self: center; position: relative; height: 18px; margin-top: 4px; cursor: pointer; touch-action: none; outline: none; }
+  .dc-track { position: absolute; left: 0; right: 0; top: 8px; height: 2px; border-radius: 2px; background: #E6E6E4; overflow: hidden; }
+  .dc-fill { height: 100%; width: 0; background: var(--cs-accent, #4F46E5); }
+  .dc-bar:hover .dc-track, .is-scrub .dc-track { top: 7px; height: 4px; }
+  .dc-tick { position: absolute; top: 5px; width: 2px; height: 8px; margin-left: -1px; border-radius: 1px; background: #9CA3AF; pointer-events: none; }
+  .dc-key { position: absolute; top: 4px; width: 10px; height: 10px; margin-left: -5px; border-radius: 999px; background: #fff; border: 2px solid var(--cs-accent, #4F46E5); box-sizing: border-box; pointer-events: none; }
+  .dc-bar:focus-visible { outline: 2px solid var(--cs-accent, #4F46E5); outline-offset: 2px; border-radius: 4px; }
+
+  .dc-steps { display: flex; justify-content: center; align-items: center; gap: 12px; }
+  .dc-steps ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .dc-step { height: 32px; padding: 0 12px 0 6px; display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #E6E6E4; background: #fff; font-size: 13px; color: #9A9A98; cursor: pointer; transition: color .2s, border-color .2s, background .2s; }
+  .dc-step i { width: 20px; height: 20px; border-radius: 999px; background: #EFEFED; color: #8A8A8A; font-size: 11px; font-style: normal; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: background .2s, color .2s; }
+  .dc-step.is-done { color: #3a3a3a; }
+  .dc-step.is-done i { background: var(--cs-accent-tint, #EEF2FF); color: var(--cs-accent-text, #4338CA); }
+  .dc-step.is-current { color: #111; border-color: var(--cs-accent, #4F46E5); background: var(--cs-accent-tint, #EEF2FF); }
+  .dc-step.is-current i { background: var(--cs-accent, #4F46E5); color: #fff; }
+  .dc-step:disabled { cursor: default; }
+  .dc-step:not(:disabled):hover { border-color: #9CA3AF; }
+  .dc-toggle { flex: none; width: 32px; height: 32px; border-radius: 999px; border: 1px solid #E6E6E4; background: #fff; color: #555; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .dc-toggle:hover { border-color: #9CA3AF; color: #111; }
+  .dc-toggle .i-play, .is-paused .dc-toggle .i-pause { display: none; }
+  .is-paused .dc-toggle .i-play { display: block; }
+  .dc-caption { margin: 0; min-height: 21px; text-align: center; font-size: 14px; color: #555; }
+  .dc-list { display: none; }
+
+  @media (max-width: 760px) {
+    .dc-stage { grid-template-columns: 1fr; }
+    .dc-col, .dc-lines { display: none; }
+    .dc-bar { width: 100%; }
+    .dc-steps ol, .dc-caption { display: none; }
+    .dc-list { display: grid; gap: 12px; margin: 0; padding-left: 22px; list-style: decimal; font-size: 14px; line-height: 1.5; color: #555; }
+    .dc-list b { color: #111; }
+  }
+</style>

@@ -1,0 +1,28 @@
+{
+  "rows": [
+    {
+      "step": "Timeline",
+      "cells": [
+        "A standard table of processing times, looked up by hand.",
+        "An estimate from similar past permits, by permit type and ZIP code.",
+        "A personal estimate by review stage, built from the applicant’s own record, with its basis one click away."
+      ]
+    },
+    {
+      "step": "Form",
+      "cells": [
+        "A blank form, typed by hand.",
+        "A chatbot answers questions while the applicant types.",
+        "AI fills the form from the uploaded files. Every filled field is marked and editable."
+      ]
+    },
+    {
+      "step": "Review",
+      "cells": [
+        "A self-check checklist before submitting.",
+        "AI flags issues in the application.",
+        "AI flags issues and cites the municipal code behind each one, with the source text on expand."
+      ]
+    }
+  ]
+}

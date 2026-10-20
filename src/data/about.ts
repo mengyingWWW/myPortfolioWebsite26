@@ -28,17 +28,15 @@ export type SundialStop = {
   place: string;
   /** Degrees north; sets the height of the sun's day arc. */
   latitude: number;
-  /**
-   * Where the sun sits left–right, as a time of day on the arc (12 = centre, earlier = left). Its height is
-   * always the place's noon sun altitude, 90° − latitude.
-   */
-  hour: number;
+  /** The sun sweeps this window of the equinox day (solar time, hours) while the place is shown. */
+  hours: [number, number];
+  /** The scene's accessible name. */
+  sceneLabel: string;
   /** Shown under the city selector; two or three lines at most. */
   caption: string;
 };
 
 export const sundial = {
-  ariaLabel: 'Hand-drawn sketch of the selected city with its sun and shadow',
   storyLabel: 'Places I have lived',
   /** Played in this order by the story. */
   stops: [
@@ -46,8 +44,8 @@ export const sundial = {
       key: 'benxi',
       place: 'Benxi',
       latitude: 41.3,
-      // Behind the first chimney's smoke.
-      hour: 13.57,
+      hours: [13.0, 16.8],
+      sceneLabel: 'Hand-drawn sketch of Benxi: hills, smoking chimneys and a stopped clock on the factory, with the sun and their shadows',
       caption:
         'Home, where time seems to pause. A quiet place I carry with me, and the reason I design for people, not just products.',
     },
@@ -55,7 +53,8 @@ export const sundial = {
       key: 'beijing',
       place: 'Beijing',
       latitude: 39.9,
-      hour: 12,
+      hours: [7.6, 10.8],
+      sceneLabel: 'Line sketch of a Beijing hutong wall with a bicycle parked in front.',
       caption:
         'In architecture, I kept looking past the walls, to the people moving between them. Their stories drew me into human factors research, and then to HCI.',
     },
@@ -63,7 +62,8 @@ export const sundial = {
       key: 'singapore',
       place: 'Singapore',
       latitude: 1.3,
-      hour: 12.0,
+      hours: [10.2, 13.8],
+      sceneLabel: 'Hand-drawn sketch of Singapore: a tower and a palm tree with a coconut, under the midday sun',
       caption:
         'Under an almost vertical sun, I designed a space that never touches the ground, and began to imagine spaces that need no ground at all.',
     },
@@ -71,8 +71,8 @@ export const sundial = {
       key: 'seattle',
       place: 'Seattle',
       latitude: 47.6,
-      // On the mountain's peak.
-      hour: 11.92,
+      hours: [13.6, 17.2],
+      sceneLabel: 'Hand-drawn sketch of Seattle: a mountain and pine trees with a crow on a tree, in the late-afternoon sun',
       caption:
         'Leaf shadows drift across my window as I learn to design the spaces people now spend their days in: the ones on their screens.',
     },

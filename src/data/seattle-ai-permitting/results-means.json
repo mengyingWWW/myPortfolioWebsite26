@@ -1,0 +1,40 @@
+{
+  "_source": "HCDE 516 final presentation (Dec 4, 2025): estimated marginal means with 95% CIs, one-way ANOVAs and Tukey post-hoc tests, run in R. n = 14 per version (4 architects + 10 residents).",
+  "versions": [
+    { "id": "v1", "short": "V1", "label": "No AI" },
+    { "id": "v2", "short": "V2", "label": "Partial AI" },
+    { "id": "v3", "short": "V3", "label": "Full AI" }
+  ],
+  "panels": [
+    {
+      "title": "Usability",
+      "stat": "F(2, 39) = 10.73, p < .001, η² = .35",
+      "means": [
+        { "mean": 2.71, "lo": 2.34, "hi": 3.09 },
+        { "mean": 3.64, "lo": 3.27, "hi": 4.02 },
+        { "mean": 3.86, "lo": 3.48, "hi": 4.23 }
+      ],
+      "p": { "v1v2": "p = .003", "v2v3": "n.s. (p = .69)" }
+    },
+    {
+      "title": "Trust",
+      "stat": "F(2, 39) = 26.03, p < .001, η² = .57",
+      "means": [
+        { "mean": 2.67, "lo": 2.39, "hi": 2.94 },
+        { "mean": 3.71, "lo": 3.44, "hi": 3.99 },
+        { "mean": 3.98, "lo": 3.70, "hi": 4.25 }
+      ],
+      "p": { "v1v2": "p < .001", "v2v3": "n.s. (p = .37)" }
+    },
+    {
+      "title": "Performance expectations",
+      "stat": "F(2, 39) = 21.94, p < .001, η² = .53",
+      "means": [
+        { "mean": 2.21, "lo": 1.89, "hi": 2.54 },
+        { "mean": 3.32, "lo": 2.99, "hi": 3.65 },
+        { "mean": 3.66, "lo": 3.33, "hi": 3.99 }
+      ],
+      "p": { "v1v2": "p < .001", "v2v3": "n.s. (p = .31)" }
+    }
+  ]
+}

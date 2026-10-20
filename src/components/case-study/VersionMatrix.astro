@@ -1,0 +1,115 @@
+---
+/**
+ * Controlled comparison: the same steps (rows) across versions (columns), so the only thing that
+ * changes along a row is the level of AI. Column chips use the same neutral → accent ramp as
+ * ResultsBoxPlot, so a version reads the same in both figures. Real table semantics; on narrow
+ * screens each row stacks into a card.
+ */
+interface Props {
+  versions: { id: string; short: string; label: string }[];
+  rows: { step: string; cells: string[] }[];
+  caption?: string;
+}
+const { versions, rows, caption } = Astro.props;
+---
+
+<figure class="vm">
+  <table>
+    {caption && <caption class="sr-only">{caption}</caption>}
+    <thead>
+      <tr>
+        <td></td>
+        {versions.map((v) => (
+          <th scope="col" class={`vm-head vm-${v.id}`}>
+            <span class="chip" aria-hidden="true"></span>
+            <span class="short">{v.short}</span>
+            <span class="label">{v.label}</span>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <th scope="row" class="step">{r.step}</th>
+          {r.cells.map((c, i) => (
+            <td class={`vm-${versions[i].id}`} data-version={`${versions[i].short} · ${versions[i].label}`}>{c}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  th, td {
+    box-sizing: border-box;
+    text-align: left;
+    vertical-align: top;
+    padding: 16px 16px 16px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+  thead td, thead th { border-bottom: 1px solid var(--color-ink); padding-top: 0; }
+  thead td { width: 22%; }
+  .vm-head { display: table-cell; }
+  .vm-head .chip {
+    display: block;
+    width: 28px;
+    height: 10px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+  }
+  .vm-v1 .chip { background: #c9c9c5; }
+  .vm-v2 .chip { background: color-mix(in srgb, var(--cs-accent, #4f46e5) 55%, white); }
+  .vm-v3 .chip { background: var(--cs-accent, #4f46e5); }
+  .short { display: block; font-family: var(--font-mono); font-size: 13px; color: var(--color-ink); }
+  .label { display: block; font-family: var(--font-mono); font-size: 13px; color: var(--color-meta); }
+  .step {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+  }
+  tbody td.vm-v1 { color: var(--color-meta); }
+  figcaption { margin-top: 12px; font-size: 14px; line-height: 1.5; color: var(--color-meta); max-width: 680px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 640px) {
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    table, tbody, tr, th, td { display: block; width: 100%; }
+    tr { padding: 20px 0; border-bottom: 1px solid var(--color-line); }
+    tbody th.step { border: 0; padding: 0 0 8px; }
+    tbody td { border: 0; padding: 8px 0 8px 40px; position: relative; }
+    tbody td::before {
+      content: attr(data-version);
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--color-meta);
+      margin-bottom: 2px;
+    }
+    tbody td::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 13px;
+      width: 28px;
+      height: 10px;
+      border-radius: 2px;
+    }
+    tbody td.vm-v1::after { background: #c9c9c5; }
+    tbody td.vm-v2::after { background: color-mix(in srgb, var(--cs-accent, #4f46e5) 55%, white); }
+    tbody td.vm-v3::after { background: var(--cs-accent, #4f46e5); }
+  }
+</style>

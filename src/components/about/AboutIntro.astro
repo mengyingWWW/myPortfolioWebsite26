@@ -2,8 +2,9 @@
 /**
  * About hero as a two-act, scroll-driven sequence inside a sticky stage:
  *   Act 1 — portrait + large headline.
- *   Act 2 — the headline fades away and the portrait shrinks and flies into the sun of the
- *           hand-drawn sundial, its photo fading to solid black, while the bio and the sundial fade in.
+ *   Act 2 — the headline fades away and the portrait shrinks and flies into the black dot of the
+ *           hand-drawn sundial's first picture, its photo fading to solid black, while the bio and the
+ *           sundial fade in.
  * Everything is scrubbed by scroll progress p (0 → 1 over the first 100vh of the section).
  * The stage is 80px shorter than the viewport, so the next section peeks in once it releases.
  * With reduced motion it's a plain static layout instead.
@@ -213,7 +214,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
 </style>
 
 <script>
-  /** The portrait has shrunk into the sun; the real sun takes over (and the sundial's tour can start). */
+  /** The portrait has shrunk into the dot; the real dot takes over (and the sundial's story can start). */
   const LAND_AT = 0.85;
   /** Scrolling this far past the end of the sequence hides the bottom hint. */
   const NEXT_HINT_SCROLL_OFF = 40;
@@ -231,7 +232,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     const bio = q<HTMLElement>('[data-bio]');
     const block = q<HTMLElement>('[data-sundial-block]');
     const sundial = q<HTMLElement>('[data-sundial]');
-    const sunDot = q<SVGCircleElement>('[data-sun-dot]');
+    const dot = q<SVGCircleElement>('[data-dot]');
     const [moreHint, nextHint] = [...seq.querySelectorAll<HTMLElement>('[data-scroll-hint]')].map((a) => a.parentElement!);
     const end = q<HTMLElement>('#about-more');
 
@@ -250,9 +251,9 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
       from.y = portrait.offsetTop + from.size / 2;
     }
 
-    // Where the sun's dot currently is on screen, including Act 2's own transform.
-    function sunOnStage() {
-      const r = sunDot.getBoundingClientRect();
+    // Where the dot currently is on screen, including Act 2's own transform.
+    function dotOnStage() {
+      const r = dot.getBoundingClientRect();
       if (!r.width) return null;
       const s = stage.getBoundingClientRect();
       return { x: r.left + r.width / 2 - s.left, y: r.top + r.height / 2 - s.top, size: r.width };
@@ -282,13 +283,13 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
       block.style.opacity = String(sundialIn);
       block.style.transform = `translateY(${16 * (1 - sundialIn)}px)`;
 
-      // FLIP: the portrait keeps its Act 1 layout box and is transformed onto the sun, shrinking to its size.
+      // FLIP: the portrait keeps its Act 1 layout box and is transformed onto the dot, shrinking to its size.
       const landed = p >= LAND_AT;
-      const sun = sunOnStage();
-      if (sun && !landed) {
+      const target = dotOnStage();
+      if (target && !landed) {
         const fly = smooth(range(p, 0, LAND_AT));
-        const scale = 1 + (sun.size / from.size - 1) * fly;
-        portrait.style.transform = `translate(${(sun.x - from.x) * fly}px, ${(sun.y - from.y) * fly}px) scale(${scale})`;
+        const scale = 1 + (target.size / from.size - 1) * fly;
+        portrait.style.transform = `translate(${(target.x - from.x) * fly}px, ${(target.y - from.y) * fly}px) scale(${scale})`;
         portrait.style.visibility = '';
       } else {
         portrait.style.visibility = landed ? 'hidden' : '';

@@ -23,7 +23,7 @@ const descriptionId = `work-card-${project.id}-description`;
 // Card width = half the container (max 1600px, 40px side padding) minus half the 40px gutter.
 // Zooming the cover changes its size on screen, so ask the browser for a proportionally sized file.
 const px = (n: number) => Math.round(n);
-const coverSizes = `(min-width: 1600px) ${px(740 * coverScale)}px, calc(${px(50 * coverScale)}vw - ${px(60 * coverScale)}px)`;
+const coverSizes = `(max-width: 767px) calc(${px(100 * coverScale)}vw - ${px(40 * coverScale)}px), (min-width: 1600px) ${px(740 * coverScale)}px, calc(${px(50 * coverScale)}vw - ${px(60 * coverScale)}px)`;
 // Scaled from the top-left corner, a focus point sits at focus × scale; shift it to the middle.
 const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
 ---
@@ -70,7 +70,7 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
     </div>
   </div>
   <div class="mt-4 flex items-baseline justify-between gap-6">
-    <h3 class="line-clamp-2 text-[24px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111]">{title}</h3>
+    <h3 class="line-clamp-2 text-[24px] leading-[1.2] font-semibold tracking-[-0.015em] text-[#111] mobile:text-[22px]">{title}</h3>
     <p class="shrink-0 font-mono text-[13px] text-meta" aria-hidden="true">{year}</p>
   </div>
 </a>
@@ -88,6 +88,30 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
     height: 20px;
     overflow: hidden;
     line-height: 20px;
+  }
+  /* Phones: up to two lines, slightly smaller. Every item carries its divider, and the one at the start of
+     each line falls in the clipped strip on the left. */
+  @media (width < 768px) {
+    :global(html[data-responsive]) .work-card-meta {
+      height: auto;
+      max-height: 40px;
+      margin-left: -17px;
+      clip-path: inset(0 0 0 17px);
+      font-size: 12px;
+    }
+    :global(html[data-responsive]) .work-card-meta li {
+      margin-left: 17px;
+    }
+    :global(html[data-responsive]) .work-card-meta li::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: -9px;
+      width: 1px;
+      height: 11px;
+      background: #d4d4d4;
+      transform: translateY(-50%);
+    }
   }
   .work-card-meta li {
     position: relative;

@@ -22,6 +22,8 @@ interface Props {
   noCanonical?: boolean;
   /** Social share card (Open Graph / Twitter). Defaults to the homepage card. */
   share?: { title?: string; description?: string; image?: string; imageAlt?: string };
+  /** Lay the page out at the device's width (phones get the `mobile:` styles) instead of a fixed 1200px. */
+  responsive?: boolean;
 }
 
 const {
@@ -32,6 +34,7 @@ const {
   noindex = false,
   noCanonical = false,
   share = {},
+  responsive = false,
 } = Astro.props;
 const pageTitle = title ? `${title} — ${site.fullName}` : site.title;
 // Always with a trailing slash, matching the sitemap's URLs.
@@ -44,10 +47,10 @@ const shareImageAlt = share.imageAlt ?? site.shareImage.alt;
 ---
 
 <!doctype html>
-<html lang="en" style={`--shadow-alpha: ${SHADOW_ALPHA}`}>
+<html lang="en" style={`--shadow-alpha: ${SHADOW_ALPHA}`} data-responsive={responsive ? '' : undefined}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=1200" />
+    <meta name="viewport" content={responsive ? 'width=device-width, initial-scale=1' : 'width=1200'} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />

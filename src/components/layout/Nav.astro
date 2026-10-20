@@ -23,10 +23,10 @@ const isCurrent = (href: string) => {
 
 <header class="nav text-glow sticky top-0 z-20" data-nav-overlay={overlay ? '' : undefined}>
   <Container as="nav" class:list={['flex h-20 items-center justify-between', animateIn && 'enter [--enter:0]']}>
-    <a href="/" class="flex items-center" aria-label="Mengying Wang — Home">
+    <a href="/" class="flex items-center mobile:min-h-11 mobile:min-w-11" aria-label="Mengying Wang — Home">
       <MWLogo variant="mark" theme="light" />
     </a>
-    <ul class="flex items-center gap-14 text-xs font-medium tracking-wider uppercase">
+    <ul class="flex items-center gap-14 text-xs font-medium tracking-wider uppercase mobile:gap-6">
       {
         navLinks.map((link) => (
           <li>
@@ -80,6 +80,16 @@ const isCurrent = (href: string) => {
      label only, so the ↗ on RESUME is not covered. */
   .nav-link {
     text-decoration: none;
+  }
+  /* Phones: 44px tap targets. */
+  @media (width < 768px) {
+    :global(html[data-responsive]) .nav-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 44px;
+    }
   }
   .nav-link:focus-visible {
     outline: 2px solid #111;

@@ -4,17 +4,23 @@
  * stands on a hand-drawn ground line; its strokes cast a hatched shadow from that place's own light moment
  * (latitude + time of day on the equinox arc).
  * - Story bar above the scene: one segment per city, with its name. Buttons; arrow keys move between them.
- * - Tapping the right half of the scene goes to the next city, the left half to the previous one (wrapping).
- * - On a city change the sun flies along the arcs to its new spot (latitude and time together) and the
- *   shadow follows; while on a city the light only breathes (a slow ±0.12h drift).
- * - Auto-play once per session (sessionStorage "tourSeen"): when the sun is first shown, ~4.2s per city
+ * - Tapping the right half of the scene goes to the next city, the left half to the previous one (wrapping);
+ *   hand-drawn ‹ › buttons beside the scene do the same. The › nudges once as a hint when the story ends.
+ * - A hand-drawn ink dot is part of each picture: a stopped clock, a bicycle's front hub, a coconut, a crow. On a
+ *   city change it hops to its place in the new picture, along an arc, with a small squash as it lands.
+ * - Once it lands, the dot's parts fade in (the clock's white hands; the crow's head, beak, tail and legs, whose
+ *   head tilts once), and fade out before the next hop.
+ * - The sun (an outline) moves every time: it sweeps the city's own window of the day over ~4s while the shadow
+ *   follows, then breathes (a slow ±0.1h drift).
+ * Ported from about-sketch-sundial-v7.html.
+ * - Auto-play once per session (sessionStorage "tourSeen"): when the dot is first shown, ~5.4s per city
  *   while its segment fills; it stops at Seattle or on any input.
- * - awaitLanding: the sun stays hidden (and auto-play waits) until the page sets data-landed, i.e. the
- *   portrait has flown into it.
- * Reduced motion: no auto-play, drift, flight or draw-in.
+ * - awaitLanding: the dot stays hidden (and the sun and auto-play wait) until the page sets data-landed, i.e.
+ *   the portrait has flown into it.
+ * Reduced motion: no auto-play, sweep, drift, hop or draw-in; the dot and the sun jump.
  */
 import { sundial } from '@/data/about';
-import { citySketches } from '@/data/citySketches';
+import { cityDotParts, cityDots, citySketches } from '@/data/citySketches';
 
 interface Props {
   class?: string;
@@ -27,10 +33,13 @@ const latLine = (stop: (typeof stops)[number]) => `${stop.latitude.toFixed(1)}°
 const clientStops = stops.map((stop) => ({
   place: stop.place,
   latitude: stop.latitude,
-  hour: stop.hour,
+  hours: stop.hours,
   latLine: latLine(stop),
   caption: stop.caption,
   strokes: citySketches[stop.key],
+  dot: cityDots[stop.key],
+  parts: cityDotParts[stop.key] ?? '',
+  sceneLabel: stop.sceneLabel,
 }));
 ---
 
@@ -61,7 +70,7 @@ const clientStops = stops.map((stop) => ({
 
   <!-- Pointer only: the story bar is the keyboard route. -->
   <div class="sks-stage" data-cursor-label="NEXT →" data-scene>
-    <svg class="sks-svg" viewBox="0 0 720 300" role="img" aria-label={sundial.ariaLabel} data-svg>
+    <svg class="sks-svg" viewBox="0 0 720 300" role="img" aria-label={stops[0].sceneLabel} data-svg>
       <defs>
         <filter id="sks-ink" x="-5%" y="-5%" width="110%" height="110%">
           <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="4" result="n" />
@@ -76,17 +85,25 @@ const clientStops = stops.map((stop) => ({
         </filter>
       </defs>
       <g class="sks-shadow" filter="url(#sks-hatch-ink)" data-shadow></g>
-      <!-- The sun, behind the drawing: white-filled silhouettes hide it and knocked-out lines cross it. In screen
-           px (the group is scaled to cancel the drawing's scale); the dot is in the scene's ink, with the same
-           ink filter, so its edge isn't a perfect vector circle. -->
-      <g class="sks-sun" data-sun>
-        <circle r="18" fill="none" stroke="#E6E6E6" stroke-width="1" data-halo2></circle>
-        <circle r="11" fill="none" stroke="#CFCFCF" stroke-width="1" data-halo></circle>
-        <circle r="6" fill="#151515" filter="url(#sks-ink)" data-sun-dot></circle>
-      </g>
       <g filter="url(#sks-ink)" data-art></g>
       <g filter="url(#sks-ink)" data-ground></g>
+      <g class="sks-sun" data-sun>
+        <circle r="20" fill="none" stroke="#EDEDED" stroke-width="1" data-halo2></circle>
+        <circle r="13" fill="none" stroke="#DADADA" stroke-width="1" data-halo></circle>
+        <circle r="8" fill="#fff" stroke="#111" stroke-width="1.4"></circle>
+      </g>
+      <!-- The ink dot, part of each picture; the portrait flies into it. Its blob and outline are drawn by the script. -->
+      <g class="sks-dot" filter="url(#sks-ink)" data-dot-g>
+        <g data-dot></g>
+        <g class="sks-dot-parts" opacity="0" data-dot-parts></g>
+      </g>
     </svg>
+    <button type="button" class="sks-nav prev" aria-label="Previous place" data-cursor-label="← PREV" data-nav="-1">
+      <svg class="sks-chevron" width="14" height="28" viewBox="0 0 14 28" aria-hidden="true"><g filter="url(#sks-ink)" data-chevron="-1"></g></svg>
+    </button>
+    <button type="button" class="sks-nav next" aria-label="Next place" data-cursor-label="NEXT →" data-nav="1">
+      <svg class="sks-chevron" width="14" height="28" viewBox="0 0 14 28" aria-hidden="true"><g filter="url(#sks-ink)" data-chevron="1"></g></svg>
+    </button>
   </div>
 
   <!-- Every caption sits invisibly in the same cell, so the box always has the longest one's height. -->
@@ -160,9 +177,68 @@ const clientStops = stops.map((stop) => ({
   }
 
   .sks-stage {
+    position: relative;
     width: min(100%, var(--sundial-max-width, 760px));
     margin-top: 40px;
     cursor: pointer;
+  }
+
+  /* ‹ › beside the scene: 44px hit areas, each chevron 24px outside the drawing's edge. */
+  .sks-nav {
+    position: absolute;
+    top: 50%;
+    width: 44px;
+    height: 44px;
+    margin-top: -22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bdbdbd;
+    cursor: pointer;
+    transition: color 150ms ease;
+  }
+  .sks-nav.prev {
+    left: calc(-24px - 7px - 22px);
+  }
+  .sks-nav.next {
+    right: calc(-24px - 7px - 22px);
+  }
+  .sks-chevron {
+    display: block;
+    overflow: visible;
+    transition: transform 150ms ease;
+  }
+  .sks-nav:is(:hover, :focus-visible),
+  .sks[data-hover-side='prev'] .sks-nav.prev,
+  .sks[data-hover-side='next'] .sks-nav.next {
+    color: #111;
+  }
+  .sks-nav.prev:is(:hover, :focus-visible) .sks-chevron {
+    transform: translateX(-3px);
+  }
+  .sks-nav.next:is(:hover, :focus-visible) .sks-chevron {
+    transform: translateX(3px);
+  }
+  .sks-nav:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 4px;
+  }
+  /* Narrow windows: below the scene, at its two ends, instead of over the drawing. */
+  @media (max-width: 600px) {
+    .sks-stage {
+      padding-bottom: 48px;
+    }
+    .sks-nav {
+      top: auto;
+      bottom: 0;
+      margin-top: 0;
+    }
+    .sks-nav.prev {
+      left: -15px;
+    }
+    .sks-nav.next {
+      right: -15px;
+    }
   }
 
   .sks-svg {
@@ -177,9 +253,13 @@ const clientStops = stops.map((stop) => ({
     transition: opacity 0.4s ease;
   }
 
-  /* Until the portrait has flown into it, the sun isn't there. */
+  .sks-dot-parts {
+    transition: opacity 0.35s;
+  }
+
+  /* Until the portrait has flown into it, the dot isn't there. */
   @media (prefers-reduced-motion: no-preference) {
-    .sks[data-await-landing]:not([data-landed]) .sks-sun {
+    .sks[data-await-landing]:not([data-landed]) .sks-dot {
       visibility: hidden;
     }
   }
@@ -237,7 +317,13 @@ const clientStops = stops.map((stop) => ({
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .sks-nav .sks-chevron {
+      transform: none !important;
+    }
     .sks-shadow,
+    .sks-dot-parts,
+    .sks-nav,
+    .sks-chevron,
     .sks-story-name,
     .sks-caption-cell {
       transition: none;
@@ -250,8 +336,8 @@ const clientStops = stops.map((stop) => ({
 </style>
 
 <script>
-  type Stroke = { d: string; weight?: 'thin' | 'light'; noShadow?: boolean; cover?: string; knockout?: boolean };
-  type Stop = { place: string; latitude: number; hour: number; latLine: string; caption: string; strokes: Stroke[] };
+  type Stroke = { d: string; weight?: 'thin' | 'light'; noShadow?: boolean };
+  type Stop = { place: string; latitude: number; hours: [number, number]; latLine: string; caption: string; strokes: Stroke[]; dot: [number, number]; parts: string; sceneLabel: string };
   type Pt = [number, number];
 
   const NS = 'http://www.w3.org/2000/svg';
@@ -264,17 +350,28 @@ const clientStops = stops.map((stop) => ({
   /** The day arc runs from 06:00 at XL to 18:00 at XR. */
   const XL = 70;
   const XR = 650;
-  /** The sun's flight to a new city's moment. */
-  const FLY_MS = 1300;
-  /** While on a city the light breathes: ± this many hours, on a slow sine. */
-  const DRIFT_HOURS = 0.12;
+  /** The dot's hop to a new picture: duration, arc height (at least HOP_MIN, or a share of the distance), squash. */
+  const HOP_MS = 1100;
+  const HOP_MIN = 50;
+  const HOP_RATIO = 0.35;
+  const SQUASH = 0.18;
+  /** After landing, the crow cocks its head once: this far, over this long, after this pause. */
+  const NOD_DEG = -14;
+  const NOD_MS = 650;
+  const NOD_DELAY = 500;
+  /** Then the sun sweeps the city's window of the day, and afterwards breathes: ± this many hours, on a slow sine. */
+  const SWEEP_MS = 4000;
+  const DRIFT_HOURS = 0.1;
   const DRIFT_RATE = 1 / 1600;
-  const STOP_MS = 4200;
+  const STOP_MS = 5400;
   /** Caption fades out for this long before the text changes. */
   const CAPTION_SWAP = 220;
   /** A tap nudges the scene this far toward the tapped side and back. */
   const NUDGE_PX = 6;
   const NUDGE_MS = 180;
+  /** The one-time hint on the › arrow: out and back twice. */
+  const HINT_PX = 6;
+  const HINT_MS = 900;
   const TOUR_KEY = 'tourSeen';
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -293,6 +390,7 @@ const clientStops = stops.map((stop) => ({
     }
   };
   const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
+  const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
   /** Seeded, so a city's sketch has the same wobble every time it's drawn. */
   function rng(seed: number) {
@@ -312,6 +410,9 @@ const clientStops = stops.map((stop) => ({
     const sun = q<SVGGElement>('[data-sun]');
     const halo = q<SVGCircleElement>('[data-halo]');
     const halo2 = q<SVGCircleElement>('[data-halo2]');
+    const dotG = q<SVGGElement>('[data-dot-g]');
+    const dotShape = q<SVGGElement>('[data-dot]');
+    const dotParts = q<SVGGElement>('[data-dot-parts]');
     const captionCell = q<HTMLElement>('[data-caption-cell]');
     const caption = q<HTMLElement>('[data-caption]');
     const latline = q<HTMLElement>('[data-latline]');
@@ -388,28 +489,35 @@ const clientStops = stops.map((stop) => ({
     // ---------- state ----------
     let cur = 0;
     let lat = stops[0].latitude;
-    let hour = stops[0].hour;
+    let hour = stops[0].hours[0];
     let drift = 0;
+    /** The dot, in scene units. */
+    let dot: Pt = toScene(...stops[0].dot);
     let casters: Pt[][] = [];
-    /** SVG units per screen px: the sun stays the same size on screen at any width. */
-    let unit = 720 / (svg.clientWidth || 720);
     let flight = 0;
     let swapTimer = 0;
     let inView = true;
+    /** Share of the sundial on screen; below 0.9 during the story means the visitor is scrolling on. */
+    let visible = 1;
+    let hinted = false;
 
     const awaitLanding = root.hasAttribute('data-await-landing') && !reduceMotion;
     const landed = () => !awaitLanding || root.hasAttribute('data-landed');
 
     // ---------- sun & shadow (equinox day, local solar time) ----------
-    // Each place's sun stands at its noon altitude (90° − latitude); `hour` only places it left–right.
-    const sunAlt = () => 90 - lat;
-    const sunXY = (h: number): Pt => [XL + ((h - 6) / 12) * (XR - XL), G - (sunAlt() / 90) * 200 - 8];
+    const sunAlt = (h: number) => {
+      const H = ((h - 12) * 15 * Math.PI) / 180;
+      const p = (lat * Math.PI) / 180;
+      return (Math.asin(Math.cos(p) * Math.cos(H)) * 180) / Math.PI;
+    };
+    const sunXY = (h: number): Pt => [XL + ((h - 6) / 12) * (XR - XL), G - (Math.max(sunAlt(h), -4) / 90) * 200 - 8];
 
     function update() {
       const h = hour + drift;
       const [sx, sy] = sunXY(h);
-      const alt = sunAlt();
-      sun.setAttribute('transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)}) scale(${unit.toFixed(4)})`);
+      const alt = sunAlt(h);
+      sun.setAttribute('transform', `translate(${sx.toFixed(1)} ${sy.toFixed(1)})`);
+      dotG.setAttribute('transform', `translate(${dot[0].toFixed(1)} ${dot[1].toFixed(1)})`);
       // Halos widen as the sun sinks and tighten at midday.
       const low = 1 - Math.min(1, Math.max(0, alt) / 60);
       halo.setAttribute('r', (10 + low * 6).toFixed(1));
@@ -442,26 +550,66 @@ const clientStops = stops.map((stop) => ({
       }
     }
 
-    /** The sun travels to the new city's moment: latitude and time of day together. */
-    function fly(to: Stop) {
+    // ---------- the sun's sweep through the city's window, then breathing ----------
+    const sweep = { on: false, elapsed: 0, last: 0 };
+    function startSweep() {
+      if (reduceMotion) return;
+      sweep.on = true;
+      sweep.elapsed = 0;
+      sweep.last = 0;
+    }
+
+    /** The dot hops to its place in the new picture; meanwhile the sun moves to the start of that city's window. */
+    function travel(to: Stop) {
       cancelAnimationFrame(flight);
       flight = 0;
+      sweep.on = false;
+      drift = 0;
+      const target = toScene(...to.dot);
+      dotParts.setAttribute('opacity', '0');
       if (reduceMotion) {
         lat = to.latitude;
-        hour = to.hour;
+        hour = to.hours[0];
+        dot = target;
+        showParts(to);
         return update();
       }
-      const from = { lat, hour };
+      const from = { lat, hour, dot: [...dot] as Pt };
+      const lift = Math.max(HOP_MIN, Math.abs(target[0] - from.dot[0]) * HOP_RATIO);
       let t0 = 0;
       const step = (now: number) => {
         t0 ||= now;
-        const t = Math.min(1, (now - t0) / FLY_MS);
+        const t = Math.min(1, (now - t0) / HOP_MS);
         const e = easeInOutCubic(t);
+        dot = [from.dot[0] + (target[0] - from.dot[0]) * e, from.dot[1] + (target[1] - from.dot[1]) * e - Math.sin(Math.PI * e) * lift];
+        // A small squash as it lands.
+        const sq = t > 0.85 && t < 1 ? 1 - SQUASH * Math.sin(((t - 0.85) / 0.15) * Math.PI) : 1;
+        dotShape.setAttribute('transform', `scale(${(2 - sq).toFixed(3)} ${sq.toFixed(3)})`);
         lat = from.lat + (to.latitude - from.lat) * e;
-        hour = from.hour + (to.hour - from.hour) * e;
-        flight = t < 1 ? requestAnimationFrame(step) : 0;
+        hour = from.hour + (to.hours[0] - from.hour) * e;
+        if (t < 1) flight = requestAnimationFrame(step);
+        else {
+          flight = 0;
+          showParts(to);
+          startSweep();
+        }
       };
       flight = requestAnimationFrame(step);
+    }
+
+    /** The dot's parts for this city fade in; a `data-nod` part (the crow's head) tilts once. */
+    function showParts(stop: Stop) {
+      dotParts.innerHTML = stop.parts;
+      dotParts.setAttribute('opacity', '1');
+      const head = dotParts.querySelector<SVGGElement>('[data-nod]');
+      if (!head || reduceMotion) return;
+      head.style.transformBox = 'view-box';
+      head.style.transformOrigin = '3px -2px';
+      head.animate([{ transform: 'rotate(0deg)' }, { transform: `rotate(${NOD_DEG}deg)` }, { transform: 'rotate(0deg)' }], {
+        duration: NOD_MS,
+        delay: NOD_DELAY,
+        easing: 'ease-in-out',
+      });
     }
 
     // ---------- city ----------
@@ -469,25 +617,13 @@ const clientStops = stops.map((stop) => ({
       art.replaceChildren();
       const R = rng(i * 97 + 5);
       casters = [];
-      const covers: SVGElement[] = [];
-      const knockouts: SVGElement[] = [];
-      const ink: SVGElement[] = [];
       stops[i].strokes.forEach((stroke, j) => {
         const runs = samplePath(stroke.d, toScene);
         const light = stroke.weight === 'light';
         const w = light ? 1 : stroke.weight === 'thin' ? 1.15 : 1.8;
-        if (stroke.cover) {
-          const fill = document.createElementNS(NS, 'path');
-          fill.setAttribute('d', stroke.cover);
-          fill.setAttribute('transform', `translate(${CX - 100 * SC} ${G - 118 * SC}) scale(${SC})`);
-          fill.setAttribute('fill', '#fff');
-          covers.push(fill);
-        }
-        if (stroke.knockout) knockouts.push(...handLine(runs, { col: '#fff', w: w * 3, anim: animate }, rng(i * 97 + j), j * 0.07));
-        ink.push(...handLine(runs, { col: light ? '#8E8E8E' : '#151515', w, anim: animate }, R, j * 0.07));
+        art.append(...handLine(runs, { col: light ? '#8E8E8E' : '#151515', w, anim: animate }, R, j * 0.07));
         if (!stroke.noShadow) casters.push(...runs);
       });
-      art.append(...covers, ...knockouts, ...ink);
     }
 
     /** Cities before i are done, city i is `fill` (0–1) of the way through, later ones are empty. */
@@ -511,14 +647,19 @@ const clientStops = stops.map((stop) => ({
     function select(i: number, source: 'init' | 'auto' | 'user', nudge = 0) {
       i = (i + stops.length) % stops.length;
       if (source === 'user' && i === cur && !nudge) return;
+      const same = i === cur;
       cur = i;
       const stop = stops[i];
       const instant = source === 'init' || reduceMotion;
       drawSketch(i, !instant);
+      svg.setAttribute('aria-label', stop.sceneLabel);
       if (source === 'init') {
         lat = stop.latitude;
-        hour = stop.hour;
-      } else fly(stop);
+        hour = stop.hours[0];
+        dot = toScene(...stop.dot);
+        showParts(stop);
+      } else if (same) startSweep();
+      else travel(stop);
       buttons.forEach((b, j) => {
         b.setAttribute('aria-current', String(j === i));
         b.tabIndex = j === i ? 0 : -1;
@@ -559,7 +700,16 @@ const clientStops = stops.map((stop) => ({
     let frame = 0;
     function loop(now: number) {
       frame = 0;
-      if (!reduceMotion) drift = Math.sin(now * DRIFT_RATE) * DRIFT_HOURS;
+      if (sweep.on) {
+        const dt = sweep.last ? Math.min(now - sweep.last, 100) : 0;
+        sweep.last = now;
+        // Holds while the portrait is back in Act 1.
+        if (landed()) sweep.elapsed += dt;
+        const t = Math.min(1, sweep.elapsed / SWEEP_MS);
+        const [from, to] = stops[cur].hours;
+        hour = from + (to - from) * easeInOutQuad(t);
+        drift = t >= 1 ? Math.sin(now * DRIFT_RATE) * DRIFT_HOURS : 0;
+      }
       if (auto.on) {
         const dt = auto.last ? Math.min(now - auto.last, 100) : 0;
         auto.last = now;
@@ -569,9 +719,13 @@ const clientStops = stops.map((stop) => ({
         setProgress(cur, t);
         if (t >= 1) {
           if (cur < stops.length - 1) {
+            if (cur === 0 && visible < 0.9) hintArrow();
             auto.elapsed = 0;
             select(cur + 1, 'auto');
-          } else stopAuto();
+          } else {
+            stopAuto();
+            hintArrow();
+          }
         }
       }
       update();
@@ -598,6 +752,30 @@ const clientStops = stops.map((stop) => ({
       buttons[cur].focus();
     });
 
+    // ‹ › buttons: the same as tapping that half of the scene.
+    const navs = [...root.querySelectorAll<HTMLButtonElement>('[data-nav]')];
+    navs.forEach((nav) => {
+      const step = Number(nav.dataset.nav);
+      const chevron = nav.querySelector<SVGGElement>('[data-chevron]')!;
+      const d = step > 0 ? 'M2 2 L12 14 L2 26' : 'M12 2 L2 14 L12 26';
+      chevron.append(...handLine(samplePath(d), { col: 'currentColor', w: 1.4, anim: false }, rng(step > 0 ? 61 : 67), 0));
+      nav.addEventListener('click', (e) => {
+        e.stopPropagation();
+        stopAuto();
+        select(cur + step, 'user', step);
+      });
+    });
+    /** Once: the › arrow nudges outward and back twice, then stays still. */
+    function hintArrow() {
+      if (hinted || reduceMotion) return;
+      hinted = true;
+      const x = `translateX(${HINT_PX}px)`;
+      root.querySelector('.sks-nav.next .sks-chevron')?.animate(
+        [{ transform: 'none' }, { transform: x }, { transform: 'none' }, { transform: x }, { transform: 'none' }],
+        { duration: HINT_MS, easing: 'ease-in-out' },
+      );
+    }
+
     // Story taps: right half → next city, left half → previous.
     const sideOf = (e: MouseEvent) => {
       const r = stage.getBoundingClientRect();
@@ -609,31 +787,60 @@ const clientStops = stops.map((stop) => ({
       select(cur + step, 'user', step);
     });
     stage.addEventListener('pointermove', (e) => {
-      const label = sideOf(e) > 0 ? 'NEXT →' : '← PREV';
+      const side = sideOf(e) > 0 ? 'next' : 'prev';
+      const label = side === 'next' ? 'NEXT →' : '← PREV';
       if (stage.dataset.cursorLabel !== label) stage.dataset.cursorLabel = label;
+      // The arrow on that side darkens too, so it agrees with the cursor.
+      if (root.dataset.hoverSide !== side) root.dataset.hoverSide = side;
     });
+    stage.addEventListener('pointerleave', () => delete root.dataset.hoverSide);
 
-    // ---------- landing (the portrait has flown into the sun) ----------
+    // ---------- landing (the portrait has flown into the dot) ----------
     function onLanding() {
-      if (!landed() || auto.on) return;
-      if (!reduceMotion && !remembered(TOUR_KEY)) {
-        startAuto();
-        run();
-      }
+      if (!landed() || auto.on || reduceMotion) return;
+      if (!remembered(TOUR_KEY)) startAuto();
+      else if (!sweep.on && !flight) startSweep();
+      run();
     }
 
     ground.append(...handLine(samplePath(GROUND), { col: '#151515', w: 1.6, anim: false }, rng(31), 0));
+    // The ink dot: a wobbly filled blob and a loose scribbled outline, in the sketch's ink (scene units).
+    {
+      const R = rng(404);
+      let blob = '';
+      for (let k = 0; k <= 22; k++) {
+        const a = (k / 22) * Math.PI * 2;
+        const r = 4.6 * (1 + (R() - 0.5) * 0.16);
+        blob += `${k ? 'L' : 'M'}${(Math.cos(a) * r).toFixed(2)} ${(Math.sin(a) * r * 0.94).toFixed(2)} `;
+      }
+      let ring = '';
+      for (let k = 0; k <= 30; k++) {
+        const a = (k / 30) * Math.PI * 2.15 + 0.4;
+        const r = 5.1 + (R() - 0.5) * 0.7;
+        ring += `${k ? 'L' : 'M'}${(Math.cos(a) * r).toFixed(2)} ${(Math.sin(a) * r * 0.95).toFixed(2)} `;
+      }
+      const fill = document.createElementNS(NS, 'path');
+      fill.setAttribute('d', `${blob}Z`);
+      fill.setAttribute('fill', '#1A1A1A');
+      fill.setAttribute('opacity', '0.92');
+      const outline = document.createElementNS(NS, 'path');
+      outline.setAttribute('d', ring);
+      outline.setAttribute('fill', 'none');
+      outline.setAttribute('stroke', '#151515');
+      outline.setAttribute('stroke-width', '1.1');
+      outline.setAttribute('stroke-linecap', 'round');
+      outline.setAttribute('opacity', '0.85');
+      dotShape.prepend(fill, outline);
+    }
     select(0, 'init');
-    new ResizeObserver(() => {
-      const width = svg.clientWidth;
-      if (!width) return;
-      unit = 720 / width;
-      update();
-    }).observe(svg);
-    new IntersectionObserver(([entry]) => {
-      inView = entry.isIntersecting;
-      if (inView) run();
-    }).observe(root);
+    new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        visible = entry.intersectionRatio;
+        if (inView) run();
+      },
+      { threshold: [0, 0.9] },
+    ).observe(root);
     new MutationObserver(onLanding).observe(root, { attributes: true, attributeFilter: ['data-landed'] });
     onLanding();
   });

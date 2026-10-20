@@ -1,0 +1,149 @@
+{
+ "tasks": [
+  {
+   "title": "A timeline you can check",
+   "note": "Principle: show the basis. A personal estimate by review stage, with how it was calculated one click away.",
+   "src": "/work/seattle-ai-permitting/tasks/still-timeline.webp",
+   "clip": "/work/seattle-ai-permitting/clips/task-timeline",
+   "hold": 7.9,
+   "alt": "The AI time tracker: 78 days of plan review, 13 days of corrections and 92 days in total, with the basis panel open and the review stages listed below.",
+   "pins": [
+    {
+     "x": 17.8,
+     "y": 10.2,
+     "side": "l",
+     "at": 0.7,
+     "t": "A personal estimate",
+     "d": "Built from this applicant’s own record and situation."
+    },
+    {
+     "x": 19.0,
+     "y": 23.5,
+     "side": "l",
+     "at": 3.19,
+     "t": "The basis, one click away",
+     "d": "Similar permits, the current review queue, license status and how complete the application is."
+    },
+    {
+     "x": 63.3,
+     "y": 33.9,
+     "side": "r",
+     "at": 4.74,
+     "t": "Three numbers that matter",
+     "d": "Plan review, corrections and the total time to issue."
+    },
+    {
+     "x": 38.0,
+     "y": 65.2,
+     "side": "r",
+     "at": 6.7,
+     "t": "Where it is now",
+     "d": "Each review stage with its dates. The current one is marked."
+    }
+   ],
+   "duration": 9.4
+  },
+  {
+   "title": "AI fills the form. The applicant decides.",
+   "note": "Principle: AI fills, people decide. Upload the files once, fill the form in one click, then check and edit.",
+   "src": "/work/seattle-ai-permitting/tasks/still-autofill.webp",
+   "clip": "/work/seattle-ai-permitting/clips/task-autofill",
+   "hold": 13.13,
+   "alt": "The application form after AI autofill: a banner says 22 fields were filled, each filled field shows an AI icon, and the phone number has been edited by hand.",
+   "pins": [
+    {
+     "x": 80.0,
+     "y": 49.0,
+     "side": "r",
+     "at": 2.11,
+     "t": "Upload the documents",
+     "d": "Drawings, site plan and license already hold most answers."
+    },
+    {
+     "x": 78.3,
+     "y": 28.2,
+     "side": "r",
+     "at": 3.62,
+     "t": "One click to fill",
+     "d": "AI reads the files and fills the form."
+    },
+    {
+     "x": 2.2,
+     "y": 7.0,
+     "side": "l",
+     "at": 7.82,
+     "t": "A summary of what changed",
+     "d": "22 fields filled from the uploaded files."
+    },
+    {
+     "x": 37.9,
+     "y": 31.1,
+     "side": "l",
+     "at": 9.37,
+     "t": "Every AI field is marked",
+     "d": "The icon stays until the applicant changes it."
+    },
+    {
+     "x": 63.4,
+     "y": 39.3,
+     "side": "r",
+     "at": 11.93,
+     "t": "Still editable",
+     "d": "The applicant corrects anything AI got wrong."
+    }
+   ],
+   "duration": 14.6
+  },
+  {
+   "title": "A review that cites the code",
+   "note": "Principle: cite the rule. Issues are flagged before submitting, each with the municipal code behind it.",
+   "src": "/work/seattle-ai-permitting/tasks/still-review.webp",
+   "clip": "/work/seattle-ai-permitting/clips/task-review",
+   "hold": 10.22,
+   "alt": "The AI review report: an expired-license flag on the application, and the flag panel open on the Seattle Municipal Code section it cites, with Accept and Dismiss buttons.",
+   "pins": [
+    {
+     "x": 79.8,
+     "y": 3.6,
+     "side": "r",
+     "at": 1.2,
+     "t": "Issues, before submitting",
+     "d": "Ranked as issue, warning or suggestion."
+    },
+    {
+     "x": 32.5,
+     "y": 39.0,
+     "side": "l",
+     "at": 2.9,
+     "t": "Flagged in place",
+     "d": "The flag sits on the exact field it’s about."
+    },
+    {
+     "x": 96.5,
+     "y": 58.5,
+     "side": "r",
+     "at": 5.75,
+     "t": "The rule behind it",
+     "d": "Each flag cites the municipal code and quotes the source."
+    },
+    {
+     "x": 87.4,
+     "y": 78.2,
+     "side": "r",
+     "at": 7.2,
+     "t": "The applicant decides",
+     "d": "Accept or dismiss. Flags are advisory."
+    },
+    {
+     "x": 95.6,
+     "y": 89.9,
+     "side": "r",
+     "at": 9.02,
+     "t": "Blocks only what’s critical",
+     "d": "Submitting waits until the critical issue is resolved."
+    }
+   ],
+   "duration": 11.7
+  }
+ ]
+}

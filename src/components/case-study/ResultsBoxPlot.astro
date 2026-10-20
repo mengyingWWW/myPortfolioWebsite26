@@ -1,0 +1,209 @@
+---
+/**
+ * Small-multiple box plots on one shared 1–5 scale: one panel per measure, one box per version.
+ * Box = middle 50%, line = median, whiskers = range, dots = outliers. Colors run from neutral (no AI)
+ * to the page accent (full AI), so the order reads as "more AI"; every box is also labelled on the
+ * x-axis, so identity never rests on color alone. Hover/focus a box for its values; a table view
+ * sits under the figure.
+ */
+interface Box { lo: number; q1: number; med: number; q3: number; hi: number; out: number[] }
+interface Props {
+  versions: { id: string; short: string; label: string }[];
+  panels: { title: string; boxes: Box[] }[];
+  caption?: string;
+  ariaLabel: string;
+}
+
+const { versions, panels, caption, ariaLabel } = Astro.props;
+
+// Plot geometry (SVG user units).
+const W = 240, H = 268;
+const L = 30, R = 8, T = 10, B = 214; // plot box: x L..W-R, y T..B
+const MIN = 1, MAX = 5;
+const y = (v: number) => T + ((MAX - v) / (MAX - MIN)) * (B - T);
+const slot = (W - L - R) / 3;
+const cx = (i: number) => L + slot * (i + 0.5);
+const BW = 30;
+const ticks = [1, 2, 3, 4, 5];
+const f = (v: number) => v.toFixed(1);
+---
+
+<figure class="rbp" aria-label={ariaLabel}>
+  <div class="rbp-grid">
+    {
+      panels.map((p) => (
+        <div class="rbp-panel">
+          <p class="rbp-title">{p.title}</p>
+          <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${p.title}, score 1 to 5 by version`}>
+            {ticks.map((t) => (
+              <g aria-hidden="true">
+                <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} class="grid" />
+                <text x={L - 8} y={y(t)} class="tick" text-anchor="end" dominant-baseline="middle">{t}</text>
+              </g>
+            ))}
+            {p.boxes.map((b, i) => (
+              <g
+                class={`box box-${versions[i].id}`}
+                tabindex="0"
+                role="img"
+                aria-label={`${p.title}, ${versions[i].short} ${versions[i].label}: median ${f(b.med)}, middle half ${f(b.q1)} to ${f(b.q3)}, range ${f(b.lo)} to ${f(b.hi)}`}
+                data-tip={`${versions[i].short} · ${versions[i].label}|Median ${f(b.med)}|Middle 50% ${f(b.q1)}–${f(b.q3)}|Range ${f(b.lo)}–${f(b.hi)}`}
+              >
+                <rect class="hit" x={cx(i) - slot / 2} y={T} width={slot} height={B - T} />
+                <line class="whisker" x1={cx(i)} x2={cx(i)} y1={y(b.hi)} y2={y(b.q3)} />
+                <line class="whisker" x1={cx(i)} x2={cx(i)} y1={y(b.q1)} y2={y(b.lo)} />
+                <line class="cap" x1={cx(i) - 6} x2={cx(i) + 6} y1={y(b.hi)} y2={y(b.hi)} />
+                <line class="cap" x1={cx(i) - 6} x2={cx(i) + 6} y1={y(b.lo)} y2={y(b.lo)} />
+                <rect class="iqr" x={cx(i) - BW / 2} y={y(b.q3)} width={BW} height={Math.max(y(b.q1) - y(b.q3), 2)} rx="2" />
+                <line class="median" x1={cx(i) - BW / 2} x2={cx(i) + BW / 2} y1={y(b.med)} y2={y(b.med)} />
+                {b.out.map((o) => <circle class="outlier" cx={cx(i)} cy={y(o)} r="3.5" />)}
+              </g>
+            ))}
+            {versions.map((v, i) => (
+              <g aria-hidden="true">
+                <text x={cx(i)} y={B + 22} class="xlab-short" text-anchor="middle">{v.short}</text>
+                <text x={cx(i)} y={B + 40} class="xlab" text-anchor="middle">{v.label}</text>
+              </g>
+            ))}
+          </svg>
+        </div>
+      ))
+    }
+  </div>
+  <div class="rbp-tip" role="status" aria-live="polite" hidden></div>
+  {caption && <figcaption>{caption}</figcaption>}
+  <details class="rbp-table">
+    <summary>Table view</summary>
+    <table>
+      <thead>
+        <tr><th scope="col">Measure</th><th scope="col">Version</th><th scope="col">Median</th><th scope="col">Middle 50%</th><th scope="col">Range</th></tr>
+      </thead>
+      <tbody>
+        {panels.map((p) => p.boxes.map((b, i) => (
+          <tr><th scope="row">{p.title}</th><td>{versions[i].short} {versions[i].label}</td><td>{f(b.med)}</td><td>{f(b.q1)}–{f(b.q3)}</td><td>{f(b.lo)}–{f(b.hi)}</td></tr>
+        )))}
+      </tbody>
+    </table>
+  </details>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.rbp').forEach((fig) => {
+    const tip = fig.querySelector<HTMLElement>('.rbp-tip');
+    if (!tip) return;
+    const show = (el: SVGGElement) => {
+      const [head, ...rows] = (el.dataset.tip ?? '').split('|');
+      tip.innerHTML = `<strong>${head}</strong>${rows.map((r) => `<span>${r}</span>`).join('')}`;
+      tip.hidden = false;
+      const f = fig.getBoundingClientRect();
+      const b = el.querySelector('.iqr')!.getBoundingClientRect();
+      // Beside the box (right, or left near the edge) so it never covers a panel title.
+      let left = b.right - f.left + 12;
+      if (left + tip.offsetWidth > f.width) left = b.left - f.left - tip.offsetWidth - 12;
+      tip.style.left = `${Math.max(left, 0)}px`;
+      tip.style.top = `${b.top - f.top}px`;
+    };
+    const hide = () => (tip.hidden = true);
+    fig.querySelectorAll<SVGGElement>('.box').forEach((el) => {
+      el.addEventListener('pointerenter', () => show(el));
+      el.addEventListener('pointerleave', hide);
+      el.addEventListener('focus', () => show(el));
+      el.addEventListener('blur', hide);
+    });
+  });
+</script>
+
+<style>
+  .rbp {
+    position: relative;
+    display: grid;
+    gap: 20px;
+  }
+  .rbp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .rbp-title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
+    margin-bottom: 8px;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .grid { stroke: #ededeb; stroke-width: 1; }
+  .tick, .xlab, .xlab-short {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    fill: var(--color-meta);
+  }
+  .xlab-short { fill: var(--color-ink); }
+  .hit { fill: transparent; }
+  .whisker, .cap { stroke: #6e6e6e; stroke-width: 1.5; }
+  .iqr { stroke: var(--color-paper); stroke-width: 2; }
+  .box-v1 .iqr { fill: #c9c9c5; }
+  .box-v2 .iqr { fill: color-mix(in srgb, var(--cs-accent, #4f46e5) 55%, white); }
+  .box-v3 .iqr { fill: var(--cs-accent, #4f46e5); }
+  .median { stroke: var(--color-ink); stroke-width: 2.5; }
+  .box-v3 .median { stroke: var(--color-paper); }
+  .outlier { fill: var(--color-paper); stroke: #6e6e6e; stroke-width: 1.5; }
+  .box { outline: none; cursor: default; }
+  .box:hover .iqr, .box:focus-visible .iqr { stroke: var(--color-ink); stroke-width: 1.5; }
+  .box:focus-visible .hit { stroke: var(--color-ink); stroke-dasharray: 3 3; }
+  .rbp-tip {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    gap: 2px;
+    min-width: 150px;
+    padding: 10px 12px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.08);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--color-ink);
+    pointer-events: none;
+  }
+  .rbp-tip[hidden] { display: none; }
+  .rbp-tip :global(span) { color: var(--color-meta); font-variant-numeric: tabular-nums; }
+  figcaption {
+    max-width: 680px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-meta);
+  }
+  .rbp-table summary {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-meta);
+    cursor: pointer;
+  }
+  .rbp-table table {
+    margin-top: 12px;
+    width: 100%;
+    max-width: 680px;
+    border-collapse: collapse;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .rbp-table th, .rbp-table td {
+    text-align: left;
+    padding: 6px 12px 6px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-weight: 400;
+  }
+  .rbp-table thead th { font-family: var(--font-mono); font-size: 12px; color: var(--color-meta); }
+
+  @media (max-width: 640px) {
+    .rbp-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .rbp-panel { max-width: 300px; }
+  }
+</style>

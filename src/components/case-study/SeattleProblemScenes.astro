@@ -1,0 +1,116 @@
+---
+// Four-panel comic strip for seattle-ai-permitting "01 Problem": a first-time applicant's permit
+// (which rules apply → how long → retyping the form → corrections weeks later).
+// Same visual language as ProblemScenes / MappingProblemScenes: black hand-drawn strokes, one accent
+// colour (var(--cs-accent)), slight wobble, no faces, no text in the art, 1–4 comic dots per panel.
+// Illustrations are decorative (aria-hidden); the captions carry the meaning.
+---
+<figure class="ps">
+  <svg width="0" height="0" class="ps-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="sps-wobble" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="11" />
+        <feDisplacementMap in="SourceGraphic" scale="2.2" />
+      </filter>
+    </defs>
+  </svg>
+  <ol class="ps-grid">
+    <li class="ps-card">
+      <svg class="ps-art" viewBox="0 0 184 138" aria-hidden="true">
+ <g filter="url(#sps-wobble)" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 5 L180 4 L179 133 L5 132 Z"/>
+  <path d="M118 48 L148 24 L178 48"/>
+  <path d="M124 48 L124 76 L172 76 L172 48"/>
+  <path d="M141 29 L151 22 L161 30 L151 37 Z" style="fill:var(--cs-accent);fill-opacity:.35" stroke-width="1.6"/>
+  <path d="M142 76 L142 62 L154 62 L154 76" stroke-width="1.6"/>
+  <circle cx="34" cy="74" r="11" fill="#FFFFFF"/>
+  <path d="M14 126 Q16 98 34 96 Q52 98 54 126" fill="#FFFFFF"/>
+  <path d="M62 88 L104 86 L105 114 L63 115 Z" fill="#FFFFFF"/>
+  <path d="M56 116 L112 114 L114 120 L54 122 Z" fill="#FFFFFF"/>
+  <path d="M68 94 L98 93 M68 100 L94 99 M68 106 L100 105" stroke-width="1.2"/>
+  <path d="M60 30 L82 26 L86 54 L64 58 Z" fill="#FFFFFF"/>
+  <path d="M78 22 L100 22 L100 50 L78 50 Z" fill="#FFFFFF"/>
+  <path d="M94 28 L114 32 L110 58 L90 54 Z" style="fill:var(--cs-accent);fill-opacity:.16" />
+  <path d="M83 30 L95 30 M83 36 L96 36 M83 42 L92 42" stroke-width="1.2"/>
+ </g>
+ <g filter="url(#sps-wobble)" style="fill:var(--cs-accent)"><path d="M44 58 Q47 54 50 58 Q47 62 44 58 Z"/><path d="M52 50 Q55 46 58 50 Q55 54 52 50 Z"/></g>
+ <g fill="#111111"><circle cx="172" cy="124" r="2.8"/></g>
+</svg>
+      <h3 class="ps-title">A new roof needs a permit</h3>
+      <p class="ps-text">Maria wants to replace her roof. The City’s site lists codes, forms and permit types. She can’t tell which ones apply to her.</p>
+    </li>
+    <li class="ps-card">
+      <svg class="ps-art" viewBox="0 0 184 138" aria-hidden="true">
+ <g filter="url(#sps-wobble)" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 5 L180 4 L179 133 L5 132 Z"/>
+  <path d="M20 24 L94 23 L95 106 L21 107 Z" fill="#FFFFFF"/>
+  <path d="M21 24 L94 23 L94 38 L21 39 Z" style="fill:var(--cs-accent);fill-opacity:.16" />
+  <path d="M36 18 L36 28 M78 17 L78 27" stroke-width="1.8"/>
+  <path d="M30 50 L36 56" stroke-width="1.4"/><path d="M43 50 L49 56" stroke-width="1.4"/><path d="M56 50 L62 56" stroke-width="1.4"/><path d="M69 50 L75 56" stroke-width="1.4"/><path d="M82 50 L88 56" stroke-width="1.4"/><path d="M30 64 L36 70" stroke-width="1.4"/><path d="M43 64 L49 70" stroke-width="1.4"/><path d="M56 64 L62 70" stroke-width="1.4"/><path d="M69 64 L75 70" stroke-width="1.4"/><path d="M82 64 L88 70" stroke-width="1.4"/><path d="M30 78 L36 84" stroke-width="1.4"/><path d="M43 78 L49 84" stroke-width="1.4"/><path d="M56 78 L62 84" stroke-width="1.4"/><path d="M69 78 L75 84" stroke-width="1.4"/><path d="M82 78 L88 84" stroke-width="1.4"/>
+  <path d="M30 92 L36 98" stroke-width="1.4"/>
+  <circle cx="120" cy="88" r="11" fill="#FFFFFF"/>
+  <path d="M100 128 Q102 104 120 102 Q138 104 140 128" fill="#FFFFFF"/>
+  <path d="M146 30 L172 30 M146 84 L172 84"/>
+  <path d="M149 31 Q149 48 159 57 Q169 48 169 31" fill="#FFFFFF"/>
+  <path d="M149 83 Q149 66 159 57 Q169 66 169 83" fill="#FFFFFF"/>
+ </g>
+ <g filter="url(#sps-wobble)" style="fill:var(--cs-accent)"><path d="M152 82 Q159 70 166 82 Z"/><path d="M158 60 L160 60 L160 66 L158 66 Z"/></g>
+ <g fill="#111111"><circle cx="164" cy="124" r="2.8"/><circle cx="172" cy="124" r="2.8"/></g>
+</svg>
+      <h3 class="ps-title">No one can say how long</h3>
+      <p class="ps-text">She wants to know how long review will take. Nothing gives her a date she can book a roofer around.</p>
+    </li>
+    <li class="ps-card">
+      <svg class="ps-art" viewBox="0 0 184 138" aria-hidden="true">
+ <g filter="url(#sps-wobble)" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 5 L180 4 L179 133 L5 132 Z"/>
+  <path d="M40 14 L118 13 L119 133 L41 133" fill="#FFFFFF"/>
+  <path d="M52 24 L84 24" stroke-width="1.6"/>
+  <path d="M52 36 L104 36 L104 43 L52 43 Z" stroke-width="1.3"/><path d="M52 50 L104 50 L104 57 L52 57 Z" stroke-width="1.3"/><path d="M52 64 L104 64 L104 71 L52 71 Z" stroke-width="1.3"/><path d="M52 92 L104 92 L104 99 L52 99 Z" stroke-width="1.3"/><path d="M52 106 L104 106 L104 113 L52 113 Z" stroke-width="1.3"/><path d="M52 120 L104 120 L104 127 L52 127 Z" stroke-width="1.3"/>
+  <path d="M52 78 L104 78 L104 85 L52 85 Z" stroke-width="1.3" style="fill:var(--cs-accent);fill-opacity:.16"/>
+  <path d="M140 40 L166 38 L168 72 L142 74 Z" fill="#FFFFFF"/>
+  <path d="M146 34 L172 34 L172 68 L146 68 Z" fill="#FFFFFF"/>
+  <path d="M152 44 L166 44 M152 50 L164 50 M152 56 L166 56" stroke-width="1.2"/>
+  <path d="M138 84 Q126 92 112 82"/>
+  <path d="M117 80 L111 82 L114 88" stroke-width="1.8"/>
+ </g>
+ <g filter="url(#sps-wobble)" style="fill:var(--cs-accent)"><path d="M60 80 L76 80 L76 83 L60 83 Z"/></g>
+ <g fill="#111111"><circle cx="156" cy="124" r="2.8"/><circle cx="164" cy="124" r="2.8"/><circle cx="172" cy="124" r="2.8"/></g>
+</svg>
+      <h3 class="ps-title">The same details, typed again</h3>
+      <p class="ps-text">The form asks for dozens of fields. Most answers are already in the documents she uploads.</p>
+    </li>
+    <li class="ps-card">
+      <svg class="ps-art" viewBox="0 0 184 138" aria-hidden="true">
+ <g filter="url(#sps-wobble)" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M4 5 L180 4 L179 133 L5 132 Z"/>
+  <path d="M26 44 L104 42 L105 98 L27 100 Z" fill="#FFFFFF"/>
+  <path d="M27 45 L66 74 L104 43"/>
+  <path d="M120 40 L172 40 L172 92 L120 92 Z" fill="#FFFFFF"/>
+  <path d="M120 54 L172 54" />
+  <path d="M130 66 L140 66 M150 66 L160 66 M130 78 L140 78" stroke-width="1.4"/>
+  <path d="M36 112 Q90 128 140 106"/>
+  <path d="M134 104 L141 105 L138 112" stroke-width="1.8"/>
+  <path d="M140 24 Q96 10 58 30"/>
+  <path d="M64 25 L57 31 L65 35" stroke-width="1.8"/>
+ </g>
+ <g filter="url(#sps-wobble)" style="fill:var(--cs-accent)"><circle cx="88" cy="86" r="9" style="fill-opacity:.85"/><path d="M121 41 L171 41 L171 53 L121 53 Z" style="fill-opacity:.25"/><path d="M149 76 L161 76 L161 82 L149 82 Z"/></g>
+ <g fill="#111111"><circle cx="148" cy="124" r="2.8"/><circle cx="156" cy="124" r="2.8"/><circle cx="164" cy="124" r="2.8"/><circle cx="172" cy="124" r="2.8"/></g>
+</svg>
+      <h3 class="ps-title">Corrections, weeks later</h3>
+      <p class="ps-text">A correction notice arrives for something she missed. She fixes it, resubmits and waits again.</p>
+    </li>
+  </ol>
+</figure>
+
+<style>
+  .ps { margin: 0; }
+  .ps-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .ps-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .ps-card { display: grid; grid-template-rows: auto auto 1fr; gap: 6px; }
+  .ps-art { display: block; width: 100%; height: auto; margin-bottom: 10px; background: transparent; overflow: visible; }
+  .ps-title { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; color: #111111; }
+  .ps-text { margin: 0; font-size: 14px; line-height: 1.5; color: #3A3A3A; }
+  @media (max-width: 1000px) { .ps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; } }
+  @media (max-width: 560px) { .ps-grid { grid-template-columns: 1fr; } .ps-art { max-width: 360px; } }
+</style>

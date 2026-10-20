@@ -15,9 +15,9 @@ import { hero } from '@/data/home';
 <section class="hero relative -mt-20 flex items-center overflow-hidden pt-20" data-hero data-cursor-zone="hero">
   <Container class="relative z-10 -mt-20 text-center">
     <div class="text-glow" data-hero-content>
-      <h1 class="text-6xl leading-[1.15] font-medium tracking-tight">
+      <h1 class="text-6xl leading-[1.15] font-medium tracking-tight mobile:text-[34px]">
         <span class="hero-enter block">
-          {hero.greeting}{' '}<a href="/about" class="hero-link"
+          {hero.greeting}{' '}<a href="/about" class="hero-link mobile:py-1"
             ><span class="hero-name font-serif font-normal italic">{hero.name}</span><span
               class="hero-period"
               aria-hidden="true"
@@ -43,7 +43,7 @@ import { hero } from '@/data/home';
       </h1>
       <p class="hero-enter mt-10 text-lg leading-relaxed">
         <em class="font-serif text-[#555]">{hero.introLead}</em>{' '}{hero.introRest}
-        <br />
+        <br class="mobile:hidden" />{' '}
         {hero.introLine2}
       </p>
       <p class="hero-enter mt-3 text-base leading-relaxed text-[#555]">

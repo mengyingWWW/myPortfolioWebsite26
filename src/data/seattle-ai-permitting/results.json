@@ -1,0 +1,35 @@
+{
+  "_source": "Read from the original R box plots (Framer image 3unApQ1BkJdpokO96bQq3YaHM.png, 2400px) by pixel position. Raw data no longer exists; treat values as approximate (±0.05).",
+  "n": "14 per version (4 architects + 10 residents)",
+  "versions": [
+    { "id": "v1", "short": "V1", "label": "No AI" },
+    { "id": "v2", "short": "V2", "label": "Partial AI" },
+    { "id": "v3", "short": "V3", "label": "Full AI" }
+  ],
+  "panels": [
+    {
+      "title": "Usability",
+      "boxes": [
+        { "lo": 1.5, "q1": 2.13, "med": 2.75, "q3": 3.0, "hi": 3.5, "out": [4.5] },
+        { "lo": 3.0, "q1": 3.5, "med": 3.5, "q3": 4.0, "hi": 4.5, "out": [2.0] },
+        { "lo": 3.0, "q1": 3.5, "med": 3.75, "q3": 4.38, "hi": 5.0, "out": [] }
+      ]
+    },
+    {
+      "title": "Trust",
+      "boxes": [
+        { "lo": 1.67, "q1": 2.33, "med": 2.67, "q3": 2.92, "hi": 3.67, "out": [] },
+        { "lo": 3.0, "q1": 3.33, "med": 3.67, "q3": 4.0, "hi": 4.33, "out": [] },
+        { "lo": 3.0, "q1": 3.75, "med": 4.0, "q3": 4.33, "hi": 4.67, "out": [] }
+      ]
+    },
+    {
+      "title": "Performance expectations",
+      "boxes": [
+        { "lo": 1.5, "q1": 1.75, "med": 2.25, "q3": 2.25, "hi": 3.0, "out": [4.0] },
+        { "lo": 2.75, "q1": 3.07, "med": 3.37, "q3": 3.68, "hi": 4.25, "out": [2.0] },
+        { "lo": 2.5, "q1": 3.13, "med": 3.87, "q3": 4.17, "hi": 4.25, "out": [] }
+      ]
+    }
+  ]
+}

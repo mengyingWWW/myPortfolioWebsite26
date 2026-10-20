@@ -58,9 +58,22 @@
     min-width: 1200px;
     @apply font-sans text-base leading-relaxed;
   }
+  /* Pages that opt into a device-width layout (BaseLayout `responsive`); every other page stays at 1200px. */
+  html[data-responsive] body {
+    min-width: 0;
+  }
 
   ::selection {
     @apply bg-ink text-paper;
+  }
+}
+
+/* Phones on a page that opts into a device-width layout (BaseLayout `responsive`), e.g. mobile:grid-cols-1. */
+@custom-variant mobile {
+  @media (width < 768px) {
+    html[data-responsive] & {
+      @slot;
+    }
   }
 }
 

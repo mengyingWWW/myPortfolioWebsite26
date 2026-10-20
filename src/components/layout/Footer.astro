@@ -13,17 +13,17 @@ const year = new Date().getFullYear();
 <footer class="bg-white pt-24 pb-12">
   <Container class="flex flex-col items-center text-center">
     <MWLogo variant="live" label="Mengying Wang" class="relative z-[1]" />
-    <span class="h-px w-[720px] bg-[#e5e5e5]" aria-hidden="true"></span>
+    <span class="h-px w-[720px] bg-[#e5e5e5] mobile:w-full" aria-hidden="true"></span>
 
     <a
       href={`mailto:${site.email}`}
-      class="mt-7 text-[22px] font-medium text-[#111] transition-colors duration-200 hover:text-[#555]"
+      class="mt-7 text-[22px] font-medium text-[#111] transition-colors duration-200 hover:text-[#555] mobile:py-2"
     >
       Let’s work together.<span class="sr-only"> (email)</span>
     </a>
 
     <nav aria-label="Contact" class="mt-5">
-      <ul class="footer-links flex items-center gap-3.5 text-[13px] tracking-[0.08em] text-[#111] uppercase">
+      <ul class="footer-links flex items-center gap-3.5 text-[13px] tracking-[0.08em] text-[#111] uppercase mobile:flex-wrap mobile:justify-center mobile:gap-x-7 mobile:gap-y-0">
         {
           footerLinks.map((link) => (
             <li>
@@ -44,7 +44,7 @@ const year = new Date().getFullYear();
     </nav>
 
     <p class="mt-8 font-mono text-[11px] tracking-[0.04em] text-meta">
-      No shadow was harmed in the making of this site · © {year}
+      No shadow was harmed in the making of this site<span class="mobile:hidden"> ·</span>{' '}<span class="mobile:block">© {year}</span>
     </p>
   </Container>
 </footer>
@@ -54,10 +54,24 @@ const year = new Date().getFullYear();
     content: '·' / '';
     margin-right: 14px;
   }
+  /* Phones: the links may wrap, so they're spaced instead (no separator at the start of a line). */
+  @media (width < 768px) {
+    :global(html[data-responsive]) .footer-links li + li::before {
+      content: none;
+    }
+  }
 
   /* Same On-style underline as the nav, at 1px. The line sits on the label only, so a ↗ is not covered. */
   .footer-link {
     text-decoration: none;
+  }
+  /* Phones: 44px tap targets. */
+  @media (width < 768px) {
+    :global(html[data-responsive]) .footer-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
   }
   .footer-link:focus-visible {
     outline: 2px solid #111;

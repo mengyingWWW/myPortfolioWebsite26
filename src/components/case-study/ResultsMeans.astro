@@ -1,0 +1,118 @@
+---
+/**
+ * Small multiples of mean score with 95% CI, one panel per measure on a shared 1–5 scale. Brackets
+ * mark the two comparisons the story rests on (no AI → partial AI, partial → full AI) with their
+ * post-hoc p-values. Colors run neutral → page accent (more AI); every version is labelled on the
+ * axis, so identity never rests on color. Hover/focus a mean for its CI; table view underneath.
+ */
+interface Mean { mean: number; lo: number; hi: number }
+interface Props {
+  versions: { id: string; short: string; label: string }[];
+  panels: { title: string; stat: string; means: Mean[]; p: { v1v2: string; v2v3: string } }[];
+  caption?: string;
+  ariaLabel: string;
+}
+const { versions, panels, caption, ariaLabel } = Astro.props;
+
+const W = 240, H = 284;
+const L = 30, R = 8, T = 40, B = 230;
+const MIN = 1, MAX = 5;
+const y = (v: number) => T + ((MAX - v) / (MAX - MIN)) * (B - T);
+const slot = (W - L - R) / 3;
+const cx = (i: number) => L + slot * (i + 0.5);
+const ticks = [1, 2, 3, 4, 5];
+const f = (v: number) => v.toFixed(2);
+const bracket = (a: number, b: number, yy: number) => `M${cx(a) + 4},${yy + 6} V${yy} H${cx(b) - 4} V${yy + 6}`;
+---
+
+<figure class="rm" aria-label={ariaLabel}>
+  <div class="rm-grid">
+    {panels.map((p) => {
+      const b12 = Math.min(y(p.means[0].hi), y(p.means[1].hi)) - 14;
+      const b23 = Math.min(y(p.means[1].hi), y(p.means[2].hi)) - 14;
+      return (
+        <div class="rm-panel">
+          <p class="rm-title">{p.title}</p>
+          <p class="rm-stat">{p.stat}</p>
+          <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`${p.title}: mean score 1 to 5 by version`}>
+            {ticks.map((t) => (
+              <g aria-hidden="true">
+                <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} class="grid" />
+                <text x={L - 8} y={y(t)} class="tick" text-anchor="end" dominant-baseline="middle">{t}</text>
+              </g>
+            ))}
+            <g aria-hidden="true" class="brk">
+              <path d={bracket(0, 1, b12)} />
+              <text x={(cx(0) + cx(1)) / 2} y={b12 - 6} text-anchor="middle" class="sig">{p.p.v1v2}</text>
+              <path d={bracket(1, 2, b23)} class="ns" />
+              <text x={(cx(1) + cx(2)) / 2} y={b23 - 6} text-anchor="middle" class="sig ns">{p.p.v2v3}</text>
+            </g>
+            {p.means.map((m, i) => (
+              <g class={`pt pt-${versions[i].id}`} tabindex="0" role="img"
+                 aria-label={`${p.title}, ${versions[i].short} ${versions[i].label}: mean ${f(m.mean)}, 95% CI ${f(m.lo)} to ${f(m.hi)}`}>
+                <rect class="hit" x={cx(i) - slot / 2} y={T} width={slot} height={B - T} />
+                <line class="ci" x1={cx(i)} x2={cx(i)} y1={y(m.hi)} y2={y(m.lo)} />
+                <line class="cap" x1={cx(i) - 5} x2={cx(i) + 5} y1={y(m.hi)} y2={y(m.hi)} />
+                <line class="cap" x1={cx(i) - 5} x2={cx(i) + 5} y1={y(m.lo)} y2={y(m.lo)} />
+                <circle class="dot" cx={cx(i)} cy={y(m.mean)} r="7" />
+                <text class="val" x={cx(i) + 12} y={y(m.mean)} dominant-baseline="middle">{m.mean.toFixed(2)}</text>
+              </g>
+            ))}
+            {versions.map((v, i) => (
+              <g aria-hidden="true">
+                <text x={cx(i)} y={B + 22} class="xlab-short" text-anchor="middle">{v.short}</text>
+                <text x={cx(i)} y={B + 40} class="xlab" text-anchor="middle">{v.label}</text>
+              </g>
+            ))}
+          </svg>
+        </div>
+      );
+    })}
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+  <details class="rm-table">
+    <summary>Table view</summary>
+    <table>
+      <thead><tr><th scope="col">Measure</th><th scope="col">Version</th><th scope="col">Mean</th><th scope="col">95% CI</th></tr></thead>
+      <tbody>
+        {panels.map((p) => p.means.map((m, i) => (
+          <tr><th scope="row">{p.title}</th><td>{versions[i].short} {versions[i].label}</td><td>{f(m.mean)}</td><td>{f(m.lo)}–{f(m.hi)}</td></tr>
+        )))}
+      </tbody>
+    </table>
+  </details>
+</figure>
+
+<style>
+  .rm { display: grid; gap: 20px; }
+  .rm-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .rm-title { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-ink); }
+  .rm-stat { font-family: var(--font-mono); font-size: 11px; color: var(--color-meta); margin-top: 4px; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .grid { stroke: #ededeb; stroke-width: 1; }
+  .tick, .xlab, .xlab-short { font-family: var(--font-mono); font-size: 11px; fill: var(--color-meta); }
+  .xlab-short { fill: var(--color-ink); }
+  .brk path { fill: none; stroke: var(--color-ink); stroke-width: 1; }
+  .brk path.ns { stroke: #a3a3a3; stroke-dasharray: 3 3; }
+  .sig { font-family: var(--font-mono); font-size: 10.5px; fill: var(--color-ink); }
+  .sig.ns { fill: var(--color-meta); }
+  .hit { fill: transparent; }
+  .ci, .cap { stroke: #6e6e6e; stroke-width: 1.5; }
+  .dot { stroke: var(--color-paper); stroke-width: 2; }
+  .pt-v1 .dot { fill: #a8a8a4; }
+  .pt-v2 .dot { fill: color-mix(in srgb, var(--cs-accent, #4f46e5) 55%, white); }
+  .pt-v3 .dot { fill: var(--cs-accent, #4f46e5); }
+  .val { font-family: var(--font-mono); font-size: 11px; fill: var(--color-ink); }
+  .pt { outline: none; }
+  .pt:hover .dot, .pt:focus-visible .dot { stroke: var(--color-ink); stroke-width: 1.5; }
+  .pt:focus-visible .hit { stroke: var(--color-ink); stroke-dasharray: 3 3; }
+  figcaption { max-width: 680px; font-size: 14px; line-height: 1.5; color: var(--color-meta); }
+  .rm-table summary { font-family: var(--font-mono); font-size: 13px; color: var(--color-meta); cursor: pointer; }
+  .rm-table table { margin-top: 12px; width: 100%; max-width: 680px; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .rm-table th, .rm-table td { text-align: left; padding: 6px 12px 6px 0; border-bottom: 1px solid var(--color-line); font-weight: 400; }
+  .rm-table thead th { font-family: var(--font-mono); font-size: 12px; color: var(--color-meta); }
+  @media (max-width: 640px) {
+    .rm-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .rm-panel { max-width: 300px; }
+  }
+</style>

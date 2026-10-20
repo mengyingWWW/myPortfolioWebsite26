@@ -11,10 +11,10 @@ const coords = `${SEATTLE.latitude.toFixed(1)}°N  ${Math.abs(SEATTLE.longitude)
 
 <div class="pointer-events-none absolute inset-x-0 bottom-[30px] z-10">
   <Container
-    class="flex items-baseline justify-between font-mono text-[11px] tracking-[0.1em] whitespace-pre text-[#5c5c5c] uppercase tabular-nums"
+    class="flex items-baseline justify-between font-mono text-[11px] tracking-[0.1em] whitespace-pre text-[#5c5c5c] uppercase tabular-nums mobile:flex-col mobile:gap-1"
   >
     <p data-coords={coords} data-sun-place aria-hidden="true">{coords}</p>
-    <p class="-mr-[0.1em]" data-sun-position aria-hidden="true"></p>
+    <p class="-mr-[0.1em] mobile:self-end" data-sun-position aria-hidden="true"></p>
   </Container>
   <p class="sr-only" data-sun-spoken></p>
 </div>

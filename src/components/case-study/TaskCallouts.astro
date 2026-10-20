@@ -3,20 +3,25 @@
  * Final design, one task at a time.
  * - The clip plays under a thin progress bar (ticks = steps, larger mark = key frame; click or drag to scrub)
  *   and a row of numbered step pills (the step on screen lights up).
- * - Clicking a pill jumps to that step, pauses, and shows that one callout (dot + line + note). It plays on after a few seconds.
+ * - Click to play: it rests on the still (the annotated key frame) with every callout and a Play walkthrough pill
+ *   (with `duration`, or the clip's own length); the bar shows once it has played. Play (the pill, the button or
+ *   the phone screen) runs the clip from the start and stops at `hold` (the frame that matches the still), where
+ *   every callout comes in one by one; Play again finishes the clip, which then returns to rest. It only pauses by
+ *   itself when scrolled out of view.
+ * - Clicking a pill jumps to that step, pauses, and shows that one callout (dot + line + note).
  *   A step's dot uses sx / sy when the element sits elsewhere at that moment; otherwise x / y.
- * - At `hold` (the frame that matches the still) every callout comes in one by one, then the clip plays on and loops.
  * - A step without x / y has no dot; when clicked, its note shows under the pills.
- * - Hover keeps a paused frame. Reduced motion or no clip: the still with every callout.
+ * - Reduced motion or no clip: the still with every callout.
  * - At 760px and below: no lines or pills; a numbered list under the phone.
  */
 interface Pin { x?: number; y?: number; sx?: number; sy?: number; side?: 'l' | 'r'; at?: number; t: string; d?: string }
-interface Task { title: string; note: string; src: string; alt: string; clip?: string; hold?: number; pins: Pin[] }
+interface Task { title: string; note: string; src: string; alt: string; clip?: string; hold?: number; duration?: number; pins: Pin[] }
 interface Props { tasks: Task[] }
 const { tasks } = Astro.props;
 const placed = (p: Pin) => p.x !== undefined && p.y !== undefined && p.side;
 const vars = (p: Pin, i: number) =>
   `--i:${i};--x:${p.x}%;--y:${p.y}%;--sx:${p.sx ?? p.x}%;--sy:${p.sy ?? p.y}%`;
+const mmss = (s?: number) => (s ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}` : '');
 ---
 <div class="tc">
   {tasks.map((task, ti) => (
@@ -37,6 +42,12 @@ const vars = (p: Pin, i: number) =>
             <img src={task.src} alt={task.alt} loading="lazy" decoding="async" />
             {task.clip && <video muted playsinline preload="none" poster={`${task.clip}.jpg`} aria-label={`${task.title} walkthrough`}><source src={`${task.clip}.mp4`} type="video/mp4" /></video>}
           </div>
+          {task.clip && (
+            <button type="button" class="tc-cta" data-cursor-label="PLAY">
+              <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"/></svg>
+              <span>Play walkthrough</span><span class="tc-dur" hidden={!task.duration}>{mmss(task.duration)}</span>
+            </button>
+          )}
           {task.pins.map((p, i) => placed(p) && (
             <>
               <span class:list={['tc-line', 'tc-c', p.side]} data-i={i} style={vars(p, i)} aria-hidden="true"></span>
@@ -75,10 +86,12 @@ const vars = (p: Pin, i: number) =>
 
 <script>
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const HOLD_MS = 4500, STEP_MS = 3500;
   document.querySelectorAll<HTMLElement>('[data-tc].has-clip').forEach((fig) => {
     const video = fig.querySelector('video')!;
     const btn = fig.querySelector<HTMLButtonElement>('.tc-toggle')!;
+    const cta = fig.querySelector<HTMLButtonElement>('.tc-cta');
+    const dur = fig.querySelector<HTMLElement>('.tc-dur');
+    const screenEl = fig.querySelector<HTMLElement>('.tc-screen')!;
     const bar = fig.querySelector<HTMLElement>('.tc-bar')!;
     const fill = fig.querySelector<HTMLElement>('.tc-fill')!;
     const caption = fig.querySelector<HTMLElement>('.tc-caption')!;
@@ -86,21 +99,24 @@ const vars = (p: Pin, i: number) =>
     const ats = steps.map((s) => parseFloat(s.dataset.at || ''));
     const callouts = [...fig.querySelectorAll<HTMLElement>('.tc-c')];
     const hold = parseFloat(fig.dataset.hold || '');
-    const fallback = () => { fig.classList.add('no-video', 'show-pins'); steps.forEach((s) => s.classList.add('is-done')); };
+    const fallback = () => {
+      fig.classList.add('no-video', 'show-pins'); steps.forEach((s) => s.classList.add('is-done'));
+      if (cta) cta.hidden = true;
+    };
     if (reduce || isNaN(hold)) { fallback(); return; }
 
-    let inView = false, userPaused = false, hovering = false, dragging = false;
-    let mode: 'play' | 'hold' | 'step' = 'play', shown = false, timer = 0, raf = 0, stepIdx = -1;
+    let mode: 'play' | 'hold' | 'step' = 'play', stepIdx = -1, stoppedAtHold = false, raf = 0, dragging = false;
 
     const placeMarks = () => {
       const d = video.duration;
       if (!d) return;
       fig.querySelectorAll<HTMLElement>('.tc-tick, .tc-key').forEach((m) => { m.style.left = `${(parseFloat(m.dataset.at!) / d) * 100}%`; });
+      if (dur && dur.hidden) { dur.textContent = `${Math.floor(d / 60)}:${String(Math.round(d % 60)).padStart(2, '0')}`; dur.hidden = false; }
     };
-    const setBtn = () => {
-      btn.setAttribute('aria-label', userPaused ? 'Play' : 'Pause');
-      btn.dataset.cursorLabel = userPaused ? 'PLAY' : 'PAUSE';
-      fig.classList.toggle('is-paused', userPaused);
+    const setBtn = (playing: boolean) => {
+      btn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      btn.dataset.cursorLabel = playing ? 'PAUSE' : 'PLAY';
+      fig.classList.toggle('is-paused', !playing);
     };
     const setMode = (m: typeof mode, i = -1) => {
       mode = m; stepIdx = i;
@@ -110,11 +126,21 @@ const vars = (p: Pin, i: number) =>
       const s = steps[i];
       caption.textContent = m === 'step' && s && !s.dataset.placed ? `${s.textContent?.trim()}: ${s.dataset.note}` : '';
     };
-    const play = () => { if (inView && !userPaused && !dragging) video.play().catch(fallback); };
-    const resume = () => {
-      clearTimeout(timer);
-      if (hovering || userPaused) return;
-      setMode('play'); play();
+    // At rest the clip is hidden behind the still, which carries every callout.
+    const rest = () => {
+      cancelAnimationFrame(raf);
+      setMode('play');
+      fig.classList.add('is-idle', 'no-video', 'show-pins');
+      steps.forEach((s) => { s.classList.add('is-done'); s.classList.remove('is-current'); });
+      fill.style.width = '100%';
+      bar.setAttribute('aria-valuenow', '100');
+      setBtn(false);
+    };
+    const wake = () => {
+      video.preload = 'auto';
+      if (!fig.classList.contains('is-idle')) return;
+      fig.classList.remove('is-idle', 'no-video');
+      video.currentTime = 0; stoppedAtHold = false;
     };
     const mark = () => {
       const t = video.currentTime, d = video.duration || 1;
@@ -125,58 +151,63 @@ const vars = (p: Pin, i: number) =>
       if (mode === 'step') cur = stepIdx;
       steps.forEach((s, i) => { s.classList.toggle('is-current', i === cur); s.classList.toggle('is-done', i < cur || mode === 'hold'); });
     };
-    const watch = () => {
-      if (mode === 'play' && !shown && !dragging && !video.paused && video.currentTime >= hold && video.currentTime < hold + 0.6) {
-        shown = true; video.pause(); setMode('hold');
-        timer = window.setTimeout(resume, HOLD_MS);
+    const loop = () => {
+      if (mode === 'play' && !stoppedAtHold && !dragging && !video.paused && video.currentTime >= hold) {
+        stoppedAtHold = true; video.pause(); setBtn(false); setMode('hold');
       }
       mark();
-      raf = requestAnimationFrame(watch);
+      raf = requestAnimationFrame(loop);
     };
-    const seek = (t: number) => { video.currentTime = Math.max(0, Math.min(t, (video.duration || t) - 0.05)); shown = video.currentTime > hold; };
+    const watch = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(loop); };
+    const seek = (t: number) => { video.currentTime = Math.max(0, Math.min(t, (video.duration || t) - 0.05)); stoppedAtHold = video.currentTime >= hold; };
+    const play = () => {
+      wake();
+      setMode('play'); setBtn(true);
+      video.play().catch(() => { fallback(); setBtn(false); });
+      watch();
+    };
+    const pause = () => { video.pause(); setBtn(false); };
 
     video.addEventListener('loadedmetadata', placeMarks);
-    video.addEventListener('ended', () => { setMode('play'); shown = false; video.currentTime = 0; play(); });
+    video.addEventListener('ended', rest);
     video.addEventListener('error', fallback);
-    fig.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hovering = true; });
-    fig.addEventListener('pointerleave', () => { hovering = false; if (mode !== 'play') timer = window.setTimeout(resume, 1200); });
-    btn.addEventListener('click', () => {
-      userPaused = !userPaused; setBtn();
-      if (userPaused) { video.pause(); clearTimeout(timer); }
-      else if (mode !== 'play') resume(); else play();
-    });
+    const toggle = () => { if (video.paused) play(); else pause(); };
+    btn.addEventListener('click', toggle);
+    cta?.addEventListener('click', toggle);
+    // The whole screen plays / pauses too; it shows the PLAY / PAUSE cursor label.
+    screenEl.dataset.cursorLabel = 'PLAY';
+    screenEl.addEventListener('click', toggle);
+    video.addEventListener('play', () => { screenEl.dataset.cursorLabel = 'PAUSE'; });
+    video.addEventListener('pause', () => { screenEl.dataset.cursorLabel = 'PLAY'; });
     steps.forEach((s, i) => s.addEventListener('click', () => {
       if (isNaN(ats[i])) return;
-      clearTimeout(timer);
-      video.pause(); seek(ats[i] + 0.15);
+      wake(); video.pause(); setBtn(false);
+      seek(ats[i] + 0.15);
       setMode('step', i);
-      userPaused = false; setBtn();
-      timer = window.setTimeout(resume, STEP_MS);
+      watch();
     }));
 
     // scrub: click or drag on the bar
     const toTime = (e: PointerEvent) => { const r = bar.getBoundingClientRect(); return ((e.clientX - r.left) / r.width) * (video.duration || 0); };
     bar.addEventListener('pointerdown', (e) => {
-      dragging = true; bar.setPointerCapture(e.pointerId); clearTimeout(timer);
-      video.pause(); setMode('play'); seek(toTime(e)); fig.classList.add('is-scrub');
+      dragging = true; bar.setPointerCapture(e.pointerId);
+      wake(); video.pause(); setBtn(false); setMode('play'); seek(toTime(e)); fig.classList.add('is-scrub'); watch();
     });
     bar.addEventListener('pointermove', (e) => { if (dragging) seek(toTime(e)); });
-    const endDrag = () => { if (!dragging) return; dragging = false; fig.classList.remove('is-scrub'); play(); };
+    const endDrag = () => { if (!dragging) return; dragging = false; fig.classList.remove('is-scrub'); };
     bar.addEventListener('pointerup', endDrag);
     bar.addEventListener('pointercancel', endDrag);
     bar.addEventListener('keydown', (e) => {
       if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-      e.preventDefault(); clearTimeout(timer); setMode('play');
-      seek(video.currentTime + (e.key === 'ArrowRight' ? 1 : -1)); play();
+      e.preventDefault(); wake(); video.pause(); setBtn(false); setMode('play');
+      seek(video.currentTime + (e.key === 'ArrowRight' ? 1 : -1)); watch();
     });
 
-    new IntersectionObserver(([e]) => {
-      inView = e.isIntersecting;
-      if (inView) { video.preload = 'auto'; if (mode === 'play') play(); cancelAnimationFrame(raf); raf = requestAnimationFrame(watch); }
-      else { video.pause(); cancelAnimationFrame(raf); }
-    }, { threshold: 0.4 }).observe(fig);
+    new IntersectionObserver(([e]) => { if (!e.isIntersecting && !video.paused) pause(); }, { threshold: 0.4 }).observe(fig);
+    // Metadata only, so the step ticks sit in place on the bar before the first play.
+    video.preload = 'metadata';
     if (video.readyState >= 1) placeMarks();
-    setBtn();
+    rest();
   });
 </script>
 
@@ -193,6 +224,15 @@ const vars = (p: Pin, i: number) =>
   .tc-screen { position: absolute; inset: 0; border-radius: 30px; overflow: hidden; border: 1px solid #E6E6E4; box-shadow: 0 10px 28px rgba(17,24,39,.08); background: #fff; }
   .tc-screen img, .tc-screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .no-video .tc-screen video { display: none; }
+
+  .has-clip:not(.no-video) .tc-screen { cursor: pointer; }
+  .tc-cta { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 4; display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 18px 0 16px; border: 0; border-radius: 999px; background: var(--cs-accent, #0F766E); color: #fff; font-size: 15px; font-weight: 500; white-space: nowrap; cursor: pointer; box-shadow: 0 6px 20px rgba(17,24,39,.22); transition: opacity .2s, transform .2s; }
+  .tc-cta:hover { transform: translateX(-50%) scale(1.04); }
+  .tc-cta:focus-visible { outline: 2px solid #111; outline-offset: 3px; }
+  .tc-dur { font: 500 12px/1 var(--font-mono, ui-monospace, monospace); opacity: .8; }
+  .tc-fig:not(.is-paused) .tc-cta { opacity: 0; pointer-events: none; }
+  .is-idle .tc-bar { visibility: hidden; }
+  @media (prefers-reduced-motion: reduce) { .tc-cta { transition: none; } .tc-cta:hover { transform: translateX(-50%); } }
 
   /* callouts: x / y on the key frame, sx / sy when one step is shown */
   .tc-c { --cx: var(--x); --cy: var(--y); }

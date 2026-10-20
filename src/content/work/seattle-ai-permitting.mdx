@@ -1,28 +1,185 @@
 ---
-title: City of Seattle AI Permitting System Design
+title: AI Permitting for the City of Seattle
+subtitle: "Where should AI help in a permit application, and how much?"
 year: 2025
-type: "Civic AI UI/UX Design & Research"
-method: Method
-status: "Concept"
-domains: ["Civic Tech", "AI"]
+type: "Civic AI Design + Research"
+method: "Between-subjects study"
+status: "Concept Tested"
+domains: ["AI", "Civic Tech"]
 platform: "Web"
 cover: ../../assets/work/seattle-ai-permitting/cover.png
 coverAlt: "A desktop showing the City of Seattle permit dashboard with an AI estimate of review time (78 days) broken into review stages, and a laptop showing an AI review report flagging issues in a residential reroofing permit application."
 coverBackground: "#f4f4f5"
 coverBlend: multiply
-role: "UI/UX Design & Research"
+role: "UX Design + Research"
 skills:
-  - Skill
-timeline: Timeline
+  - AI interaction design
+  - Experiment design (between-subjects)
+  - Survey design and analysis
+  - Vibe-coded prototyping
+timeline: "Sep 2025 – Dec 2025"
 tools:
-  - Tool
+  - Figma
+  - Bolt
+  - Qualtrics
+  - R
 team:
-  - Team
-summary: Placeholder summary.
+  - Yitong Du
+  - Evanna Yang
+  - Mengying Wang (me)
+summary: "Seattle’s construction permits are slow and hard to follow. Our team started at the City’s permitting hackathon and designed AI help for three steps of the application: the timeline, the form and a review before submitting. In UW’s HCDE 516 we then tested how much AI those steps need. We built three versions with no AI, partial AI and full AI and ran a study with 42 architects and residents. Partial AI raised usability by 34% and trust by 39%. Full AI added no significant gain on top."
+glance:
+  - { value: "42", label: "participants" }
+  - { value: "+34%", label: "usability, partial AI vs. none" }
+  - { value: "+39%", label: "trust, partial AI vs. none" }
+  - { value: "V2 = V3", label: "full AI added no significant gain" }
+accent: { main: '#4F46E5', text: '#4338CA', tint: '#EEF2FF', soft: '#F7F8FF', border: '#C7D2FE' }
 order: 4
 noindex: true
 ---
 
-## Section heading
+import CaseStudy from '@/components/case-study/CaseStudy.astro';
+import BriefCallout from '@/components/case-study/BriefCallout.astro';
+import SeattleProblemScenes from '@/components/case-study/SeattleProblemScenes.astro';
+import Section from '@/components/case-study/Section.astro';
+import DesktopCallouts from '@/components/case-study/DesktopCallouts.astro';
+import QuoteCards from '@/components/case-study/QuoteCards.astro';
+import Reframe from '@/components/case-study/Reframe.astro';
+import ResultsMeans from '@/components/case-study/ResultsMeans.astro';
+import RoleCards from '@/components/case-study/RoleCards.astro';
+import Statement from '@/components/case-study/Statement.astro';
+import Stats from '@/components/case-study/Stats.astro';
+import StepFlow from '@/components/case-study/StepFlow.astro';
+import Takeaway from '@/components/case-study/Takeaway.astro';
+import VersionMatrix from '@/components/case-study/VersionMatrix.astro';
+import means from '@/data/seattle-ai-permitting/results-means.json';
+import versionRows from '@/data/seattle-ai-permitting/versions.json';
+import design from '@/data/seattle-ai-permitting/tasks.json';
 
-Placeholder copy.
+<CaseStudy>
+
+<Section id="problem" index="01" label="Problem" title="Problem">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">In fall 2025 Seattle launched a Responsible AI Plan and a series of community hackathons. The second one opened up the City’s permitting data. For a first-time applicant, a construction permit is slow and confusing.</p>
+  <SeattleProblemScenes />
+  <figure>
+    <img src="/work/seattle-ai-permitting/problem-permit-timeline.webp" width="2477" height="960" loading="lazy" decoding="async" class="w-full rounded-lg border border-[#E6E6E4]" alt="The City’s Construction Permit Timeline for permit 6395770-CN: from late 2020 to early 2024, the application switches between City control and applicant control again and again, and most review teams return corrections in each round before approving." />
+    <figcaption class="mt-3 max-w-[680px] text-sm leading-[1.5] text-meta">A real case from the City’s own dashboard: permit 6395770-CN, a new apartment building. Plan review took 1,276 days. The outlined rows show it passing back and forth between the City and the applicant for more than three years. Source: Seattle SDCI, Construction Permit Timeline.</figcaption>
+  </figure>
+  <div>
+    <Statement>One small mistake can cost weeks. AI could help. The first question was <em>where</em>.</Statement>
+    <BriefCallout
+      label="Seattle SDCI, Construction Permit Timeline page"
+      ariaLabel="Quote from Seattle SDCI"
+      text="We've heard from the community that the permitting process can be confusing."
+    />
+  </div>
+</Section>
+
+<Section id="users" index="02" label="Users" title="Users">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Two very different people file permits. We built both personas from the City’s hackathon brief.</p>
+  <RoleCards
+    roles={[
+      { name: 'David, architect', tag: 'Knows the process', text: 'Files permits for clients. His drawings and specs already hold the answers. He wants the form to read them and keep his final say.' },
+      { name: 'Maria, first-time resident', tag: 'Needs every step explained', text: 'Is filing her first permit. She can’t tell which rules apply to her and fears a costly mistake.', accent: true },
+    ]}
+  />
+  <RoleCards
+    roles={[
+      { name: 'Show the basis', tag: 'Principle 1', text: 'Every AI output says what it was built from.' },
+      { name: 'AI fills, people decide', tag: 'Principle 2', text: 'Anything AI writes stays marked and editable.' },
+      { name: 'Cite the rule', tag: 'Principle 3', text: 'Every flag points to the code behind it.' },
+    ]}
+  />
+</Section>
+
+<Section id="design" index="03" label="Design" title="Three touchpoints">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">One AI touchpoint at each friction point. The walkthroughs below show the full-AI version. Press play to watch each one.</p>
+  <StepFlow
+    ariaLabel="Steps of a permit application"
+    caption="Three friction points. Three places to introduce AI."
+    steps={[
+      { name: 'Understand requirements' },
+      { name: 'Estimate timeline', note: 'Unclear timelines', highlight: true },
+      { name: 'Fill application', note: 'Easy to get wrong', highlight: true },
+      { name: 'Review', note: 'Easy to miss steps', highlight: true },
+      { name: 'Submit' },
+    ]}
+  />
+  <DesktopCallouts tasks={design.tasks} />
+</Section>
+
+<Section id="more-ai" index="04" label="Research" title="Is more AI better?">
+  <Reframe text="Do the three touchpoints need full AI, or is less enough?" />
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">We expected more AI to help, and also to bring new usability problems. To test it, we built three versions. Each runs the same three steps. Only the level of AI changes.</p>
+  <VersionMatrix versions={means.versions} rows={versionRows.rows} caption="The three versions. Each row is one step; only the level of AI changes across it." />
+  <Stats
+    items={[
+      { value: '42', caption: '12 architects + 30 residents' },
+      { value: '14', caption: 'per version, one version each' },
+      { value: '78%', caption: 'use AI regularly or heavily' },
+    ]}
+  />
+  <StepFlow
+    ariaLabel="Study flow"
+    caption="Each session ran inside a Qualtrics survey, about 5–8 minutes."
+    steps={[
+      { name: 'Consent and intro' },
+      { name: 'Task 1: Timeline', highlight: true },
+      { name: 'Task 2: Form', highlight: true },
+      { name: 'Task 3: Review', highlight: true },
+      { name: '15-question survey', note: '9 Likert, 5 multi-select, 1 open' },
+    ]}
+  />
+  <RoleCards
+    roles={[
+      { name: 'Usability', tag: '2 items', text: 'The help made it clear what to do. The form took little time and effort.' },
+      { name: 'Trust', tag: '3 items', text: 'Confidence completing the task, in the accuracy of the information and in smooth corrections later.' },
+      { name: 'Performance expectations', tag: '4 items', text: 'Confidence in the timeline, understanding the issues, fixing errors and smooth corrections.' },
+    ]}
+  />
+</Section>
+
+<Section id="results" index="05" label="Research" title="Results">
+  <Statement>AI helped. <em>More AI didn’t help more.</em></Statement>
+  <ResultsMeans
+    versions={means.versions}
+    panels={means.panels}
+    ariaLabel="Mean usability, trust and performance expectations by version with 95% confidence intervals. Each rises sharply from no AI to partial AI; the difference between partial and full AI is not significant."
+    caption="Mean score (1–5) with 95% confidence interval, 14 people per version. One-way ANOVA per measure; brackets show Tukey post-hoc tests."
+  />
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Both AI versions beat the baseline on all three measures, with large effects. Full AI scored a little higher than partial AI on each one. None of those gaps were significant.</p>
+  <QuoteCards
+    source="Open question at the end of the survey"
+    groups={[
+      {
+        label: 'Residents',
+        summary: 'Mostly positive, most of all when they knew little about permits. Some drew a line at personal data.',
+        quotes: [
+          'AI assistance is very helpful for the whole process, especially when i have no prior knowledge in this application.',
+          'For me AI is for exploring info, NOT to manage my personal private information',
+          'It provides me with some information. But still I would move forward based on lots of guesses.',
+        ],
+      },
+      {
+        label: 'Architects',
+        summary: 'Mixed. Some wanted AI and their independence. Some ran into glitches on the review page.',
+        quotes: ['I prefer with AI but also keep independence'],
+      },
+    ]}
+  />
+</Section>
+
+<Section id="outcome" index="06" label="Outcome" title="Outcome">
+  <Statement>The version we designed first <em>wasn’t the one to build.</em></Statement>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">We designed the full-AI version first. Partial AI at the same three steps got most of the gain. Personalization and cited sources add build cost for no significant gain. If the City builds one, partial AI is the level to start with.</p>
+</Section>
+
+<Section id="takeaways" index="07" label="Takeaways" title="Takeaways">
+  <ol>
+    <Takeaway n={1} title="The right amount of AI wasn’t the most AI">Going in, more AI looked like the obvious answer. The data showed partial AI captured most of the gain. Now I test how much help a step needs before adding more.</Takeaway>
+    <Takeaway n={2} title="Change one thing at a time">All three versions ran the same three steps. Only the AI level changed. That is what made the result readable.</Takeaway>
+    <Takeaway n={3} title="What this study can’t tell us">Each version had only 4 architects, and we couldn’t recruit City permit reviewers. Partial and full AI were also hard to tell apart for some participants. A next round would use real applications and measure time and errors.</Takeaway>
+  </ol>
+</Section>
+
+</CaseStudy>
