@@ -2,6 +2,7 @@
 dist/
 .astro/
 .a11y-build/
+.og-build/
 
 # dependencies
 node_modules/

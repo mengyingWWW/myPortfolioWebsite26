@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "a11y": "node scripts/a11y-scan.ts"
+    "a11y": "node scripts/a11y-scan.ts",
+    "og": "node scripts/og-capture.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",

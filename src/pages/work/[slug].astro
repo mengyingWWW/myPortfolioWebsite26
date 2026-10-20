@@ -1,4 +1,5 @@
 ---
+import { existsSync } from 'node:fs';
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Container from '@/components/layout/Container.astro';
@@ -11,6 +12,7 @@ import AtAGlance from '@/components/case-study/AtAGlance.astro';
 import ScreenWall from '@/components/case-study/ScreenWall.astro';
 import { mdxComponents } from '@/components/mdx';
 import { getSortedWork, type WorkEntry } from '@/lib/work';
+import { site } from '@/data/site';
 
 export async function getStaticPaths() {
   const projects = await getSortedWork();
@@ -27,6 +29,15 @@ interface Props {
 
 const { project, next } = Astro.props;
 const { Content } = await render(project);
+
+// Share card: the cover, letterboxed to 1200 × 627 by `npm run og` (the homepage card until that has run).
+const shareImage = `/og/work/${project.id}.png`;
+const share = {
+  title: `${project.data.title} — ${site.fullName}`,
+  description: project.data.subtitle ?? project.data.summary.split(/(?<=\.)\s/)[0],
+  image: existsSync(new URL(`../../../public${shareImage}`, import.meta.url)) ? shareImage : undefined,
+  imageAlt: project.data.coverAlt ?? project.data.title,
+};
 
 const accent = {
   main: '#C2410C',
@@ -45,7 +56,7 @@ const accentTokens = {
 };
 ---
 
-<BaseLayout title={project.data.title} description={project.data.summary} noindex={project.data.noindex}>
+<BaseLayout title={project.data.title} description={project.data.summary} noindex={project.data.noindex} share={share}>
   <article style={accentTokens}>
     <ProjectHero project={project} />
     <Container class="pt-20">

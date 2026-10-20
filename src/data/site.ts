@@ -4,7 +4,9 @@ export const site = {
   fullName: 'Mengying Wang',
   title: 'Mengying Wang — UX/Product Designer & Researcher',
   description:
-    'UX/Product Designer & Researcher. MS in Human Centered Design & Engineering at the University of Washington, based in Seattle.',
+    'Product designer who researches. AI and B2B products, from 0→1 mobile to enterprise knowledge tools. MS HCDE @ UW · B.Eng Architecture @ Tsinghua.',
+  /** Default social share card (Open Graph / Twitter); regenerate with `npm run og`. */
+  shareImage: { src: '/og/home.png', width: 1200, height: 627, alt: 'Mengying Wang’s homepage: “Hello, I am Mengying. A product designer who researches.” over soft leaf shadows' },
   email: 'mengyingwww712@gmail.com',
   /** Put the file at public/resume.pdf. */
   resume: '/resume.pdf',

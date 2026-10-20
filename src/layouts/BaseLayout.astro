@@ -20,6 +20,8 @@ interface Props {
   noindex?: boolean;
   /** Leave out the canonical link (e.g. the 404 page, which is served for any missing URL). */
   noCanonical?: boolean;
+  /** Social share card (Open Graph / Twitter). Defaults to the homepage card. */
+  share?: { title?: string; description?: string; image?: string; imageAlt?: string };
 }
 
 const {
@@ -29,11 +31,16 @@ const {
   animateNav = false,
   noindex = false,
   noCanonical = false,
+  share = {},
 } = Astro.props;
 const pageTitle = title ? `${title} — ${site.fullName}` : site.title;
 // Always with a trailing slash, matching the sitemap's URLs.
 const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const canonical = Astro.site && !noCanonical ? new URL(path, Astro.site).href : undefined;
+const shareTitle = share.title ?? site.title;
+const shareDescription = share.description ?? site.description;
+const shareImage = new URL(share.image ?? site.shareImage.src, Astro.site ?? Astro.url).href;
+const shareImageAlt = share.imageAlt ?? site.shareImage.alt;
 ---
 
 <!doctype html>
@@ -48,6 +55,19 @@ const canonical = Astro.site && !noCanonical ? new URL(path, Astro.site).href : 
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.fullName} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:title" content={shareTitle} />
+    <meta property="og:description" content={shareDescription} />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:width" content={String(site.shareImage.width)} />
+    <meta property="og:image:height" content={String(site.shareImage.height)} />
+    <meta property="og:image:alt" content={shareImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={shareTitle} />
+    <meta name="twitter:description" content={shareDescription} />
+    <meta name="twitter:image" content={shareImage} />
     <slot name="head" />
   </head>
   <body class="flex min-h-screen flex-col">
