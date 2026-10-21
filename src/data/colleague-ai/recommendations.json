@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    { "id": "rec-description", "priority": "high", "fixes": ["A2", "A3"], "title": "Rename “Description” to “Add questions”", "text": "Add one line of helper text that says the teacher writes the questions here." },
+    { "id": "rec-rubric", "priority": "high", "fixes": ["R1", "R3"], "title": "Offer the new rubric right away", "text": "After a rubric is made, show “Use this rubric for your assessment” and confirm when it’s attached. Let teachers keep refining it with AI." },
+    { "id": "rec-grader", "priority": "high", "fixes": ["G1", "G4"], "title": "Put the AI Grader first and add Save", "text": "Move the AI Grader above the teacher’s feedback. End the flow with a clear button to save and send to students." },
+    { "id": "rec-dropdown", "priority": "high", "fixes": ["A4"], "title": "Put “Create a new rubric with Claire” in the dropdown", "text": "Teachers then pick one option from one list." },
+    { "id": "rec-gradebook", "priority": "high", "fixes": ["A5"], "title": "Explain “Include in Gradebook”", "text": "Say what it does next to the toggle, or move it to grading. Placement needs another round of testing." },
+    { "id": "rec-scales", "priority": "high", "fixes": ["R2"], "title": "Rethink the default rating scales", "text": "Research the scales districts use and tailor options by subject." },
+    { "id": "rec-language", "priority": "high", "fixes": ["G2"], "title": "Write AI feedback for students", "text": "Simpler words, clear next steps and an encouraging tone." },
+    { "id": "rec-edit-ai", "priority": "low", "fixes": ["G3"], "title": "Make AI feedback editable", "text": "Edit it in place like a document, and save the edits." },
+    { "id": "rec-find", "priority": "low", "fixes": ["A1"], "title": "Study why Assessment is hard to find", "text": "Two teachers confused it with the Teaching Aide. The cause needs more research." }
+  ]
+}

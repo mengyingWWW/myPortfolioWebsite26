@@ -77,7 +77,7 @@ const { roles, hint = 'Tap a role for the details.' } = Astro.props;
     {roles.map((r, i) => (
       <button
         type="button"
-        class="cm-tag"
+        class="cm-tag tap-target"
         style={`left:${r.x}%;top:${r.y}%`}
         aria-pressed={i === 0 ? 'true' : 'false'}
         aria-controls="cm-bubble"

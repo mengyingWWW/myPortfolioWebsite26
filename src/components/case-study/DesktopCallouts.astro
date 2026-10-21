@@ -62,7 +62,7 @@ const mmss = (s?: number) => (s ? `${Math.floor(s / 60)}:${String(Math.round(s %
           </div>
         )}
         <div class="dc-steps">
-          {task.clip && <button type="button" class="dc-toggle" aria-label="Pause" data-cursor-label="PAUSE"><svg class="i-pause" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor"/></svg><svg class="i-play" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"/></svg></button>}
+          {task.clip && <button type="button" class="dc-toggle tap-target" aria-label="Pause" data-cursor-label="PAUSE"><svg class="i-pause" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2h3v12H4zM9 2h3v12H9z" fill="currentColor"/></svg><svg class="i-play" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2l10 6-10 6z" fill="currentColor"/></svg></button>}
           <ol>
             {task.pins.map((p, i) => (
               <li><button type="button" class="dc-step" data-at={p.at ?? ''} data-placed="1" data-note={p.d ?? ''} disabled={!task.clip || p.at === undefined}><i>{i + 1}</i>{p.t}</button></li>

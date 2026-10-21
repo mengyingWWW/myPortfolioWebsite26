@@ -34,7 +34,7 @@ const LABEL: Record<Status, string> = {
       <p class="sm-design" role="cell">{r.design}</p>
       <p class="sm-status" role="cell">
         {r.href ? (
-          <a class="sm-chip" href={r.href}>{LABEL[r.status]}{r.ref && <span class="sm-ref"> · {r.ref}</span>} <span aria-hidden="true">↓</span></a>
+          <a class="sm-chip tap-target" href={r.href}>{LABEL[r.status]}{r.ref && <span class="sm-ref"> · {r.ref}</span>} <span aria-hidden="true">↓</span></a>
         ) : (
           <span class="sm-chip">{LABEL[r.status]}</span>
         )}

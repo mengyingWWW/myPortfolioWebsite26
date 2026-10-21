@@ -109,7 +109,7 @@
 .pf-pop-head {
   padding-right: 28px;
 }
-/* Phones lay the page out at 1200px and scale it down, so touch gets a bigger target. */
+/* Touch gets a 44px target. */
 @media (pointer: coarse) {
   .pf-close {
     top: 4px;

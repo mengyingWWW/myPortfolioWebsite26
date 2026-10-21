@@ -40,6 +40,12 @@
   /* Image → its caption. */
   --space-caption: 8px;
 }
+@media (width < 768px) {
+  :root {
+    --space-section: 80px;
+    --space-block: 36px;
+  }
+}
 
 @theme inline {
   --spacing-section: var(--space-section);
@@ -55,12 +61,7 @@
   }
 
   body {
-    min-width: 1200px;
     @apply font-sans text-base leading-relaxed;
-  }
-  /* Pages that opt into a device-width layout (BaseLayout `responsive`); every other page stays at 1200px. */
-  html[data-responsive] body {
-    min-width: 0;
   }
 
   ::selection {
@@ -68,14 +69,8 @@
   }
 }
 
-/* Phones on a page that opts into a device-width layout (BaseLayout `responsive`), e.g. mobile:grid-cols-1. */
-@custom-variant mobile {
-  @media (width < 768px) {
-    html[data-responsive] & {
-      @slot;
-    }
-  }
-}
+/* Phones, e.g. mobile:grid-cols-1. Tablets (768–1023px) use `max-lg:`. */
+@custom-variant mobile (@media (width < 768px));
 
 /* First stop for keyboard users; off-screen until focused. */
 @layer components {
@@ -85,6 +80,27 @@
   }
   .skip-link:focus {
     translate: 0;
+  }
+}
+
+/*
+ * Touch screens: a control smaller than 44×44px gets an invisible 44px hit area centred on it.
+ * In a layer, so a component that positions the control itself (e.g. absolute) still wins.
+ */
+@layer components {
+  @media (pointer: coarse) {
+    .tap-target {
+      position: relative;
+    }
+    .tap-target::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      translate: -50% -50%;
+    }
   }
 }
 
@@ -183,5 +199,17 @@
 
   .prose-body hr {
     @apply my-24 border-line;
+  }
+
+  @media (width < 768px) {
+    .prose-body {
+      @apply text-[17px];
+    }
+    .prose-body h2 {
+      @apply text-[26px];
+    }
+    .prose-body blockquote {
+      @apply pl-5 text-xl;
+    }
   }
 }

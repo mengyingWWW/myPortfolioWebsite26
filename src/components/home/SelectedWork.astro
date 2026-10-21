@@ -25,3 +25,28 @@ const yearRange = first === last ? `${first}` : `${first} — ${last}`;
     </div>
   </Container>
 </section>
+
+<script>
+  // Back from a case study ("All work"): highlight the card the visitor came from. pageshow also covers a
+  // page restored from the back/forward cache, where scripts don't run again.
+  const RETURN_KEY = 'work-return';
+
+  window.addEventListener('pageshow', () => {
+    let id: string | null = null;
+    try {
+      id = sessionStorage.getItem(RETURN_KEY);
+      sessionStorage.removeItem(RETURN_KEY);
+    } catch {
+      // Storage blocked: fall back to the hash.
+    }
+    id ??= location.hash.startsWith('#work-') ? decodeURIComponent(location.hash.slice(1)) : null;
+    if (!id || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const card = document.getElementById(id);
+    if (!card?.matches('[data-project-card]')) return;
+    card.classList.remove('is-returning');
+    void card.offsetWidth;
+    card.classList.add('is-returning');
+    setTimeout(() => card.classList.remove('is-returning'), 1300);
+  });
+</script>

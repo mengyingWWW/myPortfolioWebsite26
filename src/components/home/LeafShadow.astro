@@ -66,8 +66,10 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
   const OVERSCAN = 0.92;
   /** Duration (ms) of the ease to a new sun position. */
   const SUN_TRANSITION = 1200;
-  /** Canvas pixels per CSS pixel. */
+  /** Canvas pixels per CSS pixel; lower on phones to spare their GPUs. */
   const RESOLUTION = 0.6;
+  const PHONE_RESOLUTION = 0.4;
+  const phone = window.matchMedia('(width < 768px)');
   /** Number of recent cursor samples kept as wind sources. */
   const RING_SIZE = 12;
   /** Minimum time (ms) between new cursor samples. */
@@ -470,8 +472,9 @@ const { src = '/images/hero/leaf-shadow.png' } = Astro.props;
 
     function resize() {
       const rect = section.getBoundingClientRect();
-      canvas.width = Math.max(1, Math.round(rect.width * RESOLUTION));
-      canvas.height = Math.max(1, Math.round(rect.height * RESOLUTION));
+      const resolution = phone.matches ? PHONE_RESOLUTION : RESOLUTION;
+      canvas.width = Math.max(1, Math.round(rect.width * resolution));
+      canvas.height = Math.max(1, Math.round(rect.height * resolution));
       gl!.viewport(0, 0, canvas.width, canvas.height);
       gl!.uniform2f(uniforms.resolution, canvas.width, canvas.height);
 

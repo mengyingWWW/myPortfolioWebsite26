@@ -114,7 +114,7 @@ export const education: { school: string; fields: Field[] }[] = [
 
 export const experience: { org: string; role: string; year: string }[] = [
   { org: 'IDEA Enterprises', role: 'UX / Product Designer Intern', year: '2026.6 – 2026.9' },
-  { org: 'Colleague.AI', role: 'UX Research Lead · Industry-Sponsored Course Project', year: '2026.1 – 2026.3' },
+  { org: 'Colleague.AI', role: 'UX Researcher · Industry-Sponsored Course Project', year: '2026.1 – 2026.3' },
   { org: 'City University of Hong Kong · KnowVis Lab', role: 'UX Researcher Intern', year: '2025.6 – 2025.12' },
   { org: 'NetEase Games', role: 'UX / Product Designer Intern', year: '2024.6 – 2024.9' },
   { org: 'Tsinghua Future Lab', role: 'UX / Product Designer Intern', year: '2023.6 – 2023.9' },

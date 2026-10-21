@@ -109,7 +109,7 @@ import design from '@/data/seattle-ai-permitting/tasks.json';
   />
 </Section>
 
-<Section id="design" index="03" label="Design" title="Three touchpoints">
+<Section id="design" index="03" label="Design" title="Design">
   <p class="max-w-[680px] text-lg leading-[1.6] text-muted">One AI touchpoint at each friction point. The walkthroughs below show the full-AI version. Press play to watch each one.</p>
   <StepFlow
     ariaLabel="Steps of a permit application"
@@ -125,7 +125,7 @@ import design from '@/data/seattle-ai-permitting/tasks.json';
   <DesktopCallouts tasks={design.tasks} />
 </Section>
 
-<Section id="more-ai" index="04" label="Research" title="Is more AI better?">
+<Section id="more-ai" index="04" label="Research" title="Study">
   <Reframe text="Do the three touchpoints need full AI, or is less enough?" />
   <p class="max-w-[680px] text-lg leading-[1.6] text-muted">We expected more AI to help, and also to bring new usability problems. To test it, we built three versions. Each runs the same three steps. Only the level of AI changes.</p>
   <VersionMatrix versions={means.versions} rows={versionRows.rows} caption="The three versions. Each row is one step; only the level of AI changes across it." />

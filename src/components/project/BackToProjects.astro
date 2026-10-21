@@ -1,0 +1,129 @@
+---
+/**
+ * Floating "All work" pill for case studies. Fixed below the sticky nav from 1024px up; under that,
+ * a round arrow button at the bottom left. Leaving `left` unset on desktop keeps it at its static x, so
+ * render it at the start of a Container: it then lines up with the content column (and the sidebar).
+ * TableOfContents starts its sticky position below the pill.
+ */
+interface Props {
+  /** The project's id; its homepage card is #work-{slug}. */
+  slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<a href={`/#work-${slug}`} class="back-to-projects" data-back-to-work={`work-${slug}`} aria-label="All work">
+  <span class="btp-arrow" aria-hidden="true">←</span>
+  <span class="btp-label">All work</span>
+</a>
+
+<style>
+  .back-to-projects {
+    position: fixed;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 24px;
+    color: #111;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.8),
+      inset 0 0 0 0.5px rgba(0, 0, 0, 0.08),
+      0 6px 18px rgba(20, 24, 32, 0.08);
+    transition: background-color 150ms ease;
+  }
+  .back-to-projects:is(:hover, :focus-visible) {
+    background: rgba(255, 255, 255, 0.75);
+  }
+  .back-to-projects:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 4px;
+  }
+  .btp-arrow {
+    display: inline-block;
+    transition: transform 150ms ease;
+  }
+  .back-to-projects:is(:hover, :focus-visible) .btp-arrow {
+    transform: translateX(-3px);
+  }
+
+  /* 24px line + 2 × 10px padding = 44px tall. Keep in sync with TableOfContents' sticky top. */
+  @media (width >= 1024px) {
+    .back-to-projects {
+      top: calc(5rem + 24px);
+      padding: 10px 16px;
+    }
+  }
+  /* The sidebar's text is inset 20px; with no sidebar gutter to spare, the content's edge. */
+  @media (width >= 1280px) {
+    .back-to-projects {
+      margin-left: 20px;
+    }
+  }
+
+  @media (width < 1024px) {
+    .back-to-projects {
+      left: calc(16px + env(safe-area-inset-left));
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      width: 48px;
+      height: 48px;
+      font-size: 18px;
+    }
+    .btp-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .back-to-projects,
+    .btp-arrow {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /*
+   * Arriving from the homepage marks this history entry; while it's still the current one, going back restores
+   * the homepage's exact scroll. Otherwise the link's /#work-{slug} lands on the card. Either way the homepage
+   * highlights that card (SelectedWork reads RETURN_KEY).
+   */
+  const RETURN_KEY = 'work-return';
+
+  const referrer = (() => {
+    try {
+      return new URL(document.referrer);
+    } catch {
+      return null;
+    }
+  })();
+  if (referrer && referrer.origin === location.origin && referrer.pathname === '/' && !history.state?.fromHome) {
+    history.replaceState({ ...history.state, fromHome: true }, '');
+  }
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-back-to-work]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      try {
+        sessionStorage.setItem(RETURN_KEY, link.dataset.backToWork!);
+      } catch {
+        // Storage blocked: the hash still lands on the card.
+      }
+      if (history.state?.fromHome) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+  });
+</script>

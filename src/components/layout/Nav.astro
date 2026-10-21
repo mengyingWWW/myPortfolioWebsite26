@@ -26,7 +26,7 @@ const isCurrent = (href: string) => {
     <a href="/" class="flex items-center mobile:min-h-11 mobile:min-w-11" aria-label="Mengying Wang — Home">
       <MWLogo variant="mark" theme="light" />
     </a>
-    <ul class="flex items-center gap-14 text-xs font-medium tracking-wider uppercase mobile:gap-6">
+    <ul class="flex items-center gap-14 text-xs font-medium tracking-wider uppercase mobile:gap-5 mobile:text-[14px]">
       {
         navLinks.map((link) => (
           <li>
@@ -83,7 +83,7 @@ const isCurrent = (href: string) => {
   }
   /* Phones: 44px tap targets. */
   @media (width < 768px) {
-    :global(html[data-responsive]) .nav-link {
+    .nav-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;

@@ -85,7 +85,8 @@ const rowTotal = (r) => Object.values(r.cells).reduce((n, c) => n + c.length, 0)
 
 <style>
   .am { margin: 0; }
-  .am-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Positioned, so the table's absolutely placed sr-only text is clipped here instead of widening the page. */
+  .am-scroll { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .am-grid { width: 100%; min-width: 760px; border-collapse: separate; border-spacing: 8px; table-layout: fixed; }
   .am-grid th, .am-grid td { text-align: left; vertical-align: top; }
   .am-grid thead th { padding: 0 12px 4px; font-weight: 400; }

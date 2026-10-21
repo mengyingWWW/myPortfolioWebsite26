@@ -54,7 +54,7 @@ const clientStops = stops.map((stop) => ({
       stops.map((stop, i) => (
         <button
           type="button"
-          class="sks-story-btn"
+          class="sks-story-btn tap-target"
           aria-current={i === 0 ? 'true' : 'false'}
           tabindex={i === 0 ? 0 : -1}
           data-city={i}
@@ -176,9 +176,10 @@ const clientStops = stops.map((stop) => ({
     color: #111;
   }
 
+  /* Leaves room on each side for the ‹ › (53px), which sit outside the drawing. */
   .sks-stage {
     position: relative;
-    width: min(100%, var(--sundial-max-width, 760px));
+    width: min(100% - 106px, var(--sundial-max-width, 760px));
     margin-top: 40px;
     cursor: pointer;
   }
@@ -226,6 +227,7 @@ const clientStops = stops.map((stop) => ({
   /* Narrow windows: below the scene, at its two ends, instead of over the drawing. */
   @media (max-width: 600px) {
     .sks-stage {
+      width: min(100%, var(--sundial-max-width, 760px));
       padding-bottom: 48px;
     }
     .sks-nav {

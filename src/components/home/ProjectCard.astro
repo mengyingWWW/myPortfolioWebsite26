@@ -30,7 +30,8 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
 
 <a
   href={workUrl(project)}
-  class="work-card block"
+  id={`work-${project.id}`}
+  class="work-card block scroll-mt-[calc(5rem+32px)]"
   aria-label={`View ${title} case study`}
   aria-describedby={descriptionId}
   data-cursor="view"
@@ -92,17 +93,17 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
   /* Phones: up to two lines, slightly smaller. Every item carries its divider, and the one at the start of
      each line falls in the clipped strip on the left. */
   @media (width < 768px) {
-    :global(html[data-responsive]) .work-card-meta {
+    .work-card-meta {
       height: auto;
       max-height: 40px;
       margin-left: -17px;
       clip-path: inset(0 0 0 17px);
       font-size: 12px;
     }
-    :global(html[data-responsive]) .work-card-meta li {
+    .work-card-meta li {
       margin-left: 17px;
     }
-    :global(html[data-responsive]) .work-card-meta li::before {
+    .work-card-meta li::before {
       content: '';
       position: absolute;
       top: 50%;
@@ -190,6 +191,18 @@ const shift = (focus: number) => `${+(50 - focus * coverScale).toFixed(3)}%`;
   }
   .work-card:is(:hover, :focus-visible) :global(.work-card-placeholder) {
     color: var(--color-meta);
+  }
+
+  /* Back from its case study: the cover brightens a little, then settles (SelectedWork's script). */
+  @media (prefers-reduced-motion: no-preference) {
+    .work-card.is-returning .work-card-media {
+      animation: work-card-return 1.2s ease-out;
+    }
+  }
+  @keyframes work-card-return {
+    25% {
+      filter: brightness(1.08);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

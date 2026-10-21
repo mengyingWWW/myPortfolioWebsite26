@@ -1,0 +1,471 @@
+{
+  "workflows": [
+    {
+      "key": "assessment",
+      "task": "Task 1",
+      "label": "Create an assessment",
+      "steps": [
+        "Find Assessment",
+        "Describe it",
+        "Set status",
+        "Assign class",
+        "Rubric & keys",
+        "Pick a rubric",
+        "Essay rubric",
+        "Answer keys",
+        "Grading settings",
+        "Reopen to edit"
+      ],
+      "shots": [
+        {
+          "src": "/work/colleague-ai/steps/t1-01.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Enter the assessment description",
+          "alt": "Create Assessment form. A title and a one-line description are filled in."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t1-02.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Set the status to active",
+          "alt": "General Settings with the status set to Active."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t1-03.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Apply it to a classroom",
+          "alt": "Classroom picker open, listing the teacher’s classes."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t1-04.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Set rubrics and answer keys",
+          "alt": "Rubrics and Answer Keys panel with the rubric dropdown and Create with Claire."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t1-05.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Use an existing rubric",
+          "alt": "Rubric dropdown open, listing saved rubrics."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t1-06.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Choose the essay rubric",
+          "alt": "Rubric dropdown with the essay rubric about to be selected."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t1-07.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Set answer keys",
+          "alt": "Answer keys editor with a short answer key typed in."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t1-08.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Set grading details",
+          "alt": "Grading Details with Include in Gradebook, Instant AI Feedback, due date and attempts."
+        }
+      ]
+    },
+    {
+      "key": "rubric",
+      "task": "Task 2",
+      "label": "Create a rubric",
+      "steps": [
+        "Open draft",
+        "New rubric",
+        "Rubric type",
+        "Describe task",
+        "Rating scale",
+        "Custom scale",
+        "Extra needs",
+        "AI drafting",
+        "AI rubric",
+        "Attach rubric"
+      ],
+      "shots": [
+        {
+          "src": "/work/colleague-ai/steps/t2-01.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Create a personalized rubric",
+          "alt": "Rubric builder with title, rubric type, subject and grade fields."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t2-02.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Choose specific rubrics for assessments",
+          "alt": "Type of Rubric dropdown open with general and specific options."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t2-03.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Input the assessment description",
+          "alt": "Assessment text typed into the rubric builder."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t2-04.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Select rating scales",
+          "alt": "Rating Scales dropdown open with Bloom’s Taxonomy and other scales."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t2-05.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Set a custom scale",
+          "alt": "Custom scale set to 10 points."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t2-06.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Input other requirements",
+          "alt": "Other requirements box with extra grading notes."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t2-07.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "AI thinking",
+          "alt": "The AI drafting the rubric, with a warning not to leave the page."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t2-08.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "AI-generated rubric",
+          "alt": "The finished AI rubric in its own editor tab, with five score levels."
+        }
+      ]
+    },
+    {
+      "key": "grading",
+      "task": "Task 3",
+      "label": "Grade with AI",
+      "steps": [
+        "Find grading",
+        "Open grading",
+        "Pick student",
+        "Write feedback",
+        "Grade + run AI",
+        "Use AI feedback",
+        "Growth insights",
+        "Gradebook",
+        "Edit grades",
+        "Send to students"
+      ],
+      "shots": [
+        {
+          "src": "/work/colleague-ai/steps/t3-01.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Open the grading page",
+          "alt": "Grading page before a student is picked, with an upload area."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t3-02.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Select a student to grade",
+          "alt": "Student picker open on the grading page."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t3-03.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Input feedback",
+          "alt": "Teacher feedback box above the AI Grader."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t3-04.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Input a final grade and run AI grading",
+          "alt": "Final grade entered next to Return Grade; Run AI Grading sits lower down."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t3-05.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Integrate the AI grader feedback",
+          "alt": "AI Grader overview and extended report for the sample essay."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t3-06.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Check student growth insights",
+          "alt": "Assessments list under the class tabs."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t3-07.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Open the grade book",
+          "alt": "Student Growth Insights page with the Grade Book link."
+        },
+        {
+          "src": "/work/colleague-ai/steps/t3-08.webp",
+          "width": 1400,
+          "height": 694,
+          "label": "Edit grades",
+          "alt": "Grade Book with the sample student’s score."
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "A1",
+      "workflow": "assessment",
+      "step": 0,
+      "severity": "low",
+      "freq": 2,
+      "short": "Can't find the Assessment feature",
+      "title": "Initial friction finding the Assessment feature",
+      "body": "Two teachers mistook the Teaching Aide for the Assessment feature. Both found the right one in the end.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-A1.webp",
+        "width": 1150,
+        "height": 600,
+        "alt": "Class dashboard in the study sandbox. The Teaching Aide and Assessments tabs sit side by side, highlighted."
+      }
+    },
+    {
+      "id": "A2",
+      "workflow": "assessment",
+      "step": 1,
+      "severity": "high",
+      "freq": 3,
+      "short": "Unclear what the AI will create",
+      "title": "Unclear expectations from the Assessment feature",
+      "body": "Some teachers expected the AI to write the questions. They typed what they wanted and left the answer key blank.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-A2.webp",
+        "width": 1160,
+        "height": 610,
+        "alt": "The Description field in Create Assessment, highlighted, holding a one-line request for an essay."
+      }
+    },
+    {
+      "id": "A3",
+      "workflow": "assessment",
+      "step": 1,
+      "severity": "high",
+      "freq": 3,
+      "short": "“Description” doesn't read as questions",
+      "title": "Unsure where to add questions",
+      "body": "The field for questions is labeled “Description”. Teachers looked elsewhere before they tried it.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-A3.webp",
+        "width": 1160,
+        "height": 610,
+        "alt": "The label of the questions field, highlighted. It reads Description."
+      },
+      "quote": {
+        "text": "I gotta be honest, that was not clear that the Description is where my assessment questions would be.",
+        "by": "Teacher P4"
+      }
+    },
+    {
+      "id": "A4",
+      "workflow": "assessment",
+      "step": 5,
+      "severity": "medium",
+      "freq": 4,
+      "short": "Pick a rubric or “Create with Claire”?",
+      "title": "Not sure how to add the rubric",
+      "body": "Teachers picked the General Rubric from the dropdown, then clicked “Create with Claire” as well.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-A4.webp",
+        "width": 942,
+        "height": 360,
+        "alt": "Rubric dropdown with Rubric | ESSAY selected and the Create with Claire button right below it, highlighted."
+      }
+    },
+    {
+      "id": "A5",
+      "workflow": "assessment",
+      "step": 8,
+      "severity": "high",
+      "freq": 5,
+      "short": "“Include in Gradebook” skipped",
+      "title": "Unable to understand the “Include in Gradebook” setting",
+      "body": "Every teacher skipped the toggle. After grading, they couldn’t find the grades in the gradebook.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-A5.webp",
+        "width": 1042,
+        "height": 360,
+        "alt": "Grading Details with the Include in Gradebook toggle, highlighted."
+      }
+    },
+    {
+      "id": "A6",
+      "workflow": "assessment",
+      "step": 9,
+      "severity": "high",
+      "freq": 4,
+      "short": "Can't find how to edit the draft",
+      "title": "Unsure where to edit the assessment",
+      "body": "Teachers clicked the assessment row to edit it, and the AI Grader opened. Most never noticed the pencil icon.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-A6.webp",
+        "width": 980,
+        "height": 420,
+        "alt": "Assessments list on the class dashboard. The small pencil icons that open the editor are highlighted."
+      },
+      "quote": {
+        "text": "That was not intuitive at all… If I wasn’t being assisted, I would have spent a lot of time clicking around mindlessly trying to find the document I just created",
+        "by": "Teacher P1"
+      }
+    },
+    {
+      "id": "R1",
+      "workflow": "rubric",
+      "step": 9,
+      "severity": "high",
+      "freq": 3,
+      "short": "Can't find the new rubric to attach",
+      "title": "Could not find the created rubric",
+      "body": "The new rubric opened in another tab. Teachers expected it to attach itself and had to go back and select it again.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-R1.webp",
+        "width": 942,
+        "height": 620,
+        "alt": "The rubric dropdown in Create Assessment, highlighted. Teachers had to come back here to select the rubric they had just made."
+      },
+      "quote": {
+        "text": "I would think the rubric would attach itself after making it.",
+        "by": "Teacher P3"
+      }
+    },
+    {
+      "id": "R2",
+      "workflow": "rubric",
+      "step": 4,
+      "severity": "medium",
+      "freq": 4,
+      "short": "Rating-scale terms don't match districts",
+      "title": "Did not understand the rating scales",
+      "body": "Scales such as Bloom’s Taxonomy and Advancement Levels didn’t match the terms their districts use.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-R2.webp",
+        "width": 1042,
+        "height": 500,
+        "alt": "Rating Scales dropdown, highlighted: Bloom’s Taxonomy, Advancement Levels, Reaching Standard and Depth of Knowledge."
+      }
+    },
+    {
+      "id": "R3",
+      "workflow": "rubric",
+      "step": 8,
+      "severity": "medium",
+      "freq": 3,
+      "short": "No sign the rubric was saved",
+      "title": "No system feedback after creating a rubric",
+      "body": "When the rubric appeared, teachers looked for a sign it was saved. One tried to save it as a PDF.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-R3.webp",
+        "width": 1200,
+        "height": 346,
+        "alt": "Top of the AI-generated rubric page, highlighted: an editor toolbar with no Save button or confirmation."
+      }
+    },
+    {
+      "id": "R4",
+      "workflow": "rubric",
+      "step": 2,
+      "severity": "low",
+      "freq": 2,
+      "short": "General vs specific rubric",
+      "title": "Confusion between general and specific rubrics",
+      "body": "Teachers paused between “general” and “specific” rubrics. Few found the hover text that explains them.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-R4.webp",
+        "width": 1200,
+        "height": 334,
+        "alt": "Type of Rubric dropdown, highlighted: General Rubrics for Standards and Specific Rubrics for Assessments."
+      }
+    },
+    {
+      "id": "G1",
+      "workflow": "grading",
+      "step": 4,
+      "severity": "low",
+      "freq": 3,
+      "short": "AI Grader sits below the teacher's box",
+      "title": "Trouble finding the AI Grader",
+      "body": "The teacher’s feedback box sits above the AI Grader. Teachers scrolled down to read the AI, then back up to write.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-G1.webp",
+        "width": 1072,
+        "height": 750,
+        "alt": "Grading panel. The teacher’s feedback box comes first; the AI Grader header, highlighted, sits below it."
+      }
+    },
+    {
+      "id": "G2",
+      "workflow": "grading",
+      "step": 5,
+      "severity": "medium",
+      "freq": 3,
+      "short": "Feedback written for teachers, not students",
+      "title": "AI feedback needs student-facing language",
+      "body": "The AI’s feedback was detailed and written in teacher language. Teachers expected to rewrite it for students.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-G2.webp",
+        "width": 1092,
+        "height": 360,
+        "alt": "The AI Grader’s overview of a sample essay, highlighted, written in teacher language."
+      }
+    },
+    {
+      "id": "G3",
+      "workflow": "grading",
+      "step": 5,
+      "severity": "medium",
+      "freq": 2,
+      "short": "Can't edit the AI feedback",
+      "title": "Desire to edit AI-generated feedback",
+      "body": "Teachers double-clicked the AI feedback to edit it like a document. Nothing happened.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-G3.webp",
+        "width": 1092,
+        "height": 427,
+        "alt": "The AI Grader’s extended report table, highlighted. It can’t be edited."
+      }
+    },
+    {
+      "id": "G4",
+      "workflow": "grading",
+      "step": 9,
+      "severity": "high",
+      "freq": 4,
+      "short": "No Save, no sign grades were sent",
+      "title": "Saving grade and feedback",
+      "body": "Grades save without any sign of it. Teachers searched for a Save button and worried students would never see their work.",
+      "shot": {
+        "src": "/work/colleague-ai/issues/issue-G4.webp",
+        "width": 1072,
+        "height": 270,
+        "alt": "Final grade field and the Return Grade button, highlighted. There is no Save button."
+      },
+      "quote": {
+        "text": "I would feel a lot more reassured if I could click Save somewhere.",
+        "by": "Teacher P1"
+      }
+    }
+  ]
+}

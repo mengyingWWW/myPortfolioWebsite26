@@ -48,7 +48,7 @@ const causeClass = (cause: string) => `as-cause ${cause === 'Uncategorized' ? 'i
             </div>
             <p class="as-issue">{i.title}</p>
             <p class="as-body">{i.body}</p>
-            <a class="as-fix" href={flow.fix} data-pin-link>See the fix <span aria-hidden="true">→</span></a>
+            <a class="as-fix tap-target" href={flow.fix} data-pin-link>See the fix <span aria-hidden="true">→</span></a>
           </PinCard>
         </>
       ))}
@@ -64,7 +64,7 @@ const causeClass = (cause: string) => `as-cause ${cause === 'Uncategorized' ? 'i
         </div>
         <p class="as-issue">{i.title}</p>
         <p class="as-body">{i.body}</p>
-        <a class="as-fix" href={flow.fix}>See the fix <span aria-hidden="true">→</span></a>
+        <a class="as-fix tap-target" href={flow.fix}>See the fix <span aria-hidden="true">→</span></a>
       </li>
     ))}
   </ol>

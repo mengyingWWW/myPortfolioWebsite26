@@ -1,0 +1,166 @@
+---
+// One task's walkthrough for colleague-ai "03 Findings": the 8 study steps as real screens from the
+// sandbox (4 × 2), with the issues teachers hit on each step. Steps before step 1 / after step 8
+// (outside the original 24-step map) show as dashed text rows. Each screen opens large in a dialog.
+// Data: src/data/colleague-ai/issues.json (workflow.steps 0–9, workflow.shots for steps 1–8).
+import data from '@/data/colleague-ai/issues.json';
+
+interface Props { workflow: 'assessment' | 'rubric' | 'grading' }
+const { workflow } = Astro.props;
+
+type Sev = 'high' | 'medium' | 'low';
+const sevLabel: Record<Sev, string> = { high: 'High', medium: 'Medium', low: 'Low' };
+const wf = data.workflows.find((w) => w.key === workflow)!;
+const issues = data.issues.filter((i) => i.workflow === workflow);
+const at = (s: number) => issues.filter((i) => i.step === s);
+const dialogId = `fg-dialog-${workflow}`;
+const edge = [
+  { step: 0, where: 'Before step 1' },
+  { step: 9, where: 'After step 8' },
+];
+---
+
+<div class="fg" data-flow-grid>
+  {edge.slice(0, 1).map((e) => (
+    <div class:list={['fg-edge', { 'has-issues': at(e.step).length > 0 }]}>
+      <span class="fg-edge-where">{e.where}</span>
+      <span class="fg-edge-name">{wf.steps[e.step]}</span>
+      {at(e.step).map((i) => (
+        <a class={`fg-chip sev-${i.severity}`} href={`#issue-${i.id}`} data-cursor-label="VIEW">{i.id}<span class="sr-only">, {sevLabel[i.severity as Sev]} severity</span></a>
+      ))}
+    </div>
+  ))}
+
+  <ol class="fg-grid">
+    {wf.shots.map((s, n) => {
+      const here = at(n + 1);
+      return (
+        <li class:list={['fg-step', { 'has-issues': here.length > 0 }]}>
+          <button
+            type="button"
+            class="fg-shot"
+            data-fg-open={dialogId}
+            data-src={s.src}
+            data-alt={s.alt}
+            data-caption={`Step ${n + 1} · ${s.label}`}
+            data-cursor-label="VIEW"
+            aria-label={`Enlarge step ${n + 1}: ${s.label}`}
+          >
+            <img src={s.src} width={s.width} height={s.height} alt={s.alt} loading="lazy" decoding="async" />
+            <span class="fg-num" aria-hidden="true">{n + 1}</span>
+          </button>
+          <p class="fg-label">{s.label}</p>
+          {here.length > 0 && (
+            <p class="fg-chips">
+              {here.map((i) => (
+                <a class={`fg-chip sev-${i.severity}`} href={`#issue-${i.id}`} data-cursor-label="VIEW">{i.id}<span class="sr-only">, {sevLabel[i.severity as Sev]} severity</span></a>
+              ))}
+            </p>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+
+  {edge.slice(1).map((e) => (
+    <div class:list={['fg-edge', { 'has-issues': at(e.step).length > 0 }]}>
+      <span class="fg-edge-where">{e.where}</span>
+      <span class="fg-edge-name">{wf.steps[e.step]}</span>
+      {at(e.step).map((i) => (
+        <a class={`fg-chip sev-${i.severity}`} href={`#issue-${i.id}`} data-cursor-label="VIEW">{i.id}<span class="sr-only">, {sevLabel[i.severity as Sev]} severity</span></a>
+      ))}
+    </div>
+  ))}
+
+  <dialog class="fg-dialog" id={dialogId} aria-label="Enlarged screen">
+    <form method="dialog" class="fg-close-row">
+      <button type="submit" class="fg-close" data-cursor-label="CLOSE">Close <span aria-hidden="true">×</span></button>
+    </form>
+    <img class="fg-big" src="" alt="" />
+    <p class="fg-cap"></p>
+  </dialog>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-fg-open]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const dlg = document.getElementById(btn.dataset.fgOpen!) as HTMLDialogElement | null;
+      if (!dlg) return;
+      const img = dlg.querySelector<HTMLImageElement>('.fg-big')!;
+      img.src = btn.dataset.src!;
+      img.alt = btn.dataset.alt!;
+      dlg.querySelector('.fg-cap')!.textContent = btn.dataset.caption!;
+      dlg.showModal();
+    });
+  });
+  // Click on the backdrop closes the dialog.
+  document.querySelectorAll<HTMLDialogElement>('.fg-dialog').forEach((dlg) => {
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  });
+</script>
+
+<style>
+  .fg {
+    --sev-high-bg: #5B21B6; --sev-high-fg: #FFFFFF;
+    --sev-medium-bg: #EDE9FE; --sev-medium-fg: #5B21B6;
+    --sev-low-bg: #F1F1EF; --sev-low-fg: #52525B;
+    display: grid; gap: 16px;
+  }
+  .fg-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; }
+  .fg-step { min-width: 0; }
+  .fg-shot {
+    position: relative; display: block; width: 100%; padding: 0; border: 1px solid #E6E6E4; border-radius: 8px;
+    overflow: hidden; background: #FFFFFF; cursor: zoom-in; transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .fg-step.has-issues .fg-shot { border-color: var(--cs-accent-border, #DDD6FE); box-shadow: 0 0 0 1px var(--cs-accent-border, #DDD6FE); }
+  .fg-shot:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, .08); }
+  .fg-shot:focus-visible { outline: 2px solid var(--cs-accent, #111111); outline-offset: 2px; }
+  .fg-shot img { display: block; width: 100%; height: auto; }
+  .fg-num {
+    position: absolute; top: 8px; left: 8px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+    background: #111111; color: #FFFFFF;
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: 12px; font-weight: 600;
+  }
+  .fg-step.has-issues .fg-num { background: var(--cs-accent, #111111); }
+  .fg-label { margin: 8px 0 0; font-size: 14px; line-height: 1.35; color: #3A3A3A; }
+  .fg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+
+  .fg-chip {
+    display: inline-flex; align-items: center; min-height: 26px; padding: 2px 10px; border-radius: 999px;
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace); font-size: 12px; font-weight: 600;
+    text-decoration: none;
+  }
+  .fg-chip.sev-high { background: var(--sev-high-bg); color: var(--sev-high-fg); }
+  .fg-chip.sev-medium { background: var(--sev-medium-bg); color: var(--sev-medium-fg); }
+  .fg-chip.sev-low { background: var(--sev-low-bg); color: var(--sev-low-fg); }
+  .fg-chip:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .fg-chip:focus-visible { outline: 2px solid var(--cs-accent, #111111); outline-offset: 2px; }
+
+  .fg-edge {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px;
+    border: 1px dashed #C9C9C6; border-radius: 8px; font-size: 14px; color: #3A3A3A;
+  }
+  .fg-edge-where {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: #6E6E6E;
+  }
+  .fg-edge-name { font-weight: 500; }
+  .fg-edge:not(.has-issues) { color: #6E6E6E; }
+
+  .fg-dialog {
+    margin: auto; width: min(1280px, 94vw); max-height: 92vh; padding: 16px; border: 0; border-radius: 12px; background: #FFFFFF;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .25);
+  }
+  .fg-dialog::backdrop { background: rgba(17, 17, 17, .6); }
+  .fg-close-row { display: flex; justify-content: flex-end; margin: 0 0 8px; }
+  .fg-close {
+    min-height: 44px; padding: 8px 16px; border: 1px solid #E6E6E4; border-radius: 999px; background: #FFFFFF;
+    font: inherit; font-size: 14px; cursor: pointer;
+  }
+  .fg-close:focus-visible { outline: 2px solid var(--cs-accent, #111111); outline-offset: 2px; }
+  .fg-big { display: block; width: 100%; height: auto; max-height: calc(92vh - 120px); object-fit: contain; border: 1px solid #E6E6E4; border-radius: 8px; }
+  .fg-cap { margin: 10px 0 0; font-size: 14px; color: #6E6E6E; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 900px) { .fg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (prefers-reduced-motion: reduce) { .fg-shot { transition: none; } }
+</style>

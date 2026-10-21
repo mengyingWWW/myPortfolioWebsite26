@@ -13,7 +13,7 @@ const year = new Date().getFullYear();
 <footer class="bg-white pt-24 pb-12">
   <Container class="flex flex-col items-center text-center">
     <MWLogo variant="live" label="Mengying Wang" class="relative z-[1]" />
-    <span class="h-px w-[720px] bg-[#e5e5e5] mobile:w-full" aria-hidden="true"></span>
+    <span class="h-px w-full max-w-[720px] bg-[#e5e5e5]" aria-hidden="true"></span>
 
     <a
       href={`mailto:${site.email}`}
@@ -56,7 +56,7 @@ const year = new Date().getFullYear();
   }
   /* Phones: the links may wrap, so they're spaced instead (no separator at the start of a line). */
   @media (width < 768px) {
-    :global(html[data-responsive]) .footer-links li + li::before {
+    .footer-links li + li::before {
       content: none;
     }
   }
@@ -67,7 +67,7 @@ const year = new Date().getFullYear();
   }
   /* Phones: 44px tap targets. */
   @media (width < 768px) {
-    :global(html[data-responsive]) .footer-link {
+    .footer-link {
       display: inline-flex;
       align-items: center;
       min-height: 44px;

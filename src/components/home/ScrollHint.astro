@@ -17,7 +17,7 @@ interface Props {
 const { target, label = 'View my work', class: className, autoHide = true, mono = false } = Astro.props;
 ---
 
-<div class:list={['absolute inset-x-0 bottom-8 z-10 flex justify-center mobile:bottom-[76px]', className]}>
+<div class:list={['absolute inset-x-0 bottom-8 z-10 flex justify-center min-[600px]:max-[768px]:bottom-[76px]', className]}>
   <a
     href={`#${target}`}
     class="scroll-hint text-glow"

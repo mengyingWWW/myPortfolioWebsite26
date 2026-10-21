@@ -1,0 +1,94 @@
+---
+// Full issue list for one workflow, for colleague-ai "03 Findings" (one per TabGroup panel, under FlowGrid).
+// Each row is #issue-XX (FlowGrid chips and RecList link here; TabGroup opens the right panel) and shows
+// the part of the real screen where it happened, highlighted. Rows link on to the recommendation (#rec-…).
+import data from '@/data/colleague-ai/issues.json';
+import recs from '@/data/colleague-ai/recommendations.json';
+
+interface Props { workflow: 'assessment' | 'rubric' | 'grading' }
+const { workflow } = Astro.props;
+
+type Sev = 'high' | 'medium' | 'low';
+const sevLabel: Record<Sev, string> = { high: 'High', medium: 'Medium', low: 'Low' };
+const issues = data.issues.filter((i) => i.workflow === workflow);
+const recFor = (id: string) => recs.recommendations.find((r) => r.fixes.includes(id));
+---
+
+<ol class="il">
+  {issues.map((i) => {
+    const rec = recFor(i.id);
+    const sev = i.severity as Sev;
+    return (
+      <li class={`il-row sev-${sev}`} id={`issue-${i.id}`} tabindex="-1">
+        <div class="il-meta">
+          <span class="il-id">{i.id}</span>
+          <span class="il-sev">{sevLabel[sev]}</span>
+          <span class="il-freq">{i.freq} of 5 teachers</span>
+        </div>
+        <div class="il-main">
+          <p class="il-title">{i.title}</p>
+          <p class="il-body">{i.body}</p>
+          {i.quote && (
+            <blockquote class="il-quote">
+              <p>“{i.quote.text}”</p>
+              <footer>{i.quote.by}</footer>
+            </blockquote>
+          )}
+          {rec && (
+            <a class="il-fix" href={`#${rec.id}`} data-cursor-label="VIEW">
+              Recommendation <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </div>
+        {i.shot && (
+          <img class="il-shot" src={i.shot.src} width={i.shot.width} height={i.shot.height} alt={i.shot.alt} loading="lazy" decoding="async" />
+        )}
+      </li>
+    );
+  })}
+</ol>
+
+<style>
+  .il { list-style: none; margin: 0; padding: 0; border-top: 1px solid #111111; }
+  .il-row {
+    display: grid; grid-template-columns: 150px minmax(0, 1fr) minmax(0, 380px); gap: 24px; align-items: start;
+    padding: 24px 12px; border-bottom: 1px solid #E6E6E4; border-radius: 4px;
+    scroll-margin-top: 120px; transition: background-color .3s ease;
+  }
+  .il-row:target { background: var(--cs-accent-tint, #F6F6F4); }
+  .il-row:focus { outline: none; }
+  .il-row:focus-visible { outline: 2px solid var(--cs-accent, #111111); outline-offset: 2px; }
+
+  .il-meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; letter-spacing: 0.04em; color: #6E6E6E;
+  }
+  .il-id { font-size: 15px; font-weight: 600; color: #111111; }
+  .il-sev { display: inline-flex; align-items: center; min-height: 22px; padding: 1px 9px; border-radius: 999px; font-weight: 600; text-transform: uppercase; }
+  .sev-high .il-sev { background: #5B21B6; color: #FFFFFF; }
+  .sev-medium .il-sev { background: #EDE9FE; color: #5B21B6; }
+  .sev-low .il-sev { background: #F1F1EF; color: #52525B; }
+  .il-freq { flex-basis: 100%; }
+
+  .il-title { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 500; color: #111111; }
+  .il-body { margin: 6px 0 0; font-size: 16px; line-height: 1.6; color: #3A3A3A; }
+  .il-fix {
+    display: inline-block; margin-top: 8px; padding: 4px 0;
+    font-size: 14px; font-weight: 500; color: var(--cs-accent-text, #111111);
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .il-quote { margin: 14px 0 0; padding-left: 14px; border-left: 3px solid var(--cs-accent, #111111); }
+  .il-quote p { margin: 0; font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: 17px; line-height: 1.45; color: #111111; }
+  .il-quote footer {
+    margin-top: 6px; font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; letter-spacing: 0.04em; color: #6E6E6E;
+  }
+  .il-shot { display: block; width: 100%; height: auto; border: 1px solid #E6E6E4; border-radius: 6px; background: #FFFFFF; }
+
+  @media (max-width: 900px) {
+    .il-row { grid-template-columns: 1fr; gap: 10px; }
+    .il-freq { flex-basis: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) { .il-row { transition: none; } }
+</style>

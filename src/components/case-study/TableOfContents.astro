@@ -9,7 +9,9 @@
 <nav class="toc" aria-label="On this page" data-toc hidden>
   <p class="toc-label">On this page</p>
   <ol class="toc-list" data-toc-list></ol>
-  <button type="button" class="toc-top" data-toc-top data-cursor-label="TOP"><span aria-hidden="true">↑</span> Top</button>
+  <div class="toc-foot" data-toc-foot>
+    <button type="button" class="toc-top" data-toc-top data-cursor-label="TOP"><span aria-hidden="true">↑</span> Back to top</button>
+  </div>
 </nav>
 
 <style>
@@ -23,6 +25,13 @@
     padding: 4px;
     margin: -4px;
   }
+  /* From 1024px, BackToProjects' 44px pill sits at 5rem + 24px; the list starts 20px below it. */
+  @media (width >= 1024px) {
+    .toc {
+      top: calc(5rem + 24px + 44px + 20px);
+      max-height: calc(100vh - 5rem - 24px - 44px - 20px - 32px);
+    }
+  }
 
   .toc-label {
     margin-bottom: 16px;
@@ -35,14 +44,13 @@
   }
 
   /* Items are created by the script below, so they carry no scope attribute. */
-  .toc :global(a),
-  .toc-top {
+  .toc :global(a) {
     position: relative;
     display: block;
-    padding: 5px 0 5px 20px;
+    padding: 6px 0 6px 20px;
     font-family: var(--font-sans);
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 15px;
+    line-height: 1.45;
     color: var(--color-meta);
     text-align: left;
     transition: color 150ms ease;
@@ -54,15 +62,18 @@
     text-overflow: ellipsis;
   }
   .toc :global(a:is(:hover, :focus-visible)),
-  .toc-top:is(:hover, :focus-visible),
   .toc :global(a.is-active),
   .toc :global(a.is-within) {
     color: #111;
   }
+  .toc :global(a.is-active) {
+    font-weight: 500;
+  }
+  /* Centred on the first line: 6px top padding + half of the 1.45 line height. */
   .toc :global(a)::before {
     content: '';
     position: absolute;
-    top: calc(5px + 0.7em);
+    top: calc(6px + 0.725em);
     left: 0;
     width: 12px;
     height: 1px;
@@ -74,6 +85,10 @@
     opacity: 0.4;
   }
   .toc :global(a.is-active)::before {
+    top: calc(6px + 0.725em - 8px);
+    width: 2px;
+    height: 16px;
+    background: var(--cs-accent, #111);
     opacity: 1;
   }
   .toc :global(.toc-sublist) {
@@ -85,9 +100,39 @@
     outline-offset: 2px;
   }
 
+  /* Shown once the reader is past the first section (script below). */
+  .toc-foot {
+    margin: 24px 0 0 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-line);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 150ms ease, visibility 0s linear 150ms;
+  }
+  .toc-foot.is-shown {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 150ms ease, visibility 0s;
+  }
   .toc-top {
-    margin-top: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px 0 10px;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-meta);
     cursor: pointer;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .toc-top:is(:hover, :focus-visible) {
+    border-color: #111;
+    color: #111;
   }
 
   @media (max-width: 900px) {
@@ -98,7 +143,9 @@
   @media (prefers-reduced-motion: reduce) {
     .toc :global(a),
     .toc :global(a)::before,
-    .toc-top {
+    .toc-top,
+    .toc-foot,
+    .toc-foot.is-shown {
       transition: none;
     }
   }
@@ -127,6 +174,7 @@
   function init(nav: HTMLElement, body: HTMLElement) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const list = nav.querySelector<HTMLOListElement>('[data-toc-list]')!;
+    const foot = nav.querySelector<HTMLElement>('[data-toc-foot]');
 
     const taken = new Set([...document.querySelectorAll('[id]')].map((el) => el.id));
     const slug = (text: string) => {
@@ -146,7 +194,7 @@
     function scrollToTarget(target: HTMLElement, heading: HTMLElement) {
       const top = target.getBoundingClientRect().top + window.scrollY - HEADER - 24;
       window.scrollTo({ top, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
-      history.replaceState(null, '', `#${target.id}`);
+      history.replaceState(history.state, '', `#${target.id}`);
       // Moves the keyboard starting point to the section without a second scroll.
       if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
       heading.focus({ preventScroll: true });
@@ -207,6 +255,7 @@
         section = sections.filter(passed).at(-1) ?? null;
         sub = section?.subs.filter(passed).at(-1) ?? null;
       }
+      foot?.classList.toggle('is-shown', !!section && section !== sections[0]);
       const active = sub ?? section;
       if (active === current) return;
       current = active;
@@ -244,7 +293,7 @@
 
     nav.querySelector('[data-toc-top]')?.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
-      history.replaceState(null, '', location.pathname + location.search);
+      history.replaceState(history.state, '', location.pathname + location.search);
       const h1 = document.querySelector<HTMLElement>('h1');
       if (h1) {
         if (!h1.hasAttribute('tabindex')) h1.setAttribute('tabindex', '-1');

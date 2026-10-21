@@ -4,13 +4,13 @@ import Container from '@/components/layout/Container.astro';
 ---
 
 <BaseLayout title="Page not found" description="This page doesn't exist." noindex noCanonical>
-  <Container class="pt-32 pb-16">
+  <Container class="pt-32 pb-16 mobile:pt-20">
     <p class="font-mono text-[13px] tracking-[0.1em] text-meta uppercase">404</p>
-    <h1 class="mt-8 max-w-5xl text-6xl leading-[1.1] font-medium tracking-tight">This page is in the shade.</h1>
-    <p class="mt-6 max-w-3xl text-2xl leading-snug text-muted">The link may be old, or the address mistyped.</p>
+    <h1 class="mt-8 max-w-5xl text-6xl leading-[1.1] font-medium tracking-tight mobile:text-[clamp(34px,9vw,48px)]">This page is in the shade.</h1>
+    <p class="mt-6 max-w-3xl text-2xl leading-snug text-muted mobile:text-xl">The link may be old, or the address mistyped.</p>
     <p class="mt-12 flex gap-8 text-[13px] font-medium tracking-wider uppercase">
-      <a href="/" class="underline decoration-1 underline-offset-[6px]">Back home</a>
-      <a href="/#work" class="underline decoration-1 underline-offset-[6px]">See the work</a>
+      <a href="/" class="underline decoration-1 underline-offset-[6px] mobile:inline-flex mobile:min-h-11 mobile:items-center">Back home</a>
+      <a href="/#work" class="underline decoration-1 underline-offset-[6px] mobile:inline-flex mobile:min-h-11 mobile:items-center">See the work</a>
     </p>
   </Container>
 </BaseLayout>

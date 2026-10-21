@@ -235,6 +235,12 @@
     draw();
     new ResizeObserver(draw).observe(board);
     document.fonts?.ready.then(draw);
+
+    // On a phone the board scrolls; open it on the phone in the middle rather than blank margin.
+    if (window.matchMedia('(width < 768px)').matches) {
+      const scroller = root.querySelector<HTMLElement>('.ms-scroll')!;
+      scroller.scrollLeft = (scroller.scrollWidth - scroller.clientWidth) / 2;
+    }
   }
 
   document.querySelectorAll<HTMLElement>('[data-ms]').forEach((el, i) => {

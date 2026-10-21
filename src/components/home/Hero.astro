@@ -15,7 +15,7 @@ import { hero } from '@/data/home';
 <section class="hero relative -mt-20 flex items-center overflow-hidden pt-20" data-hero data-cursor-zone="hero">
   <Container class="relative z-10 -mt-20 text-center">
     <div class="text-glow" data-hero-content>
-      <h1 class="text-6xl leading-[1.15] font-medium tracking-tight mobile:text-[34px]">
+      <h1 class="text-6xl leading-[1.15] font-medium tracking-tight mobile:text-[clamp(32px,8vw,80px)]">
         <span class="hero-enter block">
           {hero.greeting}{' '}<a href="/about" class="hero-link mobile:py-1"
             ><span class="hero-name font-serif font-normal italic">{hero.name}</span><span
@@ -41,7 +41,7 @@ import { hero } from '@/data/home';
         </span>
         <span class="hero-enter block">{hero.tagline}</span>
       </h1>
-      <p class="hero-enter mt-10 text-lg leading-relaxed">
+      <p class="hero-enter mt-10 text-lg leading-relaxed mobile:text-[clamp(16px,4.4vw,21px)]">
         <em class="font-serif text-[#555]">{hero.introLead}</em>{' '}{hero.introRest}
         <br class="mobile:hidden" />{' '}
         {hero.introLine2}

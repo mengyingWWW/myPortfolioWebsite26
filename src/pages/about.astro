@@ -13,7 +13,7 @@ import { education, experience, sectionLabels, skills } from '@/data/about';
 
   <!-- Starts just under the hero, so it peeks into the bottom of the screen when the hero releases. -->
   <!-- Bottom padding = the fixed section indicator's backing, so the last lines scroll clear of it. -->
-  <div class="mx-auto max-w-[1120px] space-y-[112px] px-12 pb-[150px]">
+  <div class="mx-auto max-w-[1120px] space-y-[112px] px-[clamp(20px,4vw,48px)] pb-[150px] mobile:space-y-20">
     <AboutSection id="education" label={sectionLabels.education}>
       <div class="space-y-16">
         {

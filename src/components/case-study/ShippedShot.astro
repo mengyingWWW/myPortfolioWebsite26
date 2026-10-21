@@ -133,7 +133,7 @@ const total = shot.items.length;
       shot.items.map((item) => (
         <li>
           {item.gapTitle ? (
-            <a class:list={['ss-id', tone[item.status]]} href={`#issue-${item.id}`}>
+            <a class:list={['ss-id', 'tap-target', tone[item.status]]} href={`#issue-${item.id}`}>
               <span class="sr-only">issue </span>
               {item.id}
             </a>

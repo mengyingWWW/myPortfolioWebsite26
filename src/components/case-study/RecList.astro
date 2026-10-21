@@ -1,0 +1,102 @@
+---
+// Recommendations for colleague-ai "05 Recommendations", ranked by priority (from the usability report).
+// Each row is #rec-…, linked from IssueList; each "Fixes" chip links back to #issue-XX.
+// Optional before/after concept for a row: pass concepts={{ 'rec-description': { before, after, alt } }}.
+import recs from '@/data/colleague-ai/recommendations.json';
+
+interface Concept { before: string; after: string; width: number; height: number; beforeAlt: string; afterAlt: string }
+interface Props { concepts?: Record<string, Concept> }
+const { concepts = {} } = Astro.props;
+
+const groups = [
+  { key: 'high', label: 'High priority' },
+  { key: 'low', label: 'Low priority' },
+];
+---
+
+<div class="rl">
+  {groups.map((g) => {
+    const items = recs.recommendations.filter((r) => r.priority === g.key);
+    return (
+      <section class="rl-group" aria-labelledby={`rl-${g.key}`}>
+        <h4 id={`rl-${g.key}`} class="rl-head">
+          <span>{g.label}</span><span class="rl-count">{items.length}</span>
+        </h4>
+        <ol class="rl-list">
+          {items.map((r) => {
+            const c = concepts[r.id];
+            return (
+              <li class="rl-row" id={r.id} tabindex="-1">
+                <div class="rl-text">
+                  <p class="rl-title">{r.title}</p>
+                  <p class="rl-body">{r.text}</p>
+                  <p class="rl-fixes">
+                    <span class="rl-fixes-label">Fixes</span>
+                    {r.fixes.map((id) => (
+                      <a href={`#issue-${id}`} data-cursor-label="VIEW" aria-label={`Issue ${id}`}>{id}</a>
+                    ))}
+                  </p>
+                </div>
+                {c && (
+                  <div class="rl-concept">
+                    <figure>
+                      <span class="rl-badge">Before</span>
+                      <img src={c.before} width={c.width} height={c.height} alt={c.beforeAlt} loading="lazy" decoding="async" />
+                    </figure>
+                    <figure>
+                      <span class="rl-badge is-after">Concept</span>
+                      <img src={c.after} width={c.width} height={c.height} alt={c.afterAlt} loading="lazy" decoding="async" />
+                    </figure>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    );
+  })}
+</div>
+
+<style>
+  .rl { display: grid; gap: 48px; }
+  .rl-head {
+    display: flex; align-items: baseline; gap: 10px; margin: 0; padding-bottom: 12px;
+    border-bottom: 1px solid #111111; font-size: 16px; font-weight: 600; color: #111111;
+  }
+  .rl-count, .rl-fixes, .rl-badge {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 12px; letter-spacing: 0.04em; color: #6E6E6E;
+  }
+  .rl-list { list-style: none; margin: 0; padding: 0; }
+  .rl-row {
+    padding: 20px 12px; border-bottom: 1px solid #E6E6E4; border-radius: 4px;
+    scroll-margin-top: 120px; transition: background-color .3s ease;
+  }
+  .rl-row:target { background: var(--cs-accent-tint, #F6F6F4); }
+  .rl-row:target .rl-fixes a { background: #FFFFFF; }
+  .rl-row:focus { outline: none; }
+  .rl-text { max-width: 680px; }
+  .rl-title { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 500; color: #111111; }
+  .rl-body { margin: 6px 0 0; font-size: 16px; line-height: 1.6; color: #3A3A3A; }
+  .rl-fixes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; }
+  .rl-fixes-label { text-transform: uppercase; margin-right: 2px; }
+  .rl-fixes a {
+    display: inline-flex; align-items: center; min-height: 28px; padding: 2px 10px; border-radius: 999px;
+    background: var(--cs-accent-tint, #F6F6F4); color: var(--cs-accent-text, #111111);
+    font-weight: 600; text-decoration: none;
+  }
+  .rl-fixes a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .rl-fixes a:focus-visible { outline: 2px solid var(--cs-accent, #111111); outline-offset: 2px; }
+
+  .rl-concept { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .rl-concept figure { margin: 0; position: relative; }
+  .rl-concept img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid #E6E6E4; }
+  .rl-badge {
+    position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 999px;
+    background: #FFFFFF; border: 1px solid #E6E6E4; text-transform: uppercase;
+  }
+  .rl-badge.is-after { color: var(--cs-accent-text, #111111); border-color: var(--cs-accent-border, #E6E6E4); }
+  @media (max-width: 720px) { .rl-concept { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .rl-row { transition: none; } }
+</style>

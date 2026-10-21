@@ -39,9 +39,9 @@ const measures = [
     <li class="np-col is-now">
       <div class="np-col-head"><span class="np-dot" aria-hidden="true"></span>Now<span class="np-col-sub">Live</span></div>
       <p class="np-group">Shipped <span class="np-n">6</span></p>
-      <ul class="np-chips">{shipped.map((id) => <li><a class="np-chip is-shipped" href={`#issue-${id}`}>{id}</a></li>)}</ul>
+      <ul class="np-chips">{shipped.map((id) => <li><a class="np-chip is-shipped tap-target" href={`#issue-${id}`}>{id}</a></li>)}</ul>
       <p class="np-group">Partly shipped <span class="np-n">4</span></p>
-      <ul class="np-chips">{partly.map((id) => <li><a class="np-chip is-partly" href={`#issue-${id}`}>{id}</a></li>)}</ul>
+      <ul class="np-chips">{partly.map((id) => <li><a class="np-chip is-partly tap-target" href={`#issue-${id}`}>{id}</a></li>)}</ul>
       <p class="np-group">Added</p>
       <p class="np-text">Job roles · Related wikis</p>
     </li>
@@ -51,7 +51,7 @@ const measures = [
         <div class="np-block">
           <p class="np-group">{g.title}</p>
           <ul class="np-list">
-            {g.items.map(([id, t]) => <li><a class="np-chip" href={`#issue-${id}`}>{id}</a><span>{t}</span></li>)}
+            {g.items.map(([id, t]) => <li><a class="np-chip tap-target" href={`#issue-${id}`}>{id}</a><span>{t}</span></li>)}
           </ul>
         </div>
       ))}
@@ -111,6 +111,8 @@ const measures = [
   .np-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .np-list { display: grid; gap: 6px; }
   .np-list li { display: flex; align-items: baseline; gap: 8px; font-size: 14px; line-height: 1.4; color: #111111; }
+  /* Touch: room for each chip's 44px hit area. */
+  @media (pointer: coarse) { .np-chips { gap: 24px 16px; } .np-list { gap: 24px; } }
   .np-chip { display: inline-block; min-width: 30px; text-align: center; padding: 2px 7px; border-radius: 999px; border: 1px solid #D9D9D6; background: #F6F6F4; color: #111111; text-decoration: none; }
   .np-chip.is-shipped { background: #ECFDF3; border-color: #067647; color: #067647; }
   .np-chip.is-partly { background: #FFFAEB; border-color: #B54708; color: #B54708; }

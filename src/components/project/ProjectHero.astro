@@ -4,20 +4,23 @@ import Container from '@/components/layout/Container.astro';
 import Tag from '@/components/ui/Tag.astro';
 import CoverPlaceholder from '@/components/ui/CoverPlaceholder.astro';
 import CoverVideo from '@/components/ui/CoverVideo.astro';
+import BackToProjects from '@/components/project/BackToProjects.astro';
 import type { WorkEntry } from '@/lib/work';
 
 interface Props {
   project: WorkEntry;
 }
 
-const { title, subtitle, type, cover, coverAlt, coverVideo, coverScreen } = Astro.props.project.data;
+const { project } = Astro.props;
+const { title, subtitle, type, cover, coverAlt, coverVideo, coverScreen } = project.data;
 ---
 
 <section>
-  <Container class="pt-32 pb-16">
+  <Container class="pt-32 pb-16 mobile:pt-20 mobile:pb-10">
+    <BackToProjects slug={project.id} />
     <Tag variant="solid">{type}</Tag>
-    <h1 class="mt-8 max-w-5xl text-6xl leading-[1.1] font-medium tracking-tight">{title}</h1>
-    {subtitle && <p class="mt-6 max-w-3xl text-2xl leading-snug text-muted">{subtitle}</p>}
+    <h1 class="mt-8 max-w-5xl text-6xl leading-[1.1] font-medium tracking-tight mobile:mt-6 mobile:text-[clamp(34px,9vw,48px)]">{title}</h1>
+    {subtitle && <p class="mt-6 max-w-3xl text-2xl leading-snug text-muted mobile:mt-4 mobile:text-xl">{subtitle}</p>}
   </Container>
 
   <Container>

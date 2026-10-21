@@ -1,28 +1,199 @@
 ---
-title: Colleague.AI Assessment Usability Study
+title: Colleague.AI Usability Study
+subtitle: "Can K–12 teachers use an AI assessment platform without training? A usability study with five teachers found 14 issues, 6 of them blocking."
 year: 2026
-type: "AI & EdTech UX Research"
-method: Method
+type: "AI EdTech UX Research"
+method: "Moderated usability study"
 status: "Research Delivered"
-domains: ["AI EdTech", "B2B SaaS"]
-platform: "Web & Mobile"
+domains: ["AI", "EdTech"]
+platform: "Web"
 cover: ../../assets/work/colleague-ai/cover.png
 coverAlt: "A laptop showing Colleague.AI's Create Assessment form, with assessment details, rubric and answer-key settings, next to a phone showing the assistant's \"How can I help you today?\" home screen."
 coverBackground: "#f4f4f5"
 coverBlend: multiply
-role: "UX Research"
+role: "UX Researcher"
 skills:
-  - Skill
-timeline: Timeline
+  - Usability test planning
+  - Moderated think-aloud sessions
+  - Questionnaire design
+  - Severity rating and synthesis
+  - Research reporting
+timeline: "Jan 2026 – Mar 2026"
 tools:
-  - Tool
+  - Zoom
+  - Google Forms
+  - Google Sheets
+  - Calendly
 team:
-  - Team
-summary: Placeholder summary.
+  - Jessica Macias
+  - Sahana Narendran
+  - Willa Wei
+  - Mengying Wang (me)
+summary: "Colleague.AI helps K–12 teachers build assessments, write rubrics and grade with AI. New teachers couldn’t finish these tasks without a training session. Our team of four ran a moderated usability study with five Washington teachers, across three tasks and 24 steps. I organized the study, wrote the task script and questionnaires, analyzed the data, and wrote and presented the report to the client. We found 14 issues. Six stopped teachers from finishing a task, and all six sit where a task starts or ends."
+glance:
+  - { value: "14", label: "issues across 3 workflows" }
+  - { value: "6", label: "blocked teachers from finishing a task" }
+  - { value: "4 of 5", label: "couldn’t tell if grades were saved" }
+accent: { main: '#6D28D9', text: '#5B21B6', tint: '#F5F3FF', soft: '#FAF8FF', border: '#DDD6FE' }
 order: 3
 noindex: true
 ---
 
-## Section heading
+import CaseStudy from '@/components/case-study/CaseStudy.astro';
+import Section from '@/components/case-study/Section.astro';
+import Block from '@/components/case-study/Block.astro';
+import Statement from '@/components/case-study/Statement.astro';
+import Stats from '@/components/case-study/Stats.astro';
+import StepFlow from '@/components/case-study/StepFlow.astro';
+import RoleCards from '@/components/case-study/RoleCards.astro';
+import TabGroup from '@/components/case-study/TabGroup.astro';
+import InsightRow from '@/components/case-study/InsightRow.astro';
+import QuoteCards from '@/components/case-study/QuoteCards.astro';
+import Takeaway from '@/components/case-study/Takeaway.astro';
+import FlowGrid from '@/components/case-study/FlowGrid.astro';
+import IssueList from '@/components/case-study/IssueList.astro';
+import RecList from '@/components/case-study/RecList.astro';
 
-Placeholder copy.
+<CaseStudy>
+
+<Section id="problem" index="01" label="Problem" title="Problem">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Colleague.AI is an AI platform for K–12 teachers. Teachers build an assessment, write a rubric and grade student work with an AI assistant called Claire. New teachers couldn’t get through these tasks on their own. Colleague.AI onboarded them with training sessions.</p>
+  {/* TODO comic, 4 panels, no faces or text: 1 teacher at a laptop at night beside a stack of papers · 2 the platform open, many buttons · 3 stuck, cursor hovering · 4 a calendar invite for a training session */}
+  {/* TODO <ColleagueProblemScenes /> — comic not built yet */}
+  <Statement>New teachers needed training. The client wanted to know <em>where the platform lost them.</em></Statement>
+  <RoleCards
+    roles={[
+      { name: 'Navigation', tag: 'Question 1', text: 'How easily can teachers move through the platform?' },
+      { name: 'Learning', tag: 'Question 2', text: 'How quickly can they learn it?' },
+      { name: 'Obstacles', tag: 'Question 3', text: 'What gets in the way when they create, assign and grade?' },
+      { name: 'New vs. experienced', tag: 'Question 4', text: 'Does it feel easier once a teacher has used it before?', accent: true },
+    ]}
+  />
+</Section>
+
+<Section id="study" index="02" label="Research" title="Study">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">We tested three core teacher tasks in a sandbox account. Before writing the script, we mapped each task step by step: 24 steps in all.</p>
+  <Stats
+    items={[
+      { value: '5', caption: 'K–12 teachers, grades 6–10' },
+      { value: '3 + 2', caption: 'new and experienced users' },
+      { value: '24', caption: 'steps across 3 tasks' },
+    ]}
+  />
+  <RoleCards
+    roles={[
+      { name: 'Create an assessment', tag: 'Task 1 · 8 steps', text: 'Draft an assignment and attach the existing General Rubric.' },
+      { name: 'Create a rubric', tag: 'Task 2 · 8 steps', text: 'Build a custom rubric with AI and publish the assignment.' },
+      { name: 'Grade with AI', tag: 'Task 3 · 8 steps', text: 'Run the AI Grader on a submission, then enter a final grade and feedback.', accent: true },
+    ]}
+  />
+  <StepFlow
+    ariaLabel="Session flow"
+    caption="Each remote session ran about 60 minutes on Zoom. Steps 2 to 4 repeat for each task."
+    steps={[
+      { name: 'Intro and consent' },
+      { name: 'Expected ease', note: 'Rated 1–7 before each task' },
+      { name: 'Task, thinking aloud', highlight: true },
+      { name: 'Actual ease', note: 'Single Ease Question, 1–7' },
+      { name: 'Post-test survey', note: '4 ratings, 3 open questions' },
+    ]}
+  />
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Five Washington teachers took part. Three were new to Colleague.AI and two had used it. They teach grades 6–10 in English, math and social studies, and all of them grade in Canvas.</p>
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Our team rotated four roles each session: moderator, timer and two note-takers. Note-takers logged each breakdown and each moment of delight with the Critical Incident Technique. We rated every issue by how far it set the teacher back, following Jeff Sauro’s three levels.</p>
+  <RoleCards
+    roles={[
+      { name: 'High', tag: 'Severity', text: 'Stopped the teacher from finishing the task.', accent: true },
+      { name: 'Medium', tag: 'Severity', text: 'Slowed the teacher down or caused real frustration.' },
+      { name: 'Low', tag: 'Severity', text: 'A minor detour. The task still got done.' },
+    ]}
+  />
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">In analysis we compared what teachers said, what they did and how they rated each task.</p>
+</Section>
+
+<Section id="findings" index="03" label="Research" title="Findings">
+  <Statement>Teachers hit 14 issues. <em>Six stopped them cold.</em></Statement>
+  <Stats
+    items={[
+      { value: '3.4 / 7', caption: 'ease of Task 1, the hardest' },
+      { value: '4.2 / 7', caption: 'how easy to learn without training' },
+      { value: '1 of 5', caption: 'finished all three tasks' },
+    ]}
+  />
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">All six blocking issues sit at the first or last step of a task, where one feature hands off to the next. Pick a task to walk through its screens.</p>
+  <TabGroup
+    id="issue-tabs"
+    label="Issues by task"
+    hint="3 tasks · 24 steps · select a screen to enlarge it"
+    tabs={[{ label: 'Create an assessment', meta: '6 issues' }, { label: 'Create a rubric', meta: '4 issues' }, { label: 'Grade with AI', meta: '4 issues' }]}
+  >
+    <div data-tab-panel class="grid gap-12"><FlowGrid workflow="assessment" /><IssueList workflow="assessment" /></div>
+    <div data-tab-panel class="grid gap-12"><FlowGrid workflow="rubric" /><IssueList workflow="rubric" /></div>
+    <div data-tab-panel class="grid gap-12"><FlowGrid workflow="grading" /><IssueList workflow="grading" /></div>
+  </TabGroup>
+  <Block title="What worked">
+    <p class="max-w-[680px] text-lg leading-[1.6] text-muted">The AI Grader’s output landed well. Three teachers praised how detailed and accurate its feedback was, including teachers who started out skeptical. The praise came more from English and social studies teachers than from math teachers.</p>
+    <QuoteCards
+      source="Think-aloud, Task 3"
+      groups={[
+        {
+          label: 'Teachers',
+          summary: 'They liked the AI’s grading. They wanted it in their students’ words.',
+          quotes: [
+            'Seeing an answer on the left and then having it help me grade on the right, that page is set up really well. That made a lot of sense.',
+            'The feedback is very teacher-facing. I know my 8th-grade students would not be able to understand this language',
+          ],
+        },
+      ]}
+    />
+  </Block>
+</Section>
+
+<Section id="insights" index="04" label="Insights" title="Insights">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">The 14 issues came from three causes.</p>
+  <ol>
+    <InsightRow
+      cause="Unclear AI role"
+      count={5}
+      insight="Teachers couldn’t tell what the AI would make, or how to change what it made."
+      principle="Show the AI’s part."
+      text="Every field says what the teacher adds and what the AI adds. AI output stays editable."
+      accent
+    />
+    <InsightRow
+      cause="Broken hand-offs"
+      count={5}
+      insight="Each feature works on its own. Teachers got lost moving between them."
+      principle="Carry the work forward."
+      text="A new rubric attaches itself. Edit and gradebook settings sit where teachers look for them."
+    />
+    <InsightRow
+      cause="Not like Canvas"
+      count={4}
+      insight="All five teachers grade in Canvas. They looked for a Save button and their district’s terms."
+      principle="Match habits they already have."
+      text="Confirm every save. Use the rating scales districts use."
+    />
+  </ol>
+  {/* Mapping: Unclear AI role = A2 A3 A4 G2 G3 · Broken hand-offs = A1 A5 A6 R1 G1 · Not like Canvas = R2 R3 R4 G4 */}
+</Section>
+
+<Section id="recommendations" index="05" label="Design" title="Recommendations">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Every issue got a recommendation the product team could act on, ranked by priority. Some are a new label. Others change the order of the flow.</p>
+  {/* TODO before/after concepts: <RecList concepts={{ 'rec-description': {...} }} /> once sketches exist */}
+  <RecList />
+  {/* CHECK: A6 (edit pencil) has no valid recommendation in the report (it repeats A5’s). R4 has one in the issue section only. Decide before publishing. */}
+</Section>
+
+<Section id="outcome" index="06" label="Outcome" title="Outcome">
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">We delivered the usability report and presented it to Colleague.AI’s Head of Product & Research and its Product Designer. They focused on assessment creation and AI grading. I don’t yet know which fixes they shipped.</p>
+</Section>
+
+<Section id="takeaways" index="07" label="Takeaways" title="Takeaways">
+  <ol>
+    <Takeaway n={1} title="Walk every role before the first session">We wrote the tasks from the teacher’s side and missed the “Include in Gradebook” toggle ourselves. All five teachers missed it too. We caught it when a student account showed no grades. Now I run each task end to end, from every role, before testing.</Takeaway>
+    <Takeaway n={2} title="Pilot with someone who matches the user">Our pilot participant didn’t closely match our teachers. The script and questionnaire changed after the first sessions, so early sessions ran a little differently. My next pilot will be a working teacher.</Takeaway>
+    <Takeaway n={3} title="What five sessions can’t tell us">Five teachers show where people get stuck. They can’t show how often it happens. Math teachers also found the AI Grader less useful than English and social studies teachers did, so subject may matter. A next round would test the fixes with more teachers per subject and track task completion.</Takeaway>
+  </ol>
+</Section>
+
+</CaseStudy>

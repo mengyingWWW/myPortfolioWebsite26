@@ -37,7 +37,7 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
         <span class="about-portrait-ink" aria-hidden="true" data-portrait-ink></span>
       </div>
       <h1
-        class="about-headline mt-8 max-w-[900px] text-[40px] leading-[1.3] font-medium tracking-[-0.02em] text-balance text-[#111]"
+        class="about-headline mt-8 max-w-[900px] text-[40px] leading-[1.3] font-medium tracking-[-0.02em] text-balance text-[#111] mobile:text-[clamp(28px,7.5vw,40px)]"
         data-headline
       >
         {
@@ -157,6 +157,18 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     margin-top: 32px;
   }
 
+  @media (width < 768px) {
+    .about-act2 {
+      padding-inline: 20px;
+    }
+    .about-bio {
+      font-size: 17px;
+    }
+    .about-sundial-block {
+      margin-top: 24px;
+    }
+  }
+
   /* Act 2 starts hidden; the script scrubs it in. */
   .about-bio,
   .about-sundial-block {
@@ -177,7 +189,8 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
     transition: opacity 400ms ease;
   }
 
-  @media (prefers-reduced-motion: reduce) {
+  /* Phones get the static layout too: Act 2 is taller than a phone's sticky stage. */
+  @media (prefers-reduced-motion: reduce), (width < 768px) {
     .about-seq {
       height: auto;
     }
@@ -221,8 +234,12 @@ const hasPortrait = fs.existsSync(path.join(process.cwd(), 'public', portrait.sr
 
   const seq = document.querySelector<HTMLElement>('[data-seq]');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const phone = window.matchMedia('(width < 768px)').matches;
 
-  if (seq && !reduceMotion) {
+  // Static layout on phones (see the CSS): no portrait flight, so the sundial's dot is there from the start.
+  if (seq && phone && !reduceMotion) seq.querySelector('[data-sundial]')?.setAttribute('data-landed', '');
+
+  if (seq && !reduceMotion && !phone) {
     const q = <T extends Element>(sel: string) => seq.querySelector<T>(sel)!;
     const stage = q<HTMLElement>('[data-stage]');
     const portrait = q<HTMLElement>('[data-portrait]');

@@ -64,7 +64,7 @@
       - paragraph: 2026.6 – 2026.9
     - listitem:
       - heading "Colleague.AI" [level=3]
-      - paragraph: UX Research Lead · Industry-Sponsored Course Project
+      - paragraph: UX Researcher · Industry-Sponsored Course Project
       - paragraph: 2026.1 – 2026.3
     - listitem:
       - heading "City University of Hong Kong · KnowVis Lab" [level=3]
