@@ -2,11 +2,15 @@
 // Recommendations for colleague-ai "05 Recommendations", ranked by priority (from the usability report).
 // Each row is #rec-…, linked from IssueList; each "Fixes" chip links back to #issue-XX.
 // Optional before/after concept for a row: pass concepts={{ 'rec-description': { before, after, alt } }}.
+// todayOnly: rec ids that show only today's screen (the highlighted crop of the issue they fix), for
+// recommendations that need research before any UI can be drawn. Low priority renders as a compact list.
 import recs from '@/data/colleague-ai/recommendations.json';
+import data from '@/data/colleague-ai/issues.json';
 
-interface Concept { before: string; after: string; width: number; height: number; beforeAlt: string; afterAlt: string }
-interface Props { concepts?: Record<string, Concept> }
-const { concepts = {} } = Astro.props;
+interface Concept { before: string; after: string; width: number; height: number; beforeAlt: string; afterAlt: string; stack?: boolean; change?: string }
+interface Props { concepts?: Record<string, Concept>; todayOnly?: string[] }
+const { concepts = {}, todayOnly = [] } = Astro.props;
+const shotFor = (id: string) => data.issues.find((i) => i.id === id)?.shot;
 
 const groups = [
   { key: 'high', label: 'High priority' },
@@ -18,15 +22,16 @@ const groups = [
   {groups.map((g) => {
     const items = recs.recommendations.filter((r) => r.priority === g.key);
     return (
-      <section class="rl-group" aria-labelledby={`rl-${g.key}`}>
+      <section class:list={['rl-group', `is-${g.key}`]} aria-labelledby={`rl-${g.key}`}>
         <h4 id={`rl-${g.key}`} class="rl-head">
           <span>{g.label}</span><span class="rl-count">{items.length}</span>
         </h4>
         <ol class="rl-list">
           {items.map((r) => {
             const c = concepts[r.id];
+            const today = !c && todayOnly.includes(r.id) ? shotFor(r.fixes[0]) : undefined;
             return (
-              <li class="rl-row" id={r.id} tabindex="-1">
+              <li class:list={['rl-row', { 'has-today': today }]} id={r.id} tabindex="-1">
                 <div class="rl-text">
                   <p class="rl-title">{r.title}</p>
                   <p class="rl-body">{r.text}</p>
@@ -37,15 +42,23 @@ const groups = [
                     ))}
                   </p>
                 </div>
+                {today && (
+                  <figure class="rl-today is-today">
+                    <figcaption class="rl-badge">Today</figcaption>
+                    <img src={today.src} width={today.width} height={today.height} alt={today.alt} loading="lazy" decoding="async" />
+                  </figure>
+                )}
                 {c && (
-                  <div class="rl-concept">
-                    <figure>
-                      <span class="rl-badge">Before</span>
+                  <div class:list={['rl-concept', { 'is-stacked': c.stack }]}>
+                    <figure class="is-today">
+                      <figcaption class="rl-badge">Today</figcaption>
                       <img src={c.before} width={c.width} height={c.height} alt={c.beforeAlt} loading="lazy" decoding="async" />
                     </figure>
-                    <figure>
-                      <span class="rl-badge is-after">Concept</span>
+                    <span class="rl-arrow" aria-hidden="true">→</span>
+                    <figure class="is-concept">
+                      <figcaption class="rl-badge is-after">Concept</figcaption>
                       <img src={c.after} width={c.width} height={c.height} alt={c.afterAlt} loading="lazy" decoding="async" />
+                      {c.change && <p class="rl-change">{c.change}</p>}
                     </figure>
                   </div>
                 )}
@@ -89,14 +102,30 @@ const groups = [
   .rl-fixes a:hover { text-decoration: underline; text-underline-offset: 3px; }
   .rl-fixes a:focus-visible { outline: 2px solid var(--cs-accent, #111111); outline-offset: 2px; }
 
-  .rl-concept { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
-  .rl-concept figure { margin: 0; position: relative; }
-  .rl-concept img { display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid #E6E6E4; }
+  .rl-concept { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 12px; margin-top: 20px; align-items: center; }
+  .rl-concept figure { margin: 0; position: relative; align-self: start; }
+  .rl-concept img { display: block; width: 100%; height: auto; border-radius: 8px; }
+  .is-today img { border: 1px solid #E6E6E4; filter: grayscale(1); opacity: .75; }
+  .is-concept img { border: 2px solid var(--cs-accent, #111111); box-shadow: 0 8px 24px rgba(91, 33, 182, .14); }
+  .rl-arrow { font-size: 22px; color: var(--cs-accent, #111111); text-align: center; }
   .rl-badge {
-    position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 999px;
-    background: #FFFFFF; border: 1px solid #E6E6E4; text-transform: uppercase;
+    display: inline-flex; align-items: center; min-height: 24px; margin-bottom: 10px; padding: 2px 10px; border-radius: 999px;
+    text-transform: uppercase; background: #F1F1EF; color: #52525B;
   }
-  .rl-badge.is-after { color: var(--cs-accent-text, #111111); border-color: var(--cs-accent-border, #E6E6E4); }
-  @media (max-width: 720px) { .rl-concept { grid-template-columns: 1fr; } }
+  .rl-badge.is-after { background: var(--cs-accent, #111111); color: #FFFFFF; }
+  .rl-change { margin: 10px 0 0; font-size: 14px; line-height: 1.45; color: var(--cs-accent-text, #111111); }
+  .rl-concept.is-stacked { grid-template-columns: 1fr; }
+  .rl-concept.is-stacked .rl-arrow { transform: rotate(90deg); }
+  .rl-row.has-today { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 32px; align-items: start; }
+  .rl-today { margin: 0; }
+  .rl-today img { display: block; width: 100%; height: auto; border-radius: 6px; border: 1px solid #E6E6E4; }
+
+  .is-low .rl-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+  .is-low .rl-row { padding: 16px 12px; }
+  .is-low .rl-title { font-size: 16px; }
+  .is-low .rl-body { font-size: 15px; line-height: 1.5; }
+  @media (max-width: 900px) { .rl-row.has-today { grid-template-columns: 1fr; gap: 16px; } .is-low .rl-list { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) { .rl-concept { grid-template-columns: 1fr; } .rl-arrow { transform: rotate(90deg); } }
   @media (prefers-reduced-motion: reduce) { .rl-row { transition: none; } }
+  @media (forced-colors: active) { .is-today img { filter: none; opacity: 1; } }
 </style>

@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "a11y": "node scripts/a11y-scan.ts",
-    "og": "node scripts/og-capture.ts"
+    "og": "node scripts/og-capture.ts",
+    "qa": "node scripts/qa-site.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",

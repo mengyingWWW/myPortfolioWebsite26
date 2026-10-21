@@ -35,7 +35,7 @@ glance:
   - { value: "6", label: "blocked teachers from finishing a task" }
   - { value: "4 of 5", label: "couldn’t tell if grades were saved" }
 accent: { main: '#6D28D9', text: '#5B21B6', tint: '#F5F3FF', soft: '#FAF8FF', border: '#DDD6FE' }
-order: 3
+order: 4
 noindex: true
 ---
 
@@ -50,6 +50,7 @@ import TabGroup from '@/components/case-study/TabGroup.astro';
 import InsightRow from '@/components/case-study/InsightRow.astro';
 import QuoteCards from '@/components/case-study/QuoteCards.astro';
 import Takeaway from '@/components/case-study/Takeaway.astro';
+import ColleagueProblemScenes from '@/components/case-study/ColleagueProblemScenes.astro';
 import FlowGrid from '@/components/case-study/FlowGrid.astro';
 import IssueList from '@/components/case-study/IssueList.astro';
 import RecList from '@/components/case-study/RecList.astro';
@@ -59,7 +60,7 @@ import RecList from '@/components/case-study/RecList.astro';
 <Section id="problem" index="01" label="Problem" title="Problem">
   <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Colleague.AI is an AI platform for K–12 teachers. Teachers build an assessment, write a rubric and grade student work with an AI assistant called Claire. New teachers couldn’t get through these tasks on their own. Colleague.AI onboarded them with training sessions.</p>
   {/* TODO comic, 4 panels, no faces or text: 1 teacher at a laptop at night beside a stack of papers · 2 the platform open, many buttons · 3 stuck, cursor hovering · 4 a calendar invite for a training session */}
-  {/* TODO <ColleagueProblemScenes /> — comic not built yet */}
+  <ColleagueProblemScenes />
   <Statement>New teachers needed training. The client wanted to know <em>where the platform lost them.</em></Statement>
   <RoleCards
     roles={[
@@ -178,9 +179,17 @@ import RecList from '@/components/case-study/RecList.astro';
 </Section>
 
 <Section id="recommendations" index="05" label="Design" title="Recommendations">
-  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">Every issue got a recommendation the product team could act on, ranked by priority. Some are a new label. Others change the order of the flow.</p>
-  {/* TODO before/after concepts: <RecList concepts={{ 'rec-description': {...} }} /> once sketches exist */}
-  <RecList />
+  <p class="max-w-[680px] text-lg leading-[1.6] text-muted">We ranked our recommendations by priority for the product team. Some are a new label. Others change the order of the flow.</p>
+  <RecList
+    concepts={{
+      'rec-description': { before: '/work/colleague-ai/concepts/description-before.webp', after: '/work/colleague-ai/concepts/description-after.webp', width: 1160, height: 610, beforeAlt: 'Today: the questions field is labeled Description and holds a one-line request.', afterAlt: 'Concept: the field is labeled Add questions, with the hint “Type or paste the questions students will answer.”', change: 'Label says what goes here, with a one-line hint.' },
+      'rec-rubric': { before: '/work/colleague-ai/concepts/rubric-before.webp', after: '/work/colleague-ai/concepts/rubric-after.webp', width: 1400, height: 303, stack: true, beforeAlt: 'Today: the AI rubric opens in its own tab with no save message and no way back to the test.', afterAlt: 'Concept: a “Rubric saved” bar above the rubric with a button to use it for Test #4.', change: 'A save message and a one-click way to attach the rubric.' },
+      'rec-dropdown': { before: '/work/colleague-ai/concepts/dropdown-before.webp', after: '/work/colleague-ai/concepts/dropdown-after.webp', width: 942, height: 620, beforeAlt: 'Today: a rubric dropdown with Rubric | ESSAY selected, and a separate yellow Create with Claire button below it.', afterAlt: 'Concept: one rubric dropdown whose last option is + Create a new rubric with Claire. The separate button is gone.', change: 'One list, one choice. The separate button is gone.' },
+      'rec-gradebook': { before: '/work/colleague-ai/concepts/gradebook-before.webp', after: '/work/colleague-ai/concepts/gradebook-after.webp', width: 842, height: 330, beforeAlt: 'Today: Grading Details with an Include in Gradebook toggle and no explanation.', afterAlt: 'Concept: the same toggle with the hint “Turn on so grades show up in your gradebook.”', change: 'One line explains what the toggle does.' },
+      'rec-grader': { before: '/work/colleague-ai/concepts/grader-before.webp', after: '/work/colleague-ai/concepts/grader-after.webp', width: 1082, height: 874, beforeAlt: 'Today: the teacher’s feedback box comes first, the AI Grader below it, and the only button is Return Grade.', afterAlt: 'Concept: the AI Grader comes first, the teacher’s feedback below it, and a Save and send to student button with a Not sent yet status.', change: 'AI results first, then the teacher’s feedback and a clear Save.' },
+    }}
+    todayOnly={['rec-scales', 'rec-language']}
+  />
   {/* CHECK: A6 (edit pencil) has no valid recommendation in the report (it repeats A5’s). R4 has one in the issue section only. Decide before publishing. */}
 </Section>
 

@@ -17,5 +17,8 @@ npm-debug.log*
 # macOS
 .DS_Store
 
+# QA reports
+qa-reports/
+
 # scratch files
 Claude outputs/
