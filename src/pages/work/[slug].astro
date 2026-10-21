@@ -56,7 +56,7 @@ const accentTokens = {
 };
 ---
 
-<BaseLayout title={project.data.title} description={project.data.summary} noindex={project.data.noindex} share={share}>
+<BaseLayout title={project.data.title} description={share.description} noindex={project.data.noindex} share={share} responsive>
   <article style={accentTokens}>
     <ProjectHero project={project} />
     <Container class="pt-20">

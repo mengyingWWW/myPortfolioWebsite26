@@ -1,5 +1,5 @@
 ---
-title: AI Permitting for the City of Seattle
+title: City of Seattle AI Permitting Design
 subtitle: "Where should AI help in a permit application, and how much?"
 year: 2025
 type: "Civic AI UX Design + Research"
@@ -29,9 +29,8 @@ team:
   - Yitong Du
   - Evanna Yang
   - Mengying Wang (me)
-summary: "Seattle’s construction permits are slow and hard to follow. Our team started at the City’s permitting hackathon and designed AI help for three steps of the application: the timeline, the form and a review before submitting. In UW’s HCDE 516 we then tested how much AI those steps need. We built three versions with no AI, partial AI and full AI and ran a study with 42 architects and residents. Partial AI raised usability by 34% and trust by 39%. Full AI added no significant gain on top."
+summary: "Seattle’s construction permits are slow and hard to follow. Our team of three started at the City’s permitting hackathon and designed AI help for three steps: the timeline, the form and a review before submitting. In UW’s HCDE 516 we tested how much AI those steps need, with three versions and 42 architects and residents. I built the prototypes, including the full-AI version, and collected and analyzed the study data. Partial AI raised usability by 34% and trust by 39%. Full AI added no significant gain on top."
 glance:
-  - { value: "42", label: "participants" }
   - { value: "+34%", label: "usability, partial AI vs. none" }
   - { value: "+39%", label: "trust, partial AI vs. none" }
   - { value: "V2 = V3", label: "full AI added no significant gain" }
@@ -54,7 +53,6 @@ screenWall:
     - /work/seattle-ai-permitting/wall/s11-v1-manual-form.webp
     - /work/seattle-ai-permitting/wall/s12-v1-checklist.webp
 order: 4
-noindex: true
 ---
 
 import CaseStudy from '@/components/case-study/CaseStudy.astro';
@@ -196,7 +194,7 @@ import design from '@/data/seattle-ai-permitting/tasks.json';
 <Section id="takeaways" index="07" label="Takeaways" title="Takeaways">
   <ol>
     <Takeaway n={1} title="The right amount of AI wasn’t the most AI">Going in, more AI looked like the obvious answer. The data showed partial AI captured most of the gain. Now I test how much help a step needs before adding more.</Takeaway>
-    <Takeaway n={2} title="Change one thing at a time">All three versions ran the same three steps. Only the AI level changed. That is what made the result readable.</Takeaway>
+    <Takeaway n={2} title="Residents and architects need different levels of AI">Residents wanted AI to walk them through each step. Architects wanted help and wanted to keep control. One AI level won’t fit both. A next version could let each applicant choose how much the AI does.</Takeaway>
     <Takeaway n={3} title="What this study can’t tell us">Each version had only 4 architects, and we couldn’t recruit City permit reviewers. Partial and full AI were also hard to tell apart for some participants. A next round would use real applications and measure time and errors.</Takeaway>
   </ol>
 </Section>
