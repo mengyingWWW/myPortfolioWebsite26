@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/layout/Container.astro';
+import ProjectCard from '@/components/home/ProjectCard.astro';
+import { getSortedWork, yearRange } from '@/lib/work';
+
+const projects = await getSortedWork();
+---
+
+<BaseLayout title="Work">
+  <section class="pt-[120px] pb-32 mobile:pt-20">
+    <Container>
+      <div class="mb-12 flex items-baseline justify-between font-mono text-[13px] leading-5 tracking-[0.06em] uppercase">
+        <h1 class="text-[#111]">All Work</h1>
+        <p class="text-meta">{yearRange(projects)}</p>
+      </div>
+      <div class="grid grid-cols-2 items-start gap-x-10 gap-y-[88px] mobile:grid-cols-1 mobile:gap-y-14">
+        {projects.map((project) => <ProjectCard project={project} />)}
+      </div>
+    </Container>
+  </section>
+</BaseLayout>

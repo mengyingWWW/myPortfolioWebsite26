@@ -30,7 +30,7 @@ const REQUEST_TIMEOUT = 15_000;
 // ---------- rule config ----------
 
 /** Pages that are noindex on purpose (drafts): A4 only warns. Add more with --allow-noindex. */
-const ALLOW_NOINDEX = ['/work/colleague-ai', '/work/google-maps-parking', '/work/netease-games'];
+const ALLOW_NOINDEX = ['/work/colleague-ai'];
 /** Hosts that block automated requests; these statuses from them are a warning, not a broken link. */
 const BOT_BLOCKING = [{ host: 'linkedin.com', statuses: [999, 429] }];
 /** A7: values that mean a field was never filled in (compared case-insensitively). */

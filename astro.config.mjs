@@ -21,6 +21,9 @@ const noindexPaths = new Set(
 
 export default defineConfig({
   site: 'https://www.mengyingwang.com',
+  redirects: {
+    '/work/google-maps-parking': '/work/parkipedia',
+  },
   integrations: [
     mdx(),
     sitemap({

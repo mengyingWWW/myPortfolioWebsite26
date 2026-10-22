@@ -6,14 +6,23 @@
  * TableOfContents starts its sticky position below the pill.
  */
 interface Props {
-  /** The project's id; its homepage card is #work-{slug}. */
+  /** The project's id; its card is #work-{slug}. */
   slug: string;
+  /** Featured projects return to their homepage card; the rest to their card on /work. */
+  featured?: boolean;
 }
 
-const { slug } = Astro.props;
+const { slug, featured = false } = Astro.props;
+const listPath = featured ? '/' : '/work';
 ---
 
-<a href={`/#work-${slug}`} class="back-to-projects" data-back-to-work={`work-${slug}`} aria-label="All work">
+<a
+  href={`${listPath}#work-${slug}`}
+  class="back-to-projects"
+  data-back-to-work={`work-${slug}`}
+  data-back-path={listPath}
+  aria-label="All work"
+>
   <span class="btp-arrow" aria-hidden="true">←</span>
   <span class="btp-label">All work</span>
 </a>
@@ -95,9 +104,9 @@ const { slug } = Astro.props;
 
 <script>
   /*
-   * Arriving from the homepage marks this history entry; while it's still the current one, going back restores
-   * the homepage's exact scroll. Otherwise the link's /#work-{slug} lands on the card. Either way the homepage
-   * highlights that card (SelectedWork reads RETURN_KEY).
+   * Arriving from the page the link returns to (the homepage, or /work) marks this history entry; while it's
+   * still the current one, going back restores that page's exact scroll. Otherwise the link's #work-{slug}
+   * lands on the card. On the homepage, SelectedWork then highlights that card (it reads RETURN_KEY).
    */
   const RETURN_KEY = 'work-return';
 
@@ -108,8 +117,10 @@ const { slug } = Astro.props;
       return null;
     }
   })();
-  if (referrer && referrer.origin === location.origin && referrer.pathname === '/' && !history.state?.fromHome) {
-    history.replaceState({ ...history.state, fromHome: true }, '');
+  const backPath = document.querySelector<HTMLAnchorElement>('[data-back-to-work]')?.dataset.backPath;
+  const fromList = referrer?.origin === location.origin && referrer.pathname.replace(/(.)\/$/, '$1') === backPath;
+  if (fromList && !history.state?.fromWorkList) {
+    history.replaceState({ ...history.state, fromWorkList: true }, '');
   }
 
   document.querySelectorAll<HTMLAnchorElement>('[data-back-to-work]').forEach((link) => {
@@ -120,7 +131,7 @@ const { slug } = Astro.props;
       } catch {
         // Storage blocked: the hash still lands on the card.
       }
-      if (history.state?.fromHome) {
+      if (history.state?.fromWorkList) {
         e.preventDefault();
         history.back();
       }

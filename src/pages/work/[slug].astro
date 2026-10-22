@@ -29,6 +29,8 @@ interface Props {
 
 const { project, next } = Astro.props;
 const { Content } = await render(project);
+const hasBody = Boolean(project.body?.trim());
+const { projectLink } = project.data;
 
 // Share card: the cover, letterboxed to 1200 × 627 by `npm run og` (the homepage card until that has run).
 const shareImage = `/og/work/${project.id}.png`;
@@ -61,7 +63,10 @@ const accentTokens = {
     <ProjectHero project={project} />
     <Container class="pt-20">
       <div
-        class="grid grid-cols-[minmax(0,7fr)_minmax(0,5fr)] items-start gap-x-20 border-b border-line pb-10 max-[900px]:grid-cols-1 max-[900px]:gap-y-12"
+        class:list={[
+          'grid grid-cols-[minmax(0,7fr)_minmax(0,5fr)] items-start gap-x-20 max-[900px]:grid-cols-1 max-[900px]:gap-y-12',
+          hasBody && 'border-b border-line pb-10',
+        ]}
       >
         <div>
           <h2 class="text-sm font-medium tracking-wide text-muted uppercase">Overview</h2>
@@ -71,6 +76,16 @@ const accentTokens = {
               <div class="mt-8 max-w-[65ch]">
                 <AtAGlance items={project.data.glance} />
               </div>
+            )
+          }
+          {
+            projectLink && (
+              <p class="mt-8">
+                <a href={projectLink.href} target="_blank" rel="noopener noreferrer" class="project-link tap-target">
+                  {projectLink.label} <span aria-hidden="true">↗</span>
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
+              </p>
             )
           }
         </div>
@@ -84,17 +99,21 @@ const accentTokens = {
         </Container>
       )
     }
-    <Container class="grid grid-cols-[200px_minmax(0,1fr)] gap-x-16 max-[900px]:grid-cols-1">
-      <aside class="max-[900px]:hidden">
-        <TableOfContents />
-      </aside>
-      <div class="prose-body case-body" data-case-body>
-        <Content components={mdxComponents} />
-      </div>
-      <div class="col-start-2 max-[900px]:col-start-1">
-        <BackToTop />
-      </div>
-    </Container>
+    {
+      hasBody && (
+        <Container class="grid grid-cols-[200px_minmax(0,1fr)] gap-x-16 max-[900px]:grid-cols-1">
+          <aside class="max-[900px]:hidden">
+            <TableOfContents />
+          </aside>
+          <div class="prose-body case-body" data-case-body>
+            <Content components={mdxComponents} />
+          </div>
+          <div class="col-start-2 max-[900px]:col-start-1">
+            <BackToTop />
+          </div>
+        </Container>
+      )
+    }
   </article>
   {next.id !== project.id && <NextProject project={next} />}
 </BaseLayout>
@@ -103,5 +122,18 @@ const accentTokens = {
   /* Clear the sticky header when a section is reached by link or by the table of contents. */
   .case-body :global(h2) {
     scroll-margin-top: calc(5rem + 24px);
+  }
+
+  .project-link {
+    font-size: 16px;
+    color: #111;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .project-link:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 4px;
+    border-radius: 2px;
   }
 </style>

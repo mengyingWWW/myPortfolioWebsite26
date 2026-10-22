@@ -10,6 +10,12 @@ const work = defineCollection({
       subtitle: z.string().optional(),
       /** Keep this case study out of search results and the sitemap (remove once the content is written). */
       noindex: z.boolean().optional(),
+      /** Shown in the homepage's Selected Work grid; the rest are listed under More Projects. */
+      featured: z.boolean().default(false),
+      /** One outbound link under the Overview, e.g. { href: "https://…", label: "View on Steam" }. */
+      projectLink: z.object({ href: z.string().url(), label: z.string() }).optional(),
+      /** One-liner for the homepage's More Projects list; defaults to summary. */
+      listSummary: z.string().optional(),
       year: z.union([z.number(), z.string()]),
       /** Short label for the project page tag, e.g. "0→1 UI/UX Design" */
       type: z.string(),

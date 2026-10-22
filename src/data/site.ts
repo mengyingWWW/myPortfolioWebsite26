@@ -16,7 +16,7 @@ export const site = {
 
 // newTab links open outside the site: they get a ↗ and target="_blank" wherever they're rendered.
 export const navLinks: { label: string; href: string; newTab?: boolean }[] = [
-  { label: 'Work', href: '/#work' },
+  { label: 'Work', href: '/work' },
   { label: 'About', href: '/about' },
   { label: 'Resume', href: site.resume, newTab: true },
 ];

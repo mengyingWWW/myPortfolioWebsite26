@@ -1,13 +1,10 @@
 ---
 import Container from '@/components/layout/Container.astro';
 import ProjectCard from './ProjectCard.astro';
-import { getSortedWork } from '@/lib/work';
+import MoreProjects from './MoreProjects.astro';
+import { getFeaturedWork, yearRange } from '@/lib/work';
 
-const projects = await getSortedWork();
-const years = projects.map((project) => project.data.year);
-const first = Math.min(...years);
-const last = Math.max(...years);
-const yearRange = first === last ? `${first}` : `${first} — ${last}`;
+const projects = await getFeaturedWork();
 ---
 
 <section class="pt-[120px] pb-32">
@@ -18,10 +15,14 @@ const yearRange = first === last ? `${first}` : `${first} — ${last}`;
       class="mb-12 flex scroll-mt-[calc(5rem+32px)] items-baseline justify-between font-mono text-[13px] leading-5 tracking-[0.06em] uppercase"
     >
       <h2 class="text-[#111]">Selected Work</h2>
-      <p class="text-meta">{yearRange}</p>
+      <p class="text-meta">{yearRange(projects)}</p>
     </div>
     <div class="grid grid-cols-2 items-start gap-x-10 gap-y-[88px] mobile:grid-cols-1 mobile:gap-y-14">
       {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+    <MoreProjects />
+    <div class="mt-12 flex justify-end font-mono text-[13px] leading-5 tracking-[0.06em] uppercase">
+      <a href="/work" class="tap-target text-[#111]">All work <span aria-hidden="true">→</span></a>
     </div>
   </Container>
 </section>

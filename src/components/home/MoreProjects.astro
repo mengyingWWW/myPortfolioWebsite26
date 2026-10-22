@@ -1,0 +1,75 @@
+---
+/**
+ * "More Projects" under the Selected Work grid: a quiet list of the entries that aren't featured, so it
+ * stays secondary to the cards. Each row is one link to the project's page.
+ */
+import { Image } from 'astro:assets';
+import { getMoreWork, workUrl } from '@/lib/work';
+
+const projects = await getMoreWork();
+---
+
+<div class="mt-[120px]">
+  <div class="mb-12 flex items-baseline justify-between font-mono text-[13px] leading-5 tracking-[0.06em] uppercase">
+    <h2 class="text-[#111]">More Projects</h2>
+  </div>
+  <ul class="border-t border-line">
+    {
+      projects.map((project) => {
+        const { title, year, role, status, summary, listSummary, cover, coverAlt } = project.data;
+        return (
+          <li class="border-b border-line">
+            <a
+              href={workUrl(project)}
+              class="more-project grid grid-cols-[80px_minmax(0,1fr)_auto_160px] items-baseline gap-x-10 py-6 max-[901px]:grid-cols-1 max-[901px]:gap-y-2"
+            >
+              <p class="font-mono text-[13px] text-meta">{year}</p>
+              <div class="max-w-[680px]">
+                <h3 class="more-project-title text-[18px] leading-[1.4] font-medium text-[#111]">{title}</h3>
+                <p class="mt-1 text-[14px] text-meta">{[role, status].join(' · ')}</p>
+                <p class="mt-2 text-[15px] leading-[1.6] text-muted">{listSummary ?? summary}</p>
+              </div>
+              <p class="text-right text-[14px] text-[#111] max-[901px]:mt-2 max-[901px]:text-left">
+                Read more <span aria-hidden="true">→</span>
+              </p>
+              <div class="aspect-video w-[160px] self-start overflow-hidden rounded-[4px] bg-[#f4f4f5] max-[901px]:hidden">
+                {cover && (
+                  <Image
+                    src={cover}
+                    alt={coverAlt ?? ''}
+                    width={320}
+                    loading="lazy"
+                    format="webp"
+                    class="h-full w-full object-cover"
+                  />
+                )}
+              </div>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style>
+  .more-project:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 4px;
+  }
+  .more-project-title {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 150ms ease;
+  }
+  .more-project:is(:hover, :focus-visible) .more-project-title {
+    text-decoration-color: currentColor;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .more-project-title {
+      transition: none;
+    }
+  }
+</style>
