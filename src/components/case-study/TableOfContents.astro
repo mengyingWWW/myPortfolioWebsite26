@@ -2,7 +2,8 @@
 /**
  * "On this page" list for a case study, built in the browser from the body's h2s
  * (inside [data-case-body]). Elements marked data-toc-sub are listed under the h2 before them,
- * and only while the reader is in that section. Hidden at 900px and below, and without JS.
+ * and only while the reader is in that section. Hidden at 900px and below, without JS, and when the
+ * body has fewer than two sections.
  */
 ---
 
@@ -235,7 +236,8 @@
         sections.push(entry);
       }
     }
-    if (!sections.length) return;
+    // A single section has nothing to navigate between.
+    if (sections.length < 2) return;
     nav.hidden = false;
 
     const atBottom = () =>

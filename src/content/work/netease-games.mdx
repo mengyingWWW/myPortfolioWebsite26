@@ -13,10 +13,29 @@ coverBlend: multiply
 role: "UX/Product Designer Intern"
 timeline: "Jun 2024 – Sep 2024"
 team: ["Product Manager", "Design Director", "Game Prototype Engineers", "Game Software Engineers", "Mengying Wang (me)"]
-skills: ["Interaction design", "Competitive analysis", "User flows", "Prototyping", "Playtesting"]
+skills: ["0→1 feature design", "Interaction design", "Competitive analysis", "User flows", "Prototyping", "Playtesting"]
 tools: ["Figma", "Unity"]
-summary: "Planet Party Time is a free-to-play party game from NetEase Games. It has 120+ minigames, and up to 32 players join each party. As a UX/Product Designer Intern, I designed the progress bar for racing minigames, the social circle and the PvP lobby. I used competitive analysis, user flows, prototypes and playtests. I worked with the product manager, the design director, game prototype engineers and game software engineers. My work went into the May 2025 Steam playtest and the gamescom 2025 demo. Under NDA, this page uses only public material."
-listSummary: "Designed the racing progress bar, the social circle and the PvP lobby for a party game with 120+ minigames."
+summary: "Planet Party Time is a free-to-play party game from NetEase Games. It has 120+ minigames, and up to 32 players join each party. As a UX/Product Designer Intern, I was the only UX designer on its social and multiplayer systems. I designed Friend StarNet from 0 to 1, the PvP lobby and the progress bar for racing minigames. I used competitive analysis, user flows, prototypes and playtests. I worked with the product manager, the design director, game prototype engineers and game software engineers. My work went into the May 2025 Steam playtest and the gamescom 2025 demo. Under NDA, this page uses only public material."
+listSummary: "The only UX designer on social and multiplayer. Designed Friend StarNet, the PvP lobby and the racing progress bar."
 projectLink: { href: "https://store.steampowered.com/app/3384570/", label: "View on Steam" }
 order: 6
 ---
+
+import ScreenGrid from '@/components/case-study/ScreenGrid.astro';
+
+## Interface
+
+<ScreenGrid id="netease-screens" columns={2} items={[
+  { src: "/work/netease-games/lobby.webp", width: 1600, height: 900,
+    alt: "Minigame selection screen: a grid of about 90 minigame thumbnails, five picked for the match along the top, and a preview of Bubble Time, a 2v2 minigame, with a Start button.",
+    caption: "PvP lobby. Players pick the minigames for a match. I designed this lobby." },
+  { src: "/work/netease-games/racing.webp", width: 1600, height: 900,
+    alt: "Racing minigame on a running track with hurdles and springboards, a countdown timer, an onboarding tip, and a race progress bar with player avatars along the bottom.",
+    caption: "Racing minigame. I designed the progress bar along the bottom." },
+  { src: "/work/netease-games/lucky-push.webp", width: 1600, height: 900,
+    alt: "Lucky Push minigame: players push each other on a wooden block arena, with a timer and a player list with lives on the right.",
+    caption: "Lucky Push is one of the 120+ minigames." },
+  { src: "/work/netease-games/tournament.webp", width: 1600, height: 900,
+    alt: "CubeGalaxyCup tournament results: three characters on a first, second and third place podium, with tabs for tourney info, signup, draw, warm-up, bracket stage and results.",
+    caption: "Tournament results for the CubeGalaxyCup." },
+]} />
