@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import EyesAdjustIntro from '@/components/EyesAdjustIntro.astro';
 import Hero from '@/components/home/Hero.astro';
 import SelectedWork from '@/components/home/SelectedWork.astro';
 import { hero } from '@/data/home';
@@ -14,6 +15,7 @@ const nameShadowFont = `https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href={nameShadowFont} />
   </Fragment>
+  <EyesAdjustIntro slot="intro" />
   <Hero />
   <SelectedWork />
 </BaseLayout>

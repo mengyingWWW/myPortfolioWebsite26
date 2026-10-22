@@ -1,0 +1,136 @@
+---
+/**
+ * Homepage opening: eyes adjusting to light. The room starts dark, the light comes up in place, the leaf
+ * shadows pull from deep blur into focus (hunting very slightly before they settle), then the nav, hero
+ * text and readouts rise in.
+ *
+ * Render it first in <body> (BaseLayout's "intro" slot) so the dark overlay is in the initial HTML and
+ * paints before anything else. The inline script right after it decides, before the hero is parsed,
+ * whether to play: it sets html[data-eyes-intro="play"], which every rule below keys on. Otherwise (played
+ * earlier this session, reduced motion, or arriving at a #hash further down the page) it removes the
+ * overlay and the hero shows as normal. Without JS nothing here shows.
+ *
+ * Timeline:
+ *   0.3–1.5s  the dark overlay fades out (ease-out)
+ *   0.4–2.8s  leaf shadows: blur 40px → 0 (ease-in-out), a ~150ms soft hunt, then settled; opacity 0.6 → 1
+ *   1.9s–     nav and headline, intro, credentials, readouts rise 12px, 0.1s apart
+ * When every step has finished, the overlay is removed and html[data-eyes-intro] becomes "done", which
+ * drops the intro's animations so the hero is exactly as it is without the intro.
+ */
+---
+
+<div class="eyes-dark" data-eyes-intro-layer aria-hidden="true"></div>
+<script is:inline>
+  (() => {
+    const KEY = 'eyes-intro';
+    const root = document.documentElement;
+    let play = !matchMedia('(prefers-reduced-motion: reduce)').matches && !location.hash;
+    try {
+      if (sessionStorage.getItem(KEY)) play = false;
+      else if (play) sessionStorage.setItem(KEY, '1');
+    } catch {
+      // Storage blocked: play it anyway.
+    }
+    const removeLayer = () => document.querySelector('[data-eyes-intro-layer]')?.remove();
+    if (!play) {
+      removeLayer();
+      return;
+    }
+    root.setAttribute('data-eyes-intro', 'play');
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      removeLayer();
+      root.setAttribute('data-eyes-intro', 'done');
+    };
+    document.addEventListener('DOMContentLoaded', () => {
+      const steps = document.getAnimations?.().filter((a) => a.animationName?.startsWith('eyes-')) ?? [];
+      Promise.all(steps.map((a) => a.finished)).then(finish, finish);
+    });
+    // In case an animation never finishes (e.g. it's interrupted).
+    setTimeout(finish, 6000);
+  })();
+</script>
+
+<style is:global>
+  .eyes-dark {
+    display: none;
+  }
+
+  /* Over the whole page (nav included) but under the skip link (z-50) and the cursor; never takes a click. */
+  [data-eyes-intro='play'] .eyes-dark {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    background: #262422;
+    animation: eyes-light-up 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) 0.3s forwards;
+  }
+
+  [data-eyes-intro='play'] .hero-leaves > * {
+    animation: eyes-focus 2.4s 0.4s both;
+  }
+
+  [data-eyes-intro='play'] :is(header.nav .enter, .hero h1 .hero-enter, .hero p.hero-enter, .hero > .enter, .hero > div:has([data-sun-position])) {
+    animation: eyes-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) calc(1.9s + var(--eyes-d, 0s)) both;
+  }
+  [data-eyes-intro='play'] .hero h1 + p.hero-enter {
+    --eyes-d: 0.1s;
+  }
+  [data-eyes-intro='play'] .hero p.hero-enter + p.hero-enter {
+    --eyes-d: 0.2s;
+  }
+  [data-eyes-intro='play'] :is(.hero > .enter, .hero > div:has([data-sun-position])) {
+    --eyes-d: 0.3s;
+  }
+
+  /* Finished: drop the intro's animations (each already rests on its final frame), so nothing replays and
+     the hero's own hover transitions take over again. */
+  [data-eyes-intro='done'] :is(.hero-leaves > *, header.nav .enter, .hero .hero-enter, .hero > .enter, .hero > div:has([data-sun-position])) {
+    animation: none;
+  }
+
+  @keyframes eyes-light-up {
+    to {
+      opacity: 0;
+    }
+  }
+  /* 2.4s: focus pulls in over the first 2.1s, overshoots a touch soft for ~150ms, then settles. */
+  @keyframes eyes-focus {
+    0% {
+      opacity: 0.6;
+      filter: blur(40px);
+      animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    50% {
+      opacity: 1;
+    }
+    87.5% {
+      filter: blur(0);
+      animation-timing-function: ease-in-out;
+    }
+    93.75% {
+      filter: blur(1.2px);
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0);
+    }
+  }
+  @keyframes eyes-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eyes-dark {
+      display: none !important;
+    }
+  }
+</style>
