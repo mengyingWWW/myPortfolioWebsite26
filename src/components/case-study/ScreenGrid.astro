@@ -1,0 +1,101 @@
+---
+/**
+ * Uses div[role=list] on purpose: .prose-body ul/p get max-w-[680px] + bullets from global.css.
+ * Generic grid of real screens with captions; each screen opens large in a <dialog>.
+ * First used on /work/netease-games (public Steam screenshots).
+ * items: src under public/, intrinsic width/height, meaningful alt, one-line caption.
+ */
+interface Item {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  caption: string;
+}
+interface Props {
+  items: Item[];
+  /** Columns at desktop; always 1 column at ≤900px. */
+  columns?: 2 | 3;
+  id?: string;
+}
+const { items, columns = 2, id = 'screen-grid' } = Astro.props;
+const dialogId = `${id}-dialog`;
+---
+
+<div class="sg" data-screen-grid={dialogId}>
+  <div role="list" class:list={['sg-grid', columns === 3 ? 'sg-3' : 'sg-2']}>
+    {items.map((item) => (
+      <div role="listitem" class="sg-item">
+        <button
+          type="button"
+          class="sg-shot"
+          data-src={item.src}
+          data-alt={item.alt}
+          data-caption={item.caption}
+          data-cursor-label="VIEW"
+          aria-label={`Enlarge: ${item.caption}`}
+        >
+          <img src={item.src} width={item.width} height={item.height} alt={item.alt} loading="lazy" decoding="async" />
+        </button>
+        <p class="sg-caption">{item.caption}</p>
+      </div>
+    ))}
+  </div>
+
+  <dialog id={dialogId} class="sg-dialog" aria-label="Enlarged screen">
+    <figure class="sg-figure">
+      <img class="sg-large" src="" alt="" />
+      <figcaption class="sg-large-caption"></figcaption>
+    </figure>
+    <button type="button" class="sg-close" data-cursor-label="CLOSE" aria-label="Close">Close</button>
+  </dialog>
+</div>
+
+<style>
+  .sg-grid { display: grid; gap: 40px 32px; list-style: none; margin: 0; padding: 0; }
+  /* Cancels .prose-body's list spacing (li + li), which would drop every item after the first by 8px. */
+  .sg-item { margin: 0; }
+  .sg-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sg-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .sg-2, .sg-3 { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
+  .sg-shot { display: block; width: 100%; padding: 0; border: 1px solid #E6E6E4; border-radius: 6px; overflow: hidden; background: #f4f4f5; cursor: zoom-in; }
+  .sg-shot img { display: block; width: 100%; height: auto; transition: transform 300ms ease; }
+  .sg-shot:hover img, .sg-shot:focus-visible img { transform: scale(1.015); }
+  .sg-shot:focus-visible { outline: 2px solid #111; outline-offset: 4px; }
+  .sg { max-width: none; }
+  .sg-caption { max-width: none; margin-top: 12px; font-size: 15px; line-height: 1.5; color: #6E6E6E; }
+  /* The base styles zero every margin, so the dialog centres itself with margin: auto. Close sits in its
+     own row above the image (order: -1), inside the screen, and stays after the image for screen readers. */
+  .sg-dialog { margin: auto; width: min(1600px, 94vw); max-width: none; max-height: 100dvh; padding: 0; border: 0; background: transparent; overflow: visible; }
+  .sg-dialog[open] { display: flex; flex-direction: column; }
+  .sg-dialog::backdrop { background: rgba(17, 17, 17, 0.86); }
+  .sg-figure { margin: 0; }
+  .sg-large { display: block; width: 100%; height: auto; max-height: calc(100dvh - 140px); object-fit: contain; border-radius: 6px; }
+  .sg-large-caption { margin-top: 14px; color: #fff; font-size: 15px; text-align: center; }
+  .sg-close { order: -1; align-self: flex-end; margin-bottom: 12px; min-height: 44px; padding: 0 14px; color: #fff; background: transparent; border: 1px solid rgba(255,255,255,0.5); border-radius: 999px; font: inherit; font-size: 14px; cursor: pointer; }
+  .sg-close:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { .sg-shot img { transition: none; } .sg-shot:hover img, .sg-shot:focus-visible img { transform: none; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-screen-grid]').forEach((root) => {
+    const dialog = root.querySelector<HTMLDialogElement>('dialog');
+    if (!dialog) return;
+    const img = dialog.querySelector<HTMLImageElement>('.sg-large')!;
+    const cap = dialog.querySelector<HTMLElement>('.sg-large-caption')!;
+    let opener: HTMLElement | null = null;
+    root.querySelectorAll<HTMLButtonElement>('.sg-shot').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        opener = btn;
+        img.src = btn.dataset.src ?? '';
+        img.alt = btn.dataset.alt ?? '';
+        cap.textContent = btn.dataset.caption ?? '';
+        dialog.showModal();
+      });
+    });
+    dialog.querySelector('.sg-close')?.addEventListener('click', () => dialog.close());
+    // Click on the backdrop (outside the figure) closes.
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => opener?.focus());
+  });
+</script>
