@@ -40,7 +40,10 @@ import { hero } from '@/data/home';
           >
         </span>
         <span class="hero-enter block">{hero.taglineLead}</span>
-        <span class="hero-enter block text-balance">{hero.taglineRest}</span>
+        <span
+          class="hero-enter mt-4 block text-[34px] leading-[1.3] font-normal tracking-normal text-balance text-[#333] mobile:text-[clamp(20px,5.4vw,28px)]"
+          >{hero.taglineRest}</span
+        >
       </h1>
       <p class="hero-enter mt-10 text-lg leading-relaxed mobile:text-[clamp(16px,4.4vw,21px)]">
         <em class="font-serif text-[#555]">{hero.introLead}</em>{' '}{hero.introRest}
