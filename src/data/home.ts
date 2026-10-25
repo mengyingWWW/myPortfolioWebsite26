@@ -5,9 +5,7 @@ export const hero = {
   nameShadow: '梦嬴',
   taglineLead: 'A product designer',
   taglineRest: 'who uses AI to build what it can’t build alone.',
-  /** Rendered in italic serif, directly before `introRest`. */
-  introLead: '2+ years of experience',
-  introRest: 'in AI, B2B and B2C products.',
+  intro: '2+ years of experience in AI, B2B and B2C products.',
   /** Quieter line under the intro; it only wraps between items. */
   education: ['M.S. HCDE @ UW', 'B.Eng @ Tsinghua'],
 };
