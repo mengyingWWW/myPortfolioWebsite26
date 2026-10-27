@@ -8,6 +8,7 @@ import Footer from '@/components/layout/Footer.astro';
 import CustomCursor from '@/components/ui/CustomCursor.astro';
 import { site } from '@/data/site';
 import { SHADOW_ALPHA } from '@/data/shadow';
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
   title?: string;
@@ -69,6 +70,7 @@ const shareImageAlt = share.imageAlt ?? site.shareImage.alt;
     <meta name="twitter:description" content={shareDescription} />
     <meta name="twitter:image" content={shareImage} />
     <slot name="head" />
+    <Analytics />
   </head>
   <body class="flex min-h-screen flex-col">
     <!-- First in the body, so a page-load overlay (the homepage's EyesAdjustIntro) paints before anything else. -->
