@@ -2,13 +2,14 @@
 /**
  * The hero tagline's rotating word, each with its own pencil mark in an SVG overlay, drawn in the
  * About page's sketch style (lines, greys and hatching from handDrawn.js):
- *   build      a small brick archway over the word: ground line, two piers, voussoirs and a keystone
  *   shape      one loop around the word, a grey echo loop behind it, hatching along its lower curve
  *   uncover    a cross-hatched patch hides the word; an eraser rubs it away, leaving grey crumbs
  *   translate  small footprints walk beneath the word, each turning grey, then fading
+ *   build      a small brick archway over the word: ground line, two piers, voussoirs and a keystone
  * Light comes from the upper left: each mark casts a hatched shadow down and to the right.
  * The word is set a little smaller than the tagline (same face and weight), on its baseline. The first
- * word holds only about 2s, the rest HOLD; the rotation pauses while the tab is hidden.
+ * word holds about 1.2s, then each holds about 2.6s; the rotation pauses while the tab is hidden.
+ * After the hero has scrolled fully away, coming back to it switches to the next word after a short beat.
  * The slot is as wide as the current word, plus a constant gap each side (its margins); between words
  * its width glides, so only this line moves. Where the line wraps, the wrap is pinned where the widest
  * word puts it, so a narrower word never pulls text up from the line below.
@@ -16,7 +17,7 @@
  * margins, between the glyphs of the lines above and below (measured, not guessed), and is clipped to
  * it, so it never covers other text. Purely visual: the caller puts it inside aria-hidden text and
  * gives screen readers the full sentence.
- * Reduced motion: no rotation; "build" shows as the finished archway, ground and shadow.
+ * Reduced motion: no rotation; "shape" shows as the finished loop, with its echo, lower-curve hatching and cast shadow.
  * Ported from Claude outputs/hero-highlights.html.
  */
 interface Props {
@@ -68,7 +69,7 @@ const { words } = Astro.props;
   if (slot) {
     var wEl = slot.querySelector('[data-rw-word]'), svg = slot.querySelector('[data-rw-marks]'), pen = createPen(svg), root = svg;
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var WORDS = slot.dataset.words.split(' '), HOLD = 3600, FIRST = 2000, GLIDE = 400, idx = 0, raf = 0, timers = [];
+    var WORDS = slot.dataset.words.split(' '), HOLD = 2600, FIRST = 1200, GLIDE = 400, idx = 0, raf = 0, timers = [];
     var BG = 'var(--color-paper)';
     /** The archway's spacing, in the word's em: piers this far off the letters and this wide, built of courses this tall,
      *  the arch's inside this far above the ascenders, the ground this far below the baseline. The arch rises this
@@ -221,14 +222,14 @@ const { words } = Astro.props;
         for (var i = 0; i <= n; i++) { var f = i / n, a = Math.PI * 1.1 + f * Math.PI * sweep, lump = 1 + .025 * Math.sin(f * 4 + 1);
           pts.push([cx + dx + Math.cos(a) * rx * sc * lump, cy + dy + Math.sin(a) * ry * sc * lump - f * lift]); } return smooth(pts, false); }
       var shade = pen.hatch(root, 'M' + (cx - rx * .78) + ' ' + (cy + ry * .55) + ' Q' + cx + ' ' + (cy + ry * 1.32) + ' ' + (cx + rx * .9) + ' ' + (cy + ry * .42) + ' Q' + cx + ' ' + (cy + ry * 1.02) + ' ' + (cx - rx * .78) + ' ' + (cy + ry * .55) + ' Z');
-      pen.fadeIn(shade, 400, 700);
+      if (!reduce) pen.fadeIn(shade, 400, 700);
       // cast shadow: a faint hatched ellipse off the loop's lower right, kept below the word's ink and inside the box
       var erx = rx * .42, ery = Math.max(1, Math.min(fs * .11, (S.b - 2 - B.ib - 1) / 2));
       var scx = Math.min(S.r - 2 - erx, cx + rx * .4 + ery * CAST[0]), scy = Math.max(B.ib + 1 + ery, Math.min(S.b - 2 - ery, cy + ry + ery * CAST[1] * .5));
       var cast = pen.hatch(root, 'M' + (scx - erx).toFixed(1) + ' ' + scy.toFixed(1) + ' a' + erx.toFixed(1) + ' ' + ery.toFixed(1) + ' 0 1 0 ' + (2 * erx).toFixed(1) + ' 0 a' + erx.toFixed(1) + ' ' + ery.toFixed(1) + ' 0 1 0 ' + (-2 * erx).toFixed(1) + ' 0 Z', .45);
-      root.insertBefore(cast, root.firstChild); pen.fadeIn(cast, 400, 900);
-      pen.drawPencil(root, loop(ex, ey, 1.04, 2.05), FAR, W_LIGHT, r, 900, 180);
-      pen.drawPencil(root, loop(0, 0, 1, 2.12), NEAR, W_NORMAL, r, 850, 0);
+      root.insertBefore(cast, root.firstChild); if (!reduce) pen.fadeIn(cast, 400, 900);
+      if (reduce) { pen.pencil(root, loop(ex, ey, 1.04, 2.05), FAR, W_LIGHT, r); pen.pencil(root, loop(0, 0, 1, 2.12), NEAR, W_NORMAL, r); }
+      else { pen.drawPencil(root, loop(ex, ey, 1.04, 2.05), FAR, W_LIGHT, r, 900, 180); pen.drawPencil(root, loop(0, 0, 1, 2.12), NEAR, W_NORMAL, r, 850, 0); }
     }
 
     // uncover: a cross-hatched patch with two pencil strokes hides the word; a pencil-drawn eraser rubs it away,
@@ -306,9 +307,9 @@ const { words } = Astro.props;
         var o = (k % 2 ? 1 : -1) * off, px = x - Math.sin(th) * o, py = y + Math.cos(th) * o;
         later(function(){ var g = foot(px, py, th * 180 / Math.PI + (r() - .5) * 6, k % 2 === 0, s, sd, r); g.style.transition = 'color .5s ease'; g.setAttribute('opacity', 0); root.appendChild(g);
           var t0 = performance.now(), grey = false;
-          (function fade(now){ var t = (now - t0) / 1900; if (!grey && t > .38) { grey = true; g.style.color = FAR; }
+          (function fade(now){ var t = (now - t0) / 1300; if (!grey && t > .38) { grey = true; g.style.color = FAR; }
             g.setAttribute('opacity', (t < .08 ? t / .08 : t < .65 ? 1 : clamp((1 - t) / .35)).toFixed(2)); if (t < 1 && g.isConnected) requestAnimationFrame(fade); })(t0);
-        }, 260 + k * (200 + (k % 3) * 30));
+        }, 200 + k * (150 + (k % 3) * 22));
       })(k);
     }
 
@@ -336,15 +337,27 @@ const { words } = Astro.props;
     }
 
     (document.fonts ? document.fonts.ready : Promise.resolve()).then(function(){
-      layout(); var B = box(); stage(B); build(B);
-      // the first word holds only FIRST, so even a short visit sees a change; then HOLD.
-      // While the tab is hidden the countdown pauses and resumes with the time it had left.
+      layout(); var B = box(); stage(B); RUN[WORDS[0]](B);
+      // The first word holds FIRST, then HOLD. While the tab is hidden the countdown pauses and
+      // resumes with the time it had left. Once the hero has left the viewport entirely, coming
+      // back to it (about 60% in view) drops the wait and switches after a short beat.
       if (!reduce) {
-        var tick = 0, due = 0, left = 0;
-        var arm = function(ms){ clearTimeout(tick); due = performance.now() + ms; tick = setTimeout(function(){ idx = (idx + 1) % WORDS.length; show(WORDS[idx]); arm(HOLD); }, ms); };
+        var tick = 0, due = 0, left = 0, seenOut = false;
+        var arm = function(ms){
+          clearTimeout(tick);
+          due = performance.now() + ms;
+          tick = setTimeout(function(){ idx = (idx + 1) % WORDS.length; show(WORDS[idx]); arm(HOLD); }, ms);
+        };
         arm(FIRST);
         document.addEventListener('visibilitychange', function(){
-          if (document.hidden) { left = Math.max(0, due - performance.now()); clearTimeout(tick); } else arm(left); });
+          if (document.hidden) { left = Math.max(0, due - performance.now()); clearTimeout(tick); } else arm(left);
+        });
+        var hero = document.querySelector('[data-hero]');
+        if (hero) new IntersectionObserver(function(entries){
+          var e = entries[0];
+          if (!e.isIntersecting) { seenOut = true; return; }
+          if (e.intersectionRatio >= 0.6 && seenOut) { seenOut = false; arm(600); }
+        }, { threshold: [0, 0.6] }).observe(hero);
       }
       var rt; addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(layout, 150); });
     });
