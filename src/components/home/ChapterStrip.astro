@@ -1,0 +1,80 @@
+---
+/**
+ * One homepage chapter: the title and subtitle beside a drawing, then its project cards.
+ * The drawing comes from the named "art" slot.
+ */
+import ProjectCard from './ProjectCard.astro';
+import type { WorkEntry } from '@/lib/work';
+
+interface Props {
+  label: string;
+  title: string;
+  subtitle: string;
+  projects: WorkEntry[];
+  /** id of the heading, so the chapter can be labelled by it. */
+  headingId: string;
+}
+
+const { label, title, subtitle, projects, headingId } = Astro.props;
+---
+
+<div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-10 mobile:grid-cols-1 mobile:gap-6" data-reveal-group>
+  <div>
+    <p data-reveal-item style="--i:0" class="mb-4 font-mono text-[13px] leading-5 tracking-[0.06em] text-meta uppercase">{label}</p>
+    <h2 data-reveal-item style="--i:1" id={headingId} class="text-[48px] leading-[1.1] font-bold tracking-[-0.025em] text-[#111] mobile:text-[36px]">
+      {title}
+    </h2>
+    <p data-reveal-item style="--i:2" class="mt-4 max-w-[580px] text-[20px] leading-[1.5] text-[#3a3a3a] mobile:text-[18px]">{subtitle}</p>
+  </div>
+  <div data-reveal-item style="--i:3" class="mr-4 w-[300px] justify-self-end mobile:mr-0 mobile:w-[260px] mobile:justify-self-start">
+    <slot name="art" />
+  </div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-x-10 mobile:grid-cols-1 mobile:gap-y-14" data-reveal-group>
+  {projects.map((project, i) => (
+    <div data-reveal-item style={{ '--i': i }}>
+      <ProjectCard project={project} />
+    </div>
+  ))}
+</div>
+
+<style>
+  /* Apple's StaggeredFadeIn: a one-shot rise, staggered within the group. Nothing moves until JS marks the group pending. */
+  [data-reveal-group] {
+    --stagger: 0.15s;
+    --fade-dur: 0.9s;
+    --rise-dur: 0.7s;
+    --rise: 30px;
+    --ease: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  [data-reveal-group][data-reveal-pending] [data-reveal-item] {
+    opacity: 0;
+    transform: translateY(var(--rise));
+  }
+  [data-reveal-group] [data-reveal-item] {
+    transition:
+      opacity var(--fade-dur) var(--ease) calc(var(--i) * var(--stagger)),
+      transform var(--rise-dur) var(--ease) calc(var(--i) * var(--stagger));
+  }
+</style>
+
+<script>
+  // Hidden only once JS is running and motion is allowed, so the content is never lost without it.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const groups = document.querySelectorAll<HTMLElement>('[data-reveal-group]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.removeAttribute('data-reveal-pending');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
+    );
+    groups.forEach((group) => {
+      group.setAttribute('data-reveal-pending', '');
+      observer.observe(group);
+    });
+  }
+</script>

@@ -1,0 +1,136 @@
+---
+/**
+ * Chapter 1's pencil lamp. Ported from Claude outputs/chapters-lamp-demo.html (v6).
+ * A jointed lamp leans over three sketches, one by one, and repeats. It only runs while
+ * the drawing is at least 30% in view. Reduced motion holds a still frame aimed at sketch 2.
+ */
+---
+
+<svg
+  data-lamp
+  viewBox="0 0 330 240"
+  overflow="visible"
+  role="img"
+  aria-label="Pencil drawing: a desk lamp leans over three sketches and lights them one by one."
+  class="block h-auto w-full"
+></svg>
+
+<script>
+  // @ts-nocheck -- ported as plain JS from the chapter demo
+  import { rng, el, createPen, NEAR, FAR } from '@/components/hero/handDrawn.js';
+
+  const svg = document.querySelector('[data-lamp]');
+  if (svg) {
+    // "lamp" so these filters don't share ids with the hero's hd-* drawing.
+    var pen = createPen(svg, 'lamp'), GROUND = 212;
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var LN = 2.3, LT = 1.5, LL = 1.2;
+    var SH = [104, GROUND - 8], L1 = 92, L2 = 96;
+    var SHEETS = [{ x: 156, w: 40, h: 54, tilt: -6 }, { x: 204, w: 44, h: 62, tilt: 1.5 }, { x: 262, w: 38, h: 52, tilt: 7 }];
+    function P(pts, close) { return 'M' + pts.map(function (p) { return p[0] + ' ' + p[1]; }).join(' L') + (close ? ' Z' : ''); }
+    /** Two half-arcs, so the circle is centred on (cx, cy). A single almost-closed arc sits off to one side. */
+    function circ(cx, cy, r) { return 'M' + (cx - r) + ' ' + cy + ' a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0 a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0'; }
+    function ctr(i) { var s = SHEETS[i]; return [s.x + s.w / 2, GROUND - s.h * .55]; }
+    var D = Math.PI / 180, n;
+
+    function build() {
+      svg.innerHTML = ''; pen.defs(); var R = rng(11);
+      var back = el('g', {}), mid = el('g', {}), top = el('g', {}); svg.appendChild(back); svg.appendChild(mid); svg.appendChild(top);
+      pen.pencil(back, 'M18 ' + GROUND + ' L322 ' + GROUND, NEAR, LT, R);
+      var faces = [];
+      SHEETS.forEach(function (s, i) {
+        var x = s.x, W = s.w, H = s.h, t = GROUND - H, cx = x + W / 2;
+        pen.hatch(back, P([[x + 4, GROUND], [x + W, GROUND], [x + W + 24, GROUND + 10], [x + 28, GROUND + 10]], true), .55);
+        pen.pencil(back, 'M' + (cx + 4) + ' ' + (t + 14) + ' L' + (cx + 16) + ' ' + GROUND, FAR, LL, R);
+        var g = el('g', { transform: 'rotate(' + s.tilt + ' ' + cx + ' ' + GROUND + ')' }); mid.appendChild(g);
+        g.appendChild(el('rect', { x: x, y: t, width: W, height: H, fill: '#fff' }));
+        pen.pencil(g, P([[x, t], [x + W, t], [x + W, GROUND], [x, GROUND]], true), NEAR, LN, R);
+        var ix = x + 7, iy = t + 8;
+        if (i === 0) pen.pencil(g, P([[ix, iy], [ix + 26, iy], [ix + 26, iy + 14], [ix, iy + 14]], true) + ' M' + ix + ' ' + (iy + 24) + ' L' + (ix + 26) + ' ' + (iy + 24) + ' M' + ix + ' ' + (iy + 32) + ' L' + (ix + 18) + ' ' + (iy + 32), NEAR, LT, R);
+        if (i === 1) pen.pencil(g, P([[ix, iy], [ix + 10, iy], [ix + 10, iy + 8], [ix, iy + 8]], true) + ' ' + P([[ix + 16, iy + 16], [ix + 26, iy + 16], [ix + 26, iy + 24], [ix + 16, iy + 24]], true) + ' ' + P([[ix, iy + 32], [ix + 10, iy + 32], [ix + 10, iy + 40], [ix, iy + 40]], true) + ' M' + (ix + 10) + ' ' + (iy + 4) + ' L' + (ix + 21) + ' ' + (iy + 4) + ' L' + (ix + 21) + ' ' + (iy + 16) + ' M' + (ix + 21) + ' ' + (iy + 24) + ' L' + (ix + 21) + ' ' + (iy + 36) + ' L' + (ix + 10) + ' ' + (iy + 36), NEAR, LT, R);
+        if (i === 2) pen.pencil(g, 'M' + ix + ' ' + (iy + 12) + ' L' + (ix + 5) + ' ' + (iy + 2) + ' L' + (ix + 10) + ' ' + (iy + 14) + ' L' + (ix + 15) + ' ' + (iy + 3) + ' L' + (ix + 20) + ' ' + (iy + 13) + ' L' + (ix + 26) + ' ' + (iy + 1) + ' M' + ix + ' ' + (iy + 26) + ' L' + (ix + 26) + ' ' + (iy + 26) + ' M' + ix + ' ' + (iy + 34) + ' L' + (ix + 20) + ' ' + (iy + 34), NEAR, LT, R);
+        var fw = el('g', {}); g.appendChild(fw); faces.push(fw);
+        pen.hatch(fw, P([[x + 2, t + 2], [x + W - 2, t + 2], [x + W - 2, GROUND - 2], [x + 2, GROUND - 2]], true), .62);
+      });
+      // lamp base + its shadow (static)
+      pen.hatch(back, P([[106, GROUND], [130, GROUND], [154, GROUND + 9], [128, GROUND + 9]], true), .5);
+      pen.pencil(top, P([[84, GROUND], [124, GROUND], [117, GROUND - 8], [91, GROUND - 8]], true), NEAR, LN, R);
+      pen.hatch(top, P([[106, GROUND - 1], [122, GROUND - 1], [116, GROUND - 7], [106, GROUND - 7]], true), .6);
+      // light cone: plain grey lines, updated every frame
+      var cone = el('g', { style: 'opacity:0' }); top.appendChild(cone);
+      var c1 = el('line', { stroke: FAR, 'stroke-width': .9, 'stroke-linecap': 'round' }), c2 = el('line', { stroke: FAR, 'stroke-width': .9, 'stroke-linecap': 'round' });
+      cone.appendChild(c1); cone.appendChild(c2);
+      // the jointed body. No ink filter on it: the hand-wobble is enough, and a filter on the moving
+      // parts would keep Chromium from repainting them. Hatch filters stay on the static parts above.
+      var wrap = el('g', {}); top.appendChild(wrap);
+      var j1 = el('g', {}), j2 = el('g', {}), j3 = el('g', {}); wrap.appendChild(j1);
+      pen.pencil(j1, 'M-2 0 L-2 ' + (-L1) + ' M2 0 L2 ' + (-L1), NEAR, LT, R);
+      pen.pencil(j1, 'M-7 -14 L-7 ' + (-L1 + 16), FAR, LL, R);
+      pen.pencil(j1, circ(0, 0, 3), NEAR, LN, R);
+      j1.appendChild(j2);
+      pen.pencil(j2, 'M-2 0 L-2 ' + (-L2) + ' M2 0 L2 ' + (-L2), NEAR, LT, R);
+      pen.pencil(j2, circ(0, 0, 3.5), NEAR, LN, R);
+      j2.appendChild(j3);
+      pen.pencil(j3, circ(0, 0, 3), NEAR, LN, R);
+      pen.pencil(j3, 'M-3 3 L-4 9 L4 9 L3 3', NEAR, LT, R);
+      pen.pencil(j3, 'M-4 9 L-16 30 M4 9 L16 30 M-16 30 C-9 35 9 35 16 30', NEAR, LN, R);
+      pen.hatch(j3, 'M2 10 L4 9 L16 30 C13 32 9 33 7 33 Z', .6);
+      var rays = el('g', { style: 'opacity:0' }); j3.appendChild(rays);
+      pen.pencil(rays, 'M-11 39 L-16 48 M0 40 L0 51 M11 39 L16 48', FAR, LL, R);
+      [].slice.call(wrap.querySelectorAll('g[filter]')).forEach(function (g) { g.removeAttribute('filter'); });
+      return { j1: j1, j2: j2, j3: j3, rays: rays, cone: cone, c1: c1, c2: c2, faces: faces };
+    }
+
+    // the lamp reaches toward each sheet (2-link IK on a sprung wrist), a little underdamped so it feels alive
+    function spring(v) { return { x: v, v: 0, to: v }; }
+    var S;
+    function wristFor(i, dip) { var s = SHEETS[i], c = ctr(i); return [c[0] - [22, 26, 34][i], GROUND - s.h - 54 + (dip || 0)]; }
+    function reset() { var w = wristFor(0), c = ctr(0); S = { wx: spring(w[0] - 14), wy: spring(w[1] - 14), ax: spring(c[0] - 30), ay: spring(c[1]) }; }
+    function step(dt) { var K = 42, C = 1.45 * Math.sqrt(K); for (var k in S) { var s = S[k]; s.v += (K * (s.to - s.x) - C * s.v) * dt; s.x += s.v * dt; } }
+    function set(o) { for (var k in o) S[k].to = o[k]; }
+    function aimAt(i, dip) { var w = wristFor(i, dip), c = ctr(i); set({ wx: w[0], wy: w[1], ax: c[0], ay: c[1] }); }
+    function ang(vx, vy) { return Math.atan2(vx, -vy) / D; }
+    function ik(T) {
+      var dx = T[0] - SH[0], dy = T[1] - SH[1], d = Math.min(L1 + L2 - 1, Math.hypot(dx, dy));
+      var b = Math.acos((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d)) / D, a1 = ang(dx, dy) - b, E = [SH[0] + L1 * Math.sin(a1 * D), SH[1] - L1 * Math.cos(a1 * D)];
+      return [a1, ang(T[0] - E[0], T[1] - E[1]) - a1];
+    }
+    function render() {
+      var q = ik([S.wx.x, S.wy.x]), a1 = q[0], a2 = q[1];
+      var e = [SH[0] + L1 * Math.sin(a1 * D), SH[1] - L1 * Math.cos(a1 * D)], w = [e[0] + L2 * Math.sin((a1 + a2) * D), e[1] - L2 * Math.cos((a1 + a2) * D)];
+      var dx = S.ax.x - w[0], dy = S.ay.x - w[1], phi = Math.atan2(dx, dy), a3 = -phi / D - a1 - a2;
+      n.j1.style.transform = 'translate(' + SH[0] + 'px,' + SH[1] + 'px) rotate(' + a1.toFixed(2) + 'deg)';
+      n.j2.style.transform = 'translate(0px,' + (-L1) + 'px) rotate(' + a2.toFixed(2) + 'deg)';
+      n.j3.style.transform = 'translate(0px,' + (-L2) + 'px) rotate(' + a3.toFixed(2) + 'deg)';
+      // the beam lights whichever sheet it points at; none of them stays lit
+      n.faces.forEach(function (f, i) { var c = ctr(i), d = Math.atan2(c[0] - w[0], c[1] - w[1]) - phi, b = Math.exp(-Math.pow(d / .13, 2));
+        f.style.opacity = (1 - b).toFixed(3); });
+      n.rays.style.opacity = (.55 + .45 * Math.abs(Math.sin(clock * 3.2))).toFixed(2); n.cone.style.opacity = '.6';
+      var h = Math.hypot(dx, dy), len = h - 8, ux = dx / h, uy = dy / h, px = -uy, py = ux, m = [w[0] + ux * 32, w[1] + uy * 32];
+      [[n.c1, -1], [n.c2, 1]].forEach(function (c) { c[0].setAttribute('x1', (m[0] + px * c[1] * 15).toFixed(1)); c[0].setAttribute('y1', (m[1] + py * c[1] * 15).toFixed(1));
+        c[0].setAttribute('x2', (w[0] + ux * len + px * c[1] * 22).toFixed(1)); c[0].setAttribute('y2', (w[1] + uy * len + py * c[1] * 22).toFixed(1)); });
+    }
+
+    // compare, on a loop: the lamp leans toward each sketch in turn and back again (1 → 2 → 3 → 2 → …)
+    var CYCLE = [[0.0, function () { aimAt(0); }], [1.0, function () { aimAt(1); }], [2.0, function () { aimAt(2); }], [3.0, function () { aimAt(1); }]], PERIOD = 4.0;
+    var clock = 0, idx = 0, running = false, last = 0;
+    function loop(now) {
+      if (!running) return;
+      var dt = Math.min(.05, (now - last) / 1000); last = now; clock += dt;
+      while (idx < CYCLE.length && clock >= CYCLE[idx][0]) { CYCLE[idx][1](); idx++; }
+      if (clock >= PERIOD) { clock -= PERIOD; idx = 0; }
+      for (var i = 0; i < 4; i++) step(dt / 4);
+      render(); requestAnimationFrame(loop);
+    }
+    function start() { if (running) return; running = true; last = performance.now(); requestAnimationFrame(loop); }
+    function stop() { running = false; }
+
+    n = build(); reset();
+    if (reduce) { aimAt(1); for (var k in S) S[k].x = S[k].to; render(); }
+    else {
+      render();
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { e.isIntersecting ? start() : stop(); }); }, { threshold: .3 });
+      io.observe(svg);
+    }
+  }
+</script>

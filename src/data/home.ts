@@ -12,3 +12,31 @@ export const hero = {
   /** Quieter line under the intro; it only wraps between items. */
   education: ['M.S. HCDE @ UW', 'B.Eng @ Tsinghua'],
 };
+
+/** Homepage chapter strips. `projects` are work-collection slugs, in order. */
+export const chapters = [
+  {
+    id: 'make-the-call',
+    label: 'Chapter 01',
+    title: 'Make the call.',
+    subtitle:
+      'I decide which design ships, and why. I sketch by hand, prototype with AI, and treat every problem as its own puzzle.',
+    projects: ['idea-ai-wiki', 'idea-mapping'],
+  },
+  {
+    id: 'sit-with-people',
+    label: 'Chapter 02',
+    title: 'Sit with people.',
+    subtitle:
+      'I listen to real users and feel what they feel. Empathy starts my design, and structured analysis turns it into solutions.',
+    projects: ['seattle-ai-permitting', 'colleague-ai'],
+  },
+  {
+    id: 'carry-it-forward',
+    label: 'Chapter 03',
+    title: 'Carry it forward.',
+    subtitle:
+      'My path wasn’t straight or standard. Every step shaped the designer I am, and no AI has walked it.',
+    projects: ['parkipedia', 'netease-games'],
+  },
+];

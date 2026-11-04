@@ -3,8 +3,9 @@
  * stroke in graphite, a grain filter, and diagonal hatching. The values match that component's; keep
  * them in step if its style changes.
  *
- * createPen(svg) binds the helpers to one <svg>; call pen.defs() after clearing it, before drawing.
- * Hatching fills reference url(#hd-hatch) (one direction) and url(#hd-hatch-x) (the crossing one).
+ * createPen(svg, prefix) binds the helpers to one <svg>; call pen.defs() after clearing it, before drawing.
+ * prefix scopes the filter and pattern ids (default "hd"), so two drawings on one page don't share ids.
+ * Hatching fills reference url(#<prefix>-hatch) and url(#<prefix>-hatch-x).
  */
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -31,16 +32,17 @@ export function smooth(pts, closed) {
 /** Corners of a rectangle with chamfered corners of size c. */
 export function rrect(x, y, w, h, c) { return [[x + c, y], [x + w - c, y], [x + w, y + c], [x + w, y + h - c], [x + w - c, y + h], [x + c, y + h], [x, y + h - c], [x, y + c]]; }
 
-export function createPen(svg) {
+export function createPen(svg, prefix) {
+  var pfx = prefix || 'hd', inkId = pfx + '-ink', hatchInkId = pfx + '-hatch-ink', hatchId = pfx + '-hatch', hatchXId = pfx + '-hatch-x';
   /** The pencil grain filter and the hatch patterns (About: sks-ink, sks-hatch, sks-hatch-ink). */
   function defs() { var d = el('defs', {});
-    var f = el('filter', { id: 'hd-ink', x: '-5%', y: '-5%', width: '110%', height: '110%' });
+    var f = el('filter', { id: inkId, x: '-5%', y: '-5%', width: '110%', height: '110%' });
     f.appendChild(el('feTurbulence', { type: 'fractalNoise', baseFrequency: '1.1', numOctaves: '2', seed: '4', result: 'n' }));
     f.appendChild(el('feDisplacementMap', { 'in': 'SourceGraphic', in2: 'n', scale: '1.4' })); d.appendChild(f);
-    var fh = el('filter', { id: 'hd-hatch-ink', x: '-5%', y: '-20%', width: '110%', height: '140%' });
+    var fh = el('filter', { id: hatchInkId, x: '-5%', y: '-20%', width: '110%', height: '140%' });
     fh.appendChild(el('feTurbulence', { type: 'fractalNoise', baseFrequency: '.9', numOctaves: '2', seed: '9', result: 'n' }));
     fh.appendChild(el('feDisplacementMap', { 'in': 'SourceGraphic', in2: 'n', scale: '2.2' })); d.appendChild(fh);
-    [['hd-hatch', -38], ['hd-hatch-x', 52]].forEach(function (h) {
+    [[hatchId, -38], [hatchXId, 52]].forEach(function (h) {
       var pt = el('pattern', { id: h[0], width: 5, height: 5, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(' + h[1] + ')' });
       pt.appendChild(el('line', { x1: 0, y1: 0, x2: 0, y2: 5, stroke: HATCH, 'stroke-width': 1.2 })); d.appendChild(pt); });
     svg.appendChild(d); }
@@ -66,7 +68,7 @@ export function createPen(svg) {
     }
     return out; }
   /** A finished pencil line along path d, grained like the About sketch. */
-  function pencil(parent, d, col, w, R) { var g = el('g', { filter: 'url(#hd-ink)' }); handLine(samplePath(d), col, w, R).forEach(function (p) { g.appendChild(p); }); parent.appendChild(g); return g; }
+  function pencil(parent, d, col, w, R) { var g = el('g', { filter: 'url(#' + inkId + ')' }); handLine(samplePath(d), col, w, R).forEach(function (p) { g.appendChild(p); }); parent.appendChild(g); return g; }
   /** A pencil line drawn on over ms, after delay; the finer pass trails slightly, as on the About page. */
   function drawPencil(parent, d, col, w, R, ms, delay) { var g = pencil(parent, d, col, w, R), ps = [].slice.call(g.children), t0 = performance.now() + (delay || 0);
     ps.forEach(function (p) { p.setAttribute('pathLength', 1); p.setAttribute('stroke-dasharray', 1); p.setAttribute('stroke-dashoffset', 1); });
@@ -75,8 +77,8 @@ export function createPen(svg) {
       if (!done && g.isConnected) requestAnimationFrame(step); })(performance.now());
     return g; }
   /** A region of hatching, roughened like the About sketch's shadows. */
-  function hatch(parent, d, opacity, cross) { var g = el('g', { filter: 'url(#hd-hatch-ink)', opacity: opacity == null ? .7 : opacity });
-    g.appendChild(el('path', { d: d, fill: 'url(#hd-hatch)' })); if (cross) g.appendChild(el('path', { d: d, fill: 'url(#hd-hatch-x)' }));
+  function hatch(parent, d, opacity, cross) { var g = el('g', { filter: 'url(#' + hatchInkId + ')', opacity: opacity == null ? .7 : opacity });
+    g.appendChild(el('path', { d: d, fill: 'url(#' + hatchId + ')' })); if (cross) g.appendChild(el('path', { d: d, fill: 'url(#' + hatchXId + ')' }));
     parent.appendChild(g); return g; }
   function fadeIn(node, ms, delay) { var to = +(node.getAttribute('opacity') || 1); node.setAttribute('opacity', 0); var t0 = performance.now() + delay;
     (function step(now) { var t = (now - t0) / ms; if (t >= 0) node.setAttribute('opacity', (to * clamp(t)).toFixed(2)); if (t < 1 && node.isConnected) requestAnimationFrame(step); })(performance.now()); }
