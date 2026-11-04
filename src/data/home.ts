@@ -4,10 +4,10 @@ export const hero = {
   taglineLead: 'A product designer who uses AI',
   /** Second line: before + rotating word + after. The first word shows first and under reduced motion. */
   taglineBefore: 'to',
-  taglineWords: ['build', 'shape', 'uncover', 'translate'],
+  taglineWords: ['shape', 'uncover', 'translate', 'build'],
   taglineAfter: 'what it can’t generate alone.',
   /** What screen readers hear instead of both visible tagline lines. */
-  taglineSpoken: 'A product designer who uses AI to build, shape, uncover and translate what it can’t generate alone.',
+  taglineSpoken: 'A product designer who uses AI to shape, uncover, translate and build what it can’t generate alone.',
   intro: '2+ years of experience in AI, B2B and B2C products.',
   /** Quieter line under the intro; it only wraps between items. */
   education: ['M.S. HCDE @ UW', 'B.Eng @ Tsinghua'],
@@ -17,7 +17,7 @@ export const hero = {
 export const chapters = [
   {
     id: 'make-the-call',
-    label: 'Chapter 01',
+    label: 'Chapter 01 · Shape',
     title: 'Make the call.',
     subtitle:
       'I decide which design ships, and why. I sketch by hand, prototype with AI, and treat every problem as its own puzzle.',
@@ -25,7 +25,7 @@ export const chapters = [
   },
   {
     id: 'sit-with-people',
-    label: 'Chapter 02',
+    label: 'Chapter 02 · Uncover',
     title: 'Sit with people.',
     subtitle:
       'I listen to real users and feel what they feel. Empathy starts my design, and structured analysis turns it into solutions.',
@@ -33,7 +33,7 @@ export const chapters = [
   },
   {
     id: 'carry-it-forward',
-    label: 'Chapter 03',
+    label: 'Chapter 03 · Translate',
     title: 'Carry it forward.',
     subtitle:
       'My path wasn’t straight or standard. Every step shaped the designer I am, and no AI has walked it.',
