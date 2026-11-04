@@ -1,6 +1,6 @@
 /**
  * Social share images (Open Graph / Twitter), 1200 × 627 PNG:
- *   public/og/home.png         the homepage hero at 13:00 Seattle time (clear midday leaf shadows)
+ *   public/og/home.png         the homepage hero
  *   public/og/work/{slug}.png  each case study's cover, letterboxed on its grey card background
  *
  *   npm run og                 build + capture
@@ -89,14 +89,11 @@ async function captureHome() {
     const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT }, deviceScaleFactor: 1 });
     await page.goto(`http://localhost:${PORT}/?hour=13`, { waitUntil: 'networkidle' });
     await page.evaluate(() => document.fonts.ready);
-    // The WebGL leaf shadows mark themselves ready once the first frame is drawn; then let the fade-in finish.
-    await page.waitForSelector('.leaf-shadow[data-ready]', { state: 'attached', timeout: 15_000 });
+    // Let the hero's entrance and the rotating word's first mark finish.
     await page.waitForTimeout(1500);
     await page.addStyleTag({
       content: `
-        [data-custom-cursor], .hero [data-scroll-hint], .hero [data-sun-place] { visibility: hidden !important; }
-        .hero [data-sun-place] { display: none !important; }
-        .hero div:has(> div > [data-sun-place]) { display: none !important; }
+        [data-custom-cursor], .hero [data-scroll-hint] { visibility: hidden !important; }
         html { scrollbar-width: none; }
       `,
     });

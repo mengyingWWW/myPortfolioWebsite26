@@ -1,0 +1,352 @@
+---
+/**
+ * The hero tagline's rotating word, each with its own pencil mark in an SVG overlay, drawn in the
+ * About page's sketch style (lines, greys and hatching from handDrawn.js):
+ *   build      a small brick archway over the word: ground line, two piers, voussoirs and a keystone
+ *   shape      one loop around the word, a grey echo loop behind it, hatching along its lower curve
+ *   uncover    a cross-hatched patch hides the word; an eraser rubs it away, leaving grey crumbs
+ *   translate  small footprints walk beneath the word, each turning grey, then fading
+ * Light comes from the upper left: each mark casts a hatched shadow down and to the right.
+ * The word is set a little smaller than the tagline (same face and weight), on its baseline. The first
+ * word holds only about 2s, the rest HOLD; the rotation pauses while the tab is hidden.
+ * The slot is as wide as the current word, plus a constant gap each side (its margins); between words
+ * its width glides, so only this line moves. Where the line wraps, the wrap is pinned where the widest
+ * word puts it, so a narrower word never pulls text up from the line below.
+ * Every mark starts once the width has settled and is sized to fit a safe box: the slot and its side
+ * margins, between the glyphs of the lines above and below (measured, not guessed), and is clipped to
+ * it, so it never covers other text. Purely visual: the caller puts it inside aria-hidden text and
+ * gives screen readers the full sentence.
+ * Reduced motion: no rotation; "build" shows as the finished archway, ground and shadow.
+ * Ported from Claude outputs/hero-highlights.html.
+ */
+interface Props {
+  /** In order; the first shows first. Each needs a mark in the script below. */
+  words: string[];
+}
+
+const { words } = Astro.props;
+---
+
+<span class="slot" data-rw-slot data-words={words.join(' ')}
+  ><span class="w" data-rw-word>{words[0]}</span><svg class="marks" data-rw-marks></svg></span
+>
+
+<style>
+  .slot {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+    text-align: center;
+    /* The breathing gap: just enough for the archway's piers beside the word. */
+    margin: 0 0.5em;
+  }
+  .w {
+    display: inline-block;
+    font-size: 0.9em;
+    line-height: 1.2;
+    transition: opacity 0.25s ease;
+  }
+  .w.hide {
+    opacity: 0;
+  }
+  .marks {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  // @ts-nocheck -- ported as plain JS from the prototype
+  import { clamp, easeIO, rng, el, jit, smooth, rrect, createPen, NEAR, FAR, W_NORMAL, W_THIN, W_LIGHT, CAST } from './handDrawn.js';
+
+  const slot = document.querySelector('[data-rw-slot]');
+  if (slot) {
+    var wEl = slot.querySelector('[data-rw-word]'), svg = slot.querySelector('[data-rw-marks]'), pen = createPen(svg), root = svg;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var WORDS = slot.dataset.words.split(' '), HOLD = 3600, FIRST = 2000, GLIDE = 400, idx = 0, raf = 0, timers = [];
+    var BG = 'var(--color-paper)';
+    /** The archway's spacing, in the word's em: piers this far off the letters and this wide, built of courses this tall,
+     *  the arch's inside this far above the ascenders, the ground this far below the baseline. The arch rises this
+     *  fraction of its span, its ring this fraction of a pier course deep; the piers' width, the ground's overhang and
+     *  the shadow follow the courses' size, down to minScale.
+     *  The slot widens by the gap and a pier each side. */
+    var ARCH = { gap: .35, pier: .24, course: .26, clear: .12, ground: .08, rise: .15, depth: .7, minScale: .85 }, PAD = { build: ARCH.gap + ARCH.pier };
+    function later(fn, ms){ timers.push(setTimeout(fn, ms)); }
+    function sw(B){ return Math.max(2.6, B.fs * .078); }
+
+    // ---------- glyph ink: how far a run of text really reaches above and below its baseline ----------
+    var ctx = document.createElement('canvas').getContext('2d'), inkCache = {};
+    function inkOf(text, elem){ var cs = getComputedStyle(elem), font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily, key = font + '|' + text;
+      if (!inkCache[key]) { ctx.font = font; var m = ctx.measureText(text); inkCache[key] = { up: m.actualBoundingBoxAscent, down: m.actualBoundingBoxDescent, asc: m.fontBoundingBoxAscent, l: m.actualBoundingBoxLeft, r: m.actualBoundingBoxRight }; }
+      return inkCache[key]; }
+    /** Every visible glyph near the tagline, in slot coordinates: box, baseline, ink top and bottom. */
+    function glyphs(r){
+      var scope = (slot.closest('h1') || slot).parentElement || document.body, out = [], rg = document.createRange();
+      var walk = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT), n;
+      while ((n = walk.nextNode())) {
+        var host = n.parentElement; if (!host || slot.contains(host) || host.getBoundingClientRect().width <= 1) continue;
+        for (var i = 0; i < n.data.length; i++) { var ch = n.data[i]; if (!ch.trim()) continue;
+          rg.setStart(n, i); rg.setEnd(n, i + 1); var c = rg.getClientRects()[0]; if (!c || !c.width) continue;
+          var k = inkOf(ch, host), base = c.top - r.top + k.asc;
+          out.push({ l: c.left - r.left, r: c.right - r.left, base: base, top: base - k.up, bot: base + k.down }); }
+      }
+      return out; }
+    /** The safe box: inside it a mark can't touch any other text. */
+    function safeBox(B, r){
+      var m = parseFloat(getComputedStyle(slot).marginLeft) || 0, gap = Math.max(2, B.fs * .04), G = glyphs(r);
+      var S = { l: -m + B.sw, r: r.width + m - B.sw, t: -Infinity, b: Infinity };
+      G.forEach(function(g){ if (Math.abs(g.base - B.base) > B.fs * .5) return;
+        if (g.r <= 0.5) S.l = Math.max(S.l, g.r + B.sw); else if (g.l >= r.width - .5) S.r = Math.min(S.r, g.l - B.sw); });
+      G.forEach(function(g){ if (Math.abs(g.base - B.base) <= B.fs * .5 || g.r <= S.l || g.l >= S.r) return;
+        if (g.base < B.base) S.t = Math.max(S.t, g.bot + gap); else S.b = Math.min(S.b, g.top - gap); });
+      if (S.t === -Infinity) S.t = B.it - B.fs * .6;
+      if (S.b === Infinity) S.b = B.ib + B.fs * .6;
+      return S; }
+    function box(){ var r = slot.getBoundingClientRect(), b = wEl.getBoundingClientRect(), fs = parseFloat(getComputedStyle(wEl).fontSize);
+      var B = { x: b.left - r.left, y: b.top - r.top, w: b.width, h: b.height, fs: fs, cy: b.top - r.top + b.height * .52 };
+      var rg = document.createRange(); rg.selectNodeContents(wEl); var tr = rg.getBoundingClientRect(), k = inkOf(wEl.textContent, wEl);
+      B.base = tr.top - r.top + k.asc; B.it = B.base - k.up; B.ib = B.base + k.down; B.icy = (B.it + B.ib) / 2; B.sw = sw(B);
+      B.il = tr.left - r.left - k.l; B.ir = tr.left - r.left + k.r;
+      B.S = safeBox(B, r); return B; }
+    /** Clears the overlay and returns a group clipped to the safe box, for the next mark. */
+    function stage(B){
+      while (svg.firstChild) svg.removeChild(svg.firstChild); pen.defs();
+      var S = B.S, cp = el('clipPath', { id: 'hd-safe' }); cp.appendChild(el('rect', { x: S.l, y: S.t, width: Math.max(0, S.r - S.l), height: Math.max(0, S.b - S.t) }));
+      svg.firstChild.appendChild(cp); root = el('g', { 'clip-path': 'url(#hd-safe)' }); svg.appendChild(root); return root; }
+
+    // build: a small brick archway over the word, lit from the upper left. A pencil ground line; two piers built course
+    // by course beside the word; an arch of tapered voussoirs, every joint on a radius from the arch's centre, set from
+    // both springers upward, alternating sides, each sliding in along its radius; the keystone drops in last; then the
+    // archway's hatched shadow falls on the ground to its lower right. The arch is segmental: an arc of one circle
+    // rising a shallow fraction of its span, its ring a little shallower than a pier course, seated on skewbacks cut
+    // into the piers' top courses.
+    function build(B){
+      var S = B.S, fs = B.fs, r = rng(4), edge = W_THIN / 2 + 1.2, mg = Math.max(.8, fs * .02), i;
+      var gapS = fs * ARCH.gap, gapW = fs * ARCH.clear, ov = Math.max(1.5, fs * .08);
+      // the piers' inner faces stand gapS off the word's ink; the ground runs a little past their outer faces
+      var cx = (B.il + B.ir) / 2, hw = (B.ir - B.il) / 2, a = hw + gapS;
+      var G = Math.min(B.ib + fs * ARCH.ground + W_NORMAL / 2 + .6, S.b - 3.5), foot = G - W_NORMAL / 2;
+      // the intrados (radius R, rise f) clears the word's outer ascenders by gapW, which sets the springing line ys;
+      // the piers fill ys..foot in n whole courses and the ring is ARCH.depth of a course deep (t), the keystone 15%
+      // deeper. The line spacing is fixed, so the ring's depth comes first: the fewest courses (the biggest bricks,
+      // up to 30% over ARCH.course) whose ring fits under the line above even when flat, then as much rise as is left
+      var R, f, ys, n, ch, t;
+      function fit(ff, nn){ f = ff; n = nn; R = (a * a + f * f) / (2 * f); ys = B.it - gapW + Math.sqrt(R * R - hw * hw) - (R - f);
+        ch = (foot - ys) / n; t = Math.max(2, (ch - mg) * ARCH.depth);
+        return ys - f - t * 1.15 - .8 >= S.t + edge; }
+      var rise = 2 * a * ARCH.rise, flat = a * .004, nn = 2;
+      while (nn < 6 && (!fit(flat, nn) || ch > fs * ARCH.course * 1.3)) nn++;
+      if (!fit(rise, nn)) { var lo = flat, hi = rise;
+        for (i = 0; i < 16; i++) { var mid = (lo + hi) / 2; if (fit(mid, nn)) lo = mid; else hi = mid; } fit(lo, nn); }
+      var sc = Math.max(ARCH.minScale, Math.min(1, ch / (fs * ARCH.course)));
+      var pw = Math.max(2, Math.min(fs * ARCH.pier * sc, cx - a - (S.l + edge + ov), (S.r - edge - ov) - (cx + a)));
+      var yc = ys - f + R, PHI = Math.asin(Math.min(1, a / R)), sP = Math.sin(PHI), cP = Math.cos(PHI);
+      /** A point on the arch: phi runs -PHI (left springing) to PHI (right) about the centre, d is depth out from the intrados. */
+      function P(phi, d){ return [cx + (R + d) * Math.sin(phi), yc - (R + d) * Math.cos(phi)]; }
+      function poly(pts){ return 'M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' Z'; }
+      /** How far a brick can start out along (ux, uy) and still be inside the box. */
+      function room(pts, ux, uy){ var m = fs * .3;
+        pts.forEach(function(p){ if (uy < -.01) m = Math.min(m, (p[1] - S.t - edge) / -uy);
+          if (ux < -.01) m = Math.min(m, (p[0] - S.l - edge) / -ux); if (ux > .01) m = Math.min(m, (S.r - edge - p[0]) / ux); });
+        return Math.max(0, m); }
+      var items = [], arch;
+      function brick(pts, hatchPts, o){ var g = el('g', { opacity: 0 }), d = poly(jit(pts, r, .6)); arch.appendChild(g);
+        g.appendChild(el('path', { d: d, fill: BG })); pen.hatch(g, poly(hatchPts)); pen.pencil(g, d, NEAR, W_THIN, r);
+        o.p = g; items.push(o); }
+
+      // cast shadow: a hatched band on the ground off the archway's lower right
+      var top = G + W_NORMAL / 2 + .5, sh = Math.min(Math.max(5, fs * .16) * sc, S.b - 1 - top), skew = sh * CAST[0] / CAST[1];
+      var xR = cx + a + pw, xs = cx - a * .3, cast = null;
+      if (sh > 1.5) cast = pen.hatch(root, poly([[xs, top], [xR, top], [Math.min(S.r - 1.5, xR + skew), top + sh], [xs + skew, top + sh]]));
+      var gx0 = Math.max(S.l + edge, cx - a - pw - fs * .2 * sc), gx1 = Math.min(S.r - edge, xR + fs * .2 * sc), gp = [];
+      for (i = 0; i <= 6; i++) gp.push([gx0 + (gx1 - gx0) * i / 6, G + (i % 6 ? (r() - .5) * 1.2 : 0)]);
+      if (reduce) pen.pencil(root, smooth(gp, false), NEAR, W_NORMAL, r); else pen.drawPencil(root, smooth(gp, false), NEAR, W_NORMAL, r, 260, 0);
+      arch = el('g', {}); root.appendChild(arch);
+
+      // piers: whole courses from the ground to the springing line, left and right alternating; every other course
+      // is two half bricks (when the pier is wide enough), so the joints stagger. The top course's arch side is
+      // cut along the springing radius (the skewback) the first voussoir sits on
+      var seq = 0;
+      for (var c = 0; c < n; c++) [-1, 1].forEach(function(side){
+        var xi = cx + side * a, x0 = side < 0 ? xi - pw : xi, yb = foot - c * ch, yt = yb - ch + mg, hy = yt + (yb - yt) * .55, delay = 150 + seq++ * 70;
+        function topY(x){ return c < n - 1 ? yt : yt - Math.min(Math.abs(x - xi) / sP, t) * cP; }
+        var parts = pw >= fs * .2 && c % 2 ? [[x0, x0 + pw / 2 - mg / 2], [x0 + pw / 2 + mg / 2, x0 + pw]] : [[x0, x0 + pw]];
+        parts.forEach(function(q){ var xb = xi + side * t * sP, top = [[q[0], topY(q[0])]];
+          if (c === n - 1 && xb > q[0] && xb < q[1]) top.push([xb, topY(xb)]); top.push([q[1], topY(q[1])]);
+          var pts = top.concat([[q[1], yb], [q[0], yb]]);
+          brick(pts, [[q[0], hy], [q[1], hy], [q[1], yb], [q[0], yb]], { ux: 0, uy: -1, d: room(pts, 0, -1), fall: true, delay: delay, dur: 220, b: Math.max(.6, fs * .03) }); }); });
+
+      // arch: four voussoirs a side and the keystone, every joint on a radius from the centre; widths vary ±15%
+      // (each side still sums the same, so the keystone stays centred) and the keystone is 25% wider, 15% deeper
+      var wl = [], wr = [], KW = 1.25, gA = mg / (R + t / 2), sl = 0, sr = 0;
+      for (i = 0; i < 4; i++) { wl.push(1 + (r() - .5) * .3); wr.push(1 + (r() - .5) * .3); sl += wl[i]; sr += wr[i]; }
+      var unit = (2 * PHI - 10 * gA) / (8 + KW), pl = -PHI, pr = PHI;
+      function vous(p1, p2, tt, o){ var pm = (p1 + p2) / 2, Im = P(pm, 0), E = P(pm, tt), h = tt * .42;
+        var pts = [P(p1, 0), P(p1, tt), E, P(p2, tt), P(p2, 0), Im], hp = [P(p1, 0), P(p1, h), P(pm, h), P(p2, h), P(p2, 0), Im];
+        if (o.ux == null) { var l = Math.hypot(E[0] - Im[0], E[1] - Im[1]) || 1; o.ux = (E[0] - Im[0]) / l; o.uy = (E[1] - Im[1]) / l; }
+        o.d = Math.min(o.dmax, room(pts, o.ux, o.uy)); brick(pts, hp, o); }
+      var archAt = 150 + seq * 70 + 120, vs = 45;
+      for (i = 0; i < 4; i++) { var dl = unit * wl[i] * 4 / sl, dr = unit * wr[i] * 4 / sr;
+        vous(pl + gA, pl + gA + dl, t, { delay: archAt + 2 * i * vs, dur: 200, b: -fs * .02, dmax: fs * .25 }); pl += gA + dl;
+        vous(pr - gA - dr, pr - gA, t, { delay: archAt + (2 * i + 1) * vs, dur: 200, b: -fs * .02, dmax: fs * .25 }); pr -= gA + dr; }
+      var keyAt = archAt + 8 * vs + 40;
+      vous(pl + gA, pr - gA, t * 1.15, { ux: 0, uy: -1, fall: true, delay: keyAt, dur: 280, b: -Math.max(1, fs * .05), dmax: fs * .2 });
+      if (cast && !reduce) pen.fadeIn(cast, 350, keyAt + 280);
+
+      // each brick falls (piers, keystone) or slides in (voussoirs) along (ux, uy), then settles: a small rebound
+      // for the piers, a press inward for the voussoirs and, stronger, the keystone
+      var t0 = performance.now(); if (reduce) t0 -= 1e5;
+      (function step(now){ var ms = now - t0, all = true;
+        items.forEach(function(it){ var q = clamp((ms - it.delay) / it.dur); if (q < 1) all = false;
+          var off = q < .7 ? it.d * (it.fall ? 1 - Math.pow(q / .7, 2) : Math.pow(1 - q / .7, 2)) : it.b * Math.sin(Math.PI * (q - .7) / .3);
+          it.p.setAttribute('opacity', clamp(q * 3).toFixed(2));
+          it.p.setAttribute('transform', 'translate(' + (it.ux * off).toFixed(2) + ' ' + (it.uy * off).toFixed(2) + ')'); });
+        if (!all) raf = requestAnimationFrame(step); })(performance.now());
+    }
+
+    // shape: one confident loop around the word, a grey echo just behind it, and hatching along its lower curve.
+    // Sized from the word's ink and the room in the safe box; the echo moves out only as far as the box allows.
+    function shape(B){
+      var S = B.S, fs = B.fs, r = rng(17), cx = B.x + B.w / 2, cy = B.icy, ext = sw(B) / 2 + 1.5, lift = fs * .03;
+      var hw = B.w / 2 + fs * .08, hh = (B.ib - B.it) / 2 + fs * .06, ax = Math.min(cx - S.l, S.r - cx) - ext, up = cy - S.t - ext - lift, down = S.b - cy - ext;
+      var ry = Math.max(hh * .8, Math.min(hh * Math.SQRT2, up / 1.066, down / 1.066));
+      var rx = Math.min(ax / 1.066, Math.max(hw * 1.1, ry > hh * 1.02 ? hw / Math.sqrt(1 - (hh / ry) * (hh / ry)) : Infinity));
+      var ex = Math.max(0, Math.min(fs * .1, ax - rx * 1.066)), ey = -Math.max(0, Math.min(fs * .12, up - ry * 1.066));
+      function loop(dx, dy, sc, sweep){ var pts = [], n = 18;
+        for (var i = 0; i <= n; i++) { var f = i / n, a = Math.PI * 1.1 + f * Math.PI * sweep, lump = 1 + .025 * Math.sin(f * 4 + 1);
+          pts.push([cx + dx + Math.cos(a) * rx * sc * lump, cy + dy + Math.sin(a) * ry * sc * lump - f * lift]); } return smooth(pts, false); }
+      var shade = pen.hatch(root, 'M' + (cx - rx * .78) + ' ' + (cy + ry * .55) + ' Q' + cx + ' ' + (cy + ry * 1.32) + ' ' + (cx + rx * .9) + ' ' + (cy + ry * .42) + ' Q' + cx + ' ' + (cy + ry * 1.02) + ' ' + (cx - rx * .78) + ' ' + (cy + ry * .55) + ' Z');
+      pen.fadeIn(shade, 400, 700);
+      // cast shadow: a faint hatched ellipse off the loop's lower right, kept below the word's ink and inside the box
+      var erx = rx * .42, ery = Math.max(1, Math.min(fs * .11, (S.b - 2 - B.ib - 1) / 2));
+      var scx = Math.min(S.r - 2 - erx, cx + rx * .4 + ery * CAST[0]), scy = Math.max(B.ib + 1 + ery, Math.min(S.b - 2 - ery, cy + ry + ery * CAST[1] * .5));
+      var cast = pen.hatch(root, 'M' + (scx - erx).toFixed(1) + ' ' + scy.toFixed(1) + ' a' + erx.toFixed(1) + ' ' + ery.toFixed(1) + ' 0 1 0 ' + (2 * erx).toFixed(1) + ' 0 a' + erx.toFixed(1) + ' ' + ery.toFixed(1) + ' 0 1 0 ' + (-2 * erx).toFixed(1) + ' 0 Z', .45);
+      root.insertBefore(cast, root.firstChild); pen.fadeIn(cast, 400, 900);
+      pen.drawPencil(root, loop(ex, ey, 1.04, 2.05), FAR, W_LIGHT, r, 900, 180);
+      pen.drawPencil(root, loop(0, 0, 1, 2.12), NEAR, W_NORMAL, r, 850, 0);
+    }
+
+    // uncover: a cross-hatched patch with two pencil strokes hides the word; a pencil-drawn eraser rubs it away,
+    // all the way past the patch's right edge, and the patch is removed once the eraser is done
+    function uncover(B){
+      var S = B.S, ext = B.sw;
+      // the patch's outline bulges up to 2px past x0/x1, plus up to 1.5px of jitter
+      var r = rng(9), x0 = Math.max(S.l + ext + 3.5, B.x - B.fs * .14), x1 = Math.min(S.r - ext - 3.5, B.x + B.w + B.fs * .14), y0 = Math.max(S.t + ext, B.y + B.h * .1), y1 = Math.min(S.b - ext, B.y + B.h * .92), W = x1 - x0, H = y1 - y0;
+      var id = 'hd-clip' + Date.now(), dd = el('defs', {}), cp = el('clipPath', { id: id }), cr = el('rect', { x: x0 - 8, y: y0 - 14, width: W + 16, height: H + 28 });
+      cp.appendChild(cr); dd.appendChild(cp); svg.appendChild(dd);
+      var cover = el('g', { 'clip-path': 'url(#' + id + ')' }); root.appendChild(cover);
+      var patch = jit([[x0, y0 + 2], [x0 + W * .5, y0], [x1, y0 + 3], [x1 + 2, y0 + H * .5], [x1, y1], [x0 + W * .5, y1 + 2], [x0, y1 - 1], [x0 - 2, y0 + H * .5]], r, 3);
+      cover.appendChild(el('path', { d: smooth(patch, true), fill: BG }));
+      var hatched = pen.hatch(cover, smooth(patch, true), 1, true); pen.fadeIn(hatched, 220, 0);
+      pen.drawPencil(cover, smooth([[x0 + B.fs * .1, y0 + H * .35], [x0 + W * .5, y0 + H * .25], [x1 - B.fs * .1, y0 + H * .4]], false), NEAR, W_NORMAL, r, 260, 140);
+      pen.drawPencil(cover, smooth([[x0 + B.fs * .2, y0 + H * .72], [x0 + W * .55, y0 + H * .62], [x1 - B.fs * .05, y0 + H * .74]], false), NEAR, W_NORMAL, r, 260, 260);
+      // the eraser shrinks if its tilted (up to 21° with the sway), swaying body, outline and shadow wouldn't fit between the lines
+      var eh = H * .92, ew = B.fs * .44, cyE = y0 + H / 2, sway = H * .1, cos = Math.cos(21 * Math.PI / 180), sin = Math.sin(21 * Math.PI / 180), sd = Math.max(4, B.fs * .14);
+      var needY = (eh / 2 + ext) * cos + (ew / 2 + ext) * sin + sway + sd, kE = Math.min(1, Math.min(cyE - S.t, S.b - cyE) / needY); eh *= kE; ew *= kE; sway *= kE;
+      var extX = (ew / 2 + ext) * cos + (eh / 2 + ext) * sin + sd;
+      var body = jit(rrect(-ew / 2, -eh / 2, ew, eh, ew * .14), r, 1);
+      // its cast shadow is redrawn each frame in slot coordinates, so the hatching keeps its angle while the eraser rocks
+      var cast = pen.hatch(root, smooth(body, true)), castPath = cast.firstChild;
+      function castAt(x, y, deg){ var a = deg * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+        castPath.setAttribute('d', smooth(body.map(function(p){ return [x + sd * CAST[0] + p[0] * c - p[1] * s, y + sd * CAST[1] + p[0] * s + p[1] * c]; }), true)); }
+      var er = el('g', {}); root.appendChild(er);
+      er.appendChild(el('path', { d: smooth(body, true), fill: BG }));
+      pen.hatch(er, 'M' + (-ew / 2 + 2).toFixed(1) + ' ' + (eh * .14).toFixed(1) + ' h' + (ew - 4).toFixed(1) + ' v' + (eh * .34).toFixed(1) + ' h' + (4 - ew).toFixed(1) + ' Z');
+      pen.pencil(er, smooth(body, true), NEAR, W_NORMAL, r);
+      pen.pencil(er, smooth([[-ew / 2, eh * .12], [ew / 2, eh * .1]], false), NEAR, W_THIN, r);
+      er.setAttribute('opacity', 0); er.setAttribute('transform', 'translate(' + Math.max(S.l + extX, x0).toFixed(1) + ' ' + cyE.toFixed(1) + ') rotate(-16)');
+      cast.setAttribute('opacity', 0); castAt(Math.max(S.l + extX, x0), cyE, -16);
+      var crumbs = el('g', { filter: 'url(#hd-ink)' }); root.appendChild(crumbs);
+      // the rub ends past the patch's clip edge (x1 + 8) by a stroke width plus the rough filter's overflow
+      var xEnd = x1 + 8 + sw(B) + 3, t0 = performance.now() + 620, lastCrumb = 0;
+      (function step(now){ var t = (now - t0) / 1150; if (t < 0) { raf = requestAnimationFrame(step); return; }
+        var k = easeIO(clamp(t)), ex = x0 + k * (xEnd - x0), ey = cyE + Math.sin(t * 16) * sway, exd = Math.max(S.l + extX, Math.min(S.r - extX, ex));
+        cr.setAttribute('x', ex.toFixed(1)); cr.setAttribute('width', Math.max(0, x1 - ex + 8).toFixed(1));
+        if (t >= 1 && cover.isConnected) cover.remove();
+        var rot = -16 + Math.sin(t * 16) * 5, eo = t < .9 ? 1 : clamp((1.08 - t) / .18);
+        er.setAttribute('transform', 'translate(' + exd.toFixed(1) + ' ' + ey.toFixed(1) + ') rotate(' + rot.toFixed(1) + ')');
+        er.setAttribute('opacity', eo.toFixed(2)); castAt(exd, ey, rot); cast.setAttribute('opacity', (eo * .7).toFixed(2));
+        if (t - lastCrumb > .09 && t < .95) { lastCrumb = t; var cxr = Math.max(S.l + 3, Math.min(S.r - 3, exd - B.fs * .1)), cyr = Math.min(S.b - 3, y1 + B.fs * (.03 + r() * .12));
+          var ca = r() * Math.PI, cl = 1 + r() * 1.5;
+          crumbs.appendChild(el('path', { d: 'M' + (cxr - Math.cos(ca) * cl).toFixed(1) + ' ' + (cyr - Math.sin(ca) * cl).toFixed(1) + ' L' + (cxr + Math.cos(ca) * cl).toFixed(1) + ' ' + (cyr + Math.sin(ca) * cl).toFixed(1), stroke: FAR, 'stroke-width': W_LIGHT * 1.4, 'stroke-linecap': 'round' })); }
+        if (t > 1.1) crumbs.setAttribute('opacity', clamp(1 - (t - 1.1) / .4).toFixed(2));
+        if (t < 1.5) raf = requestAnimationFrame(step); })(performance.now());
+    }
+
+    // translate: small bare footprints walk beneath the word; each one turns grey, then fades, like a magic map.
+    // Drawn in slot coordinates (not a scaled group) so the pencil width and grain match the other marks.
+    // Each print sits on a paper-filled sole over its own hatched cast shadow, offset by sd to the lower right.
+    function foot(x, y, ang, left, s, sd, r){
+      var a = (ang + 90) * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a), mx = left ? -s : s;
+      function tf(p){ var px = p[0] * mx, py = p[1] * s; return [x + px * ca - py * sa, y + px * sa + py * ca]; }
+      var g = el('g', {}); g.style.color = NEAR;
+      var sole = [[0, -6], [3.4, -4.6], [3.8, -.5], [2.4, 3.4], [2.6, 6.6], [0, 8.2], [-2.4, 6.4], [-2, 2.6], [-3.4, -1.6], [-2.6, -5.2]].map(tf);
+      pen.hatch(g, smooth(sole.map(function(p){ return [p[0] + sd * CAST[0], p[1] + sd * CAST[1]]; }), true));
+      g.appendChild(el('path', { d: smooth(sole, true), fill: BG }));
+      var ink = pen.pencil(g, smooth(sole, true), 'currentColor', W_THIN, r);
+      [[-2.6, -9.4, 1.3], [-.4, -10.6, 1.15], [1.7, -10.2, 1], [3.4, -8.8, .85]].forEach(function(t){ var c = tf(t);
+        ink.appendChild(el('circle', { cx: c[0].toFixed(1), cy: c[1].toFixed(1), r: (t[2] * s * .7).toFixed(2), fill: 'currentColor', opacity: .92 })); });
+      return g;
+    }
+    function translate(B){
+      var S = B.S, fs = B.fs, r = rng(21), n = 6, s = fs / 27 * .7, off = fs * .1, curve = fs * .07;
+      // between the word's ink and the box bottom; prints, stagger and curve shrink together if the band is short
+      var sd = Math.max(1.5, fs / 27 * .7 * 3);
+      var top = B.ib + Math.max(2, fs * .04), bot = S.b - 1, need = curve + 2 * off + 2 * (4.6 * s + 1) + sd, kF = Math.min(1, (bot - top) / need);
+      s *= kF; off *= kF; curve *= kF; sd = Math.max(1.5, sd * kF); var half = 4.6 * s + 1;
+      var base = Math.max(top + curve + off + half, Math.min(bot - off - half - sd * CAST[1], B.y + B.h / 2 + fs * .7));
+      var x0 = Math.max(S.l + 12.5 * s, B.x - fs * .05), W = Math.min(S.r - 12.5 * s - sd * CAST[0], B.x + B.w + fs * .05) - x0;
+      for (var k = 0; k < n; k++) (function(k){
+        var f = k / (n - 1), x = x0 + f * W, y = base - Math.sin(f * Math.PI) * curve, slope = -Math.cos(f * Math.PI) * curve * Math.PI / W, th = Math.atan(slope);
+        var o = (k % 2 ? 1 : -1) * off, px = x - Math.sin(th) * o, py = y + Math.cos(th) * o;
+        later(function(){ var g = foot(px, py, th * 180 / Math.PI + (r() - .5) * 6, k % 2 === 0, s, sd, r); g.style.transition = 'color .5s ease'; g.setAttribute('opacity', 0); root.appendChild(g);
+          var t0 = performance.now(), grey = false;
+          (function fade(now){ var t = (now - t0) / 1900; if (!grey && t > .38) { grey = true; g.style.color = FAR; }
+            g.setAttribute('opacity', (t < .08 ? t / .08 : t < .65 ? 1 : clamp((1 - t) / .35)).toFixed(2)); if (t < 1 && g.isConnected) requestAnimationFrame(fade); })(t0);
+        }, 260 + k * (200 + (k % 3) * 30));
+      })(k);
+    }
+
+    var RUN = { build: build, shape: shape, uncover: uncover, translate: translate };
+    // The old word and its mark fade out and are cleared before the line glides to the new width (so nothing
+    // overhangs a shrinking slot or slides past other text); the new word and its mark come in once it has settled.
+    function show(w){
+      cancelAnimationFrame(raf); timers.forEach(clearTimeout); timers = [];
+      svg.style.transition = 'opacity .22s'; svg.style.opacity = 0; wEl.classList.add('hide');
+      setTimeout(function(){ svg.replaceChildren(); wEl.textContent = w; setWidth(widthOf(w), true);
+        setTimeout(function(){ slot.style.transition = 'none'; var B = box(); stage(B); svg.style.opacity = 1; wEl.classList.remove('hide'); RUN[w](B); }, GLIDE);
+      }, 240);
+    }
+    function widthOf(w){ var probe = wEl.cloneNode(); probe.style.position = 'absolute'; probe.style.visibility = 'hidden'; probe.textContent = w; slot.appendChild(probe);
+      var x = probe.getBoundingClientRect().width + 2 * (PAD[w] || 0) * parseFloat(getComputedStyle(probe).fontSize); probe.remove(); return Math.ceil(x); }
+    function setWidth(px, glide){ slot.style.transition = glide && !reduce ? 'width ' + GLIDE + 'ms cubic-bezier(.4,0,.2,1)' : 'none'; slot.style.width = px + 'px'; }
+    /** Sizes the slot to the current word; where the line wraps, pins the wrap where the widest word puts it. */
+    function layout(){
+      var line = slot.parentNode, pin = line.querySelector('[data-rw-break]'); if (pin) { pin.remove(); line.normalize(); }
+      setWidth(Math.max.apply(null, WORDS.map(widthOf)));
+      var tn = slot.nextSibling, sr = slot.getBoundingClientRect(), rg = document.createRange(), re = /\S+/g, m;
+      if (tn && tn.nodeType === 3) while ((m = re.exec(tn.data))) { rg.setStart(tn, m.index); rg.setEnd(tn, m.index + m[0].length); var c = rg.getClientRects()[0];
+        if (c && c.top > sr.top + sr.height * .6) { var br = document.createElement('br'); br.setAttribute('data-rw-break', ''); line.insertBefore(br, tn.splitText(m.index)); break; } }
+      setWidth(widthOf(wEl.textContent));
+    }
+
+    (document.fonts ? document.fonts.ready : Promise.resolve()).then(function(){
+      layout(); var B = box(); stage(B); build(B);
+      // the first word holds only FIRST, so even a short visit sees a change; then HOLD.
+      // While the tab is hidden the countdown pauses and resumes with the time it had left.
+      if (!reduce) {
+        var tick = 0, due = 0, left = 0;
+        var arm = function(ms){ clearTimeout(tick); due = performance.now() + ms; tick = setTimeout(function(){ idx = (idx + 1) % WORDS.length; show(WORDS[idx]); arm(HOLD); }, ms); };
+        arm(FIRST);
+        document.addEventListener('visibilitychange', function(){
+          if (document.hidden) { left = Math.max(0, due - performance.now()); clearTimeout(tick); } else arm(left); });
+      }
+      var rt; addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(layout, 150); });
+    });
+  }
+</script>
