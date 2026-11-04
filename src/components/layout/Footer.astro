@@ -1,7 +1,7 @@
 ---
 /**
- * Centered signature footer: the live MW logo standing on a ground line (Seattle's real sun
- * and shadow; around it the pointer becomes the sun), a mailto line and contact links.
+ * Centered signature footer: the live pencil MW standing on its own horizon (Seattle's real sun
+ * and hatched shadow; around it the pointer becomes the sun), a mailto line and contact links.
  */
 import Container from './Container.astro';
 import MWLogo from '@/components/ui/MWLogo.astro';
@@ -13,13 +13,12 @@ const year = new Date().getFullYear();
 <footer class="bg-white pt-24 pb-12">
   <Container class="flex flex-col items-center text-center">
     <MWLogo variant="live" label="Mengying Wang" class="relative z-[1]" />
-    <span class="h-px w-full max-w-[720px] bg-[#e5e5e5]" aria-hidden="true"></span>
 
     <a
       href={`mailto:${site.email}`}
-      class="mt-7 text-[22px] font-medium text-[#111] transition-colors duration-200 hover:text-[#555] mobile:py-2"
+      class="mt-10 text-[44px] leading-[1.1] font-bold tracking-[-0.025em] text-[#111] transition-colors duration-200 hover:text-[#555] mobile:py-2 mobile:text-[32px]"
     >
-      Let’s work together.<span class="sr-only"> (email)</span>
+      Let’s build together.<span class="sr-only"> (email)</span>
     </a>
 
     <nav aria-label="Contact" class="mt-5">
