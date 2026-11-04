@@ -7,6 +7,7 @@ import Analytics from '@vercel/analytics/astro';
 import Nav from '@/components/layout/Nav.astro';
 import Footer from '@/components/layout/Footer.astro';
 import CustomCursor from '@/components/ui/CustomCursor.astro';
+import Reveal from '@/components/ui/Reveal.astro';
 import { site } from '@/data/site';
 
 interface Props {
@@ -80,6 +81,7 @@ const shareImageAlt = share.imageAlt ?? site.shareImage.alt;
       <slot />
     </main>
     <Footer />
+    <Reveal />
     <CustomCursor />
   </body>
 </html>

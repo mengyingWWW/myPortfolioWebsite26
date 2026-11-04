@@ -1,0 +1,71 @@
+---
+/**
+ * One-shot staggered fade shared by the homepage chapters and the About rows.
+ * Callers own the markup: a [data-reveal-group] of [data-reveal-item] children, indexed by --i.
+ * A [data-reveal-item="fade"] on the section label only fades. It is not inside the group (a
+ * transform, or a wrapper around the label, would break its sticky range), and it reveals when
+ * that section's first group does.
+ */
+---
+
+<style is:global>
+  /* Apple's StaggeredFadeIn: a one-shot rise, staggered within the group. Nothing moves until JS marks the group pending. */
+  [data-reveal-group] {
+    --stagger: 0.15s;
+    --fade-dur: 0.9s;
+    --rise-dur: 0.7s;
+    --rise: 30px;
+    --ease: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  [data-reveal-group][data-reveal-pending] [data-reveal-item] {
+    opacity: 0;
+    transform: translateY(var(--rise));
+  }
+  [data-reveal-group][data-reveal-pending] [data-reveal-item='fade'] {
+    transform: none;
+  }
+  [data-reveal-group] [data-reveal-item] {
+    transition:
+      opacity var(--fade-dur) var(--ease) calc(var(--i) * var(--stagger)),
+      transform var(--rise-dur) var(--ease) calc(var(--i) * var(--stagger));
+  }
+  [data-reveal-group] [data-reveal-item='fade'] {
+    transition: opacity var(--fade-dur) var(--ease) calc(var(--i) * var(--stagger));
+  }
+  /* Section label: fade only, timed with the first group. Outside the group so sticky is unchanged. */
+  section > [data-reveal-item='fade'] {
+    transition: opacity 0.9s cubic-bezier(0.4, 0, 0.6, 1) calc(var(--i, 0) * 0.15s);
+  }
+  section > [data-reveal-item='fade'][data-reveal-pending] {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  // Hidden only once JS is running and motion is allowed, so the content is never lost without it.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const groups = document.querySelectorAll<HTMLElement>('[data-reveal-group]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const group = entry.target as HTMLElement;
+          group.removeAttribute('data-reveal-pending');
+          const section = group.closest('section');
+          if (section && group === section.querySelector('[data-reveal-group]')) {
+            section.querySelector<HTMLElement>(':scope > [data-reveal-item="fade"]')?.removeAttribute('data-reveal-pending');
+          }
+          observer.unobserve(group);
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' },
+    );
+    groups.forEach((group) => {
+      group.setAttribute('data-reveal-pending', '');
+      observer.observe(group);
+    });
+    document.querySelectorAll<HTMLElement>('section > [data-reveal-item="fade"]').forEach((label) => {
+      if (label.parentElement?.querySelector('[data-reveal-group]')) label.setAttribute('data-reveal-pending', '');
+    });
+  }
+</script>
