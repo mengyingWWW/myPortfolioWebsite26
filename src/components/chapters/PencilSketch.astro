@@ -1,0 +1,120 @@
+---
+/**
+ * Chapter 3's pencil. Ported from Claude outputs/chapter3-pencil-demo.html.
+ * The pencil draws a winding route that repeats; the older part of the line fades behind it.
+ * It only runs while the drawing is at least 30% in view. Reduced motion holds one still frame.
+ */
+---
+
+<svg
+  data-pencil
+  viewBox="0 0 330 240"
+  overflow="visible"
+  role="img"
+  aria-label="Pencil drawing: a pencil draws a winding line that loops, folds back and keeps going; the older part fades behind it."
+  class="block h-auto w-full"
+></svg>
+
+<script>
+  // @ts-nocheck -- ported as plain JS from the chapter demo
+  import { rng, el, smooth, createPen, NEAR, FAR } from '@/components/hero/handDrawn.js';
+
+  const svg = document.querySelector('[data-pencil]');
+  if (svg) {
+    // "pencil" so these filters don't share ids with the hero, the lamp or the conversation.
+    var pen = createPen(svg, 'pencil');
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var LN = 2.3, LT = 1.5, LL = 1.2, D = Math.PI / 180, TIPX = 196, TIPY = 150, TRAIL = 230;
+    function grp(parent, a) { var g = el('g', a || {}); parent.appendChild(g); return g; }
+    function plain(g) { [].slice.call(g.querySelectorAll('g[filter]')).forEach(function (x) { x.removeAttribute('filter'); }); return g; }
+
+    // one period of the route: a wave, a little loop, a fold back, a zigzag, then calm again
+    var W = 280, CP = [[0, 0], [30, -12], [60, -4], [78, 8], [96, -2], [100, -18], [90, -26], [80, -16], [92, -6], [118, -10], [134, -30], [146, 6], [160, -22], [186, -8], [214, 10], [240, -6], [262, 4]];
+    var PTS = [], LP = 0, PAUSES = [];
+    function route() {
+      var all = []; for (var p = -1; p <= 2; p++) CP.forEach(function (c) { all.push([c[0] + p * W, c[1]]); });
+      var path = el('path', { d: smooth(all, false) }); svg.appendChild(path);
+      var L = path.getTotalLength(), pts = [];
+      for (var t = 0; t <= L; t += 1) { var q = path.getPointAtLength(t); pts.push([q.x, q.y]); } path.remove();
+      // keep one period starting at x=0 (arc-length samples) and measure it
+      var i0 = pts.findIndex(function (q) { return q[0] >= 0; }), i1 = pts.findIndex(function (q) { return q[0] >= W; });
+      PTS = pts.slice(i0, i1); LP = PTS.length;
+      PAUSES = [Math.round(LP * .31), Math.round(LP * .62)];
+    }
+    function at(s) {
+      var p = Math.floor(s / LP), i = Math.floor(s - p * LP), f = (s - p * LP) - i, a = PTS[i], b = PTS[(i + 1) % LP], bo = (i + 1 === LP) ? W : 0;
+      return [p * W + a[0] + (b[0] + bo - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+    }
+
+    // time -> distance: steady drawing with two short "thinking" pauses per period
+    var SPEED = 48, PAUSE = .75, TP = 0;
+    function dist(t) {
+      var per = Math.floor(t / TP), r = t - per * TP, s = 0, last = 0;
+      for (var k = 0; k < PAUSES.length; k++) { var run = (PAUSES[k] - last) / SPEED; if (r < run) return { s: per * LP + last + r * SPEED, think: 0 }; r -= run; if (r < PAUSE) return { s: per * LP + PAUSES[k], think: r / PAUSE }; r -= PAUSE; last = PAUSES[k]; }
+      return { s: per * LP + Math.min(LP, last + r * SPEED), think: 0 };
+    }
+
+    var n = {};
+    function build() {
+      svg.innerHTML = ''; pen.defs(); var R = rng(51), defs = svg.querySelector('defs');
+      route(); TP = LP / SPEED + PAUSES.length * PAUSE;
+      var gr = el('linearGradient', { id: 'pencil-fade', gradientUnits: 'userSpaceOnUse', x1: 20, y1: 0, x2: TIPX, y2: 0 });
+      [[0, 0], [.55, .55], [1, 1]].forEach(function (o) { gr.appendChild(el('stop', { offset: o[0], 'stop-color': '#fff', 'stop-opacity': o[1] })); }); defs.appendChild(gr);
+      var mk = el('mask', { id: 'pencil-mask', maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 330, height: 240 }); mk.appendChild(el('rect', { x: 0, y: 0, width: 330, height: 240, fill: 'url(#pencil-fade)' })); defs.appendChild(mk);
+      var trailG = grp(svg, { mask: 'url(#pencil-mask)' });
+      n.t1 = el('path', { fill: 'none', stroke: NEAR, 'stroke-width': 1.9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: .92 }); trailG.appendChild(n.t1);
+      n.t2 = el('path', { fill: 'none', stroke: NEAR, 'stroke-width': 1, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: .4 }); trailG.appendChild(n.t2);
+      // the pencil, drawn along +x with its tip at the origin; shadow first (lower right), no filter
+      n.shadow = grp(svg); n.shadow.appendChild(el('path', { d: 'M3 0 L16 -4 L92 -4 Q97 -4 97 0 Q97 4 92 4 L16 4 Z', fill: 'url(#pencil-hatch)', opacity: .45 }));
+      var pc = grp(svg); n.pencil = pc;
+      pc.appendChild(el('path', { d: 'M0 0 L16 -4.5 L94 -4.5 Q99 -4.5 99 0 Q99 4.5 94 4.5 L16 4.5 Z', fill: '#fff' }));
+      pen.pencil(pc, 'M0 0 L16 -4.5 L80 -4.5 M0 0 L16 4.5 L80 4.5 M16 -4.5 L16 4.5', NEAR, LT, R);
+      pen.pencil(pc, 'M5 -1.4 L5 1.4', NEAR, LT, R);
+      pc.appendChild(el('path', { d: 'M0 0 L5 -1.4 L5 1.4 Z', fill: NEAR }));
+      pen.pencil(pc, 'M16 0 L80 0', FAR, LL, R);
+      pc.appendChild(el('path', { d: 'M16 1 L80 1 L80 4.5 L16 4.5 Z', fill: 'url(#pencil-hatch)', opacity: .55 }));
+      pen.pencil(pc, 'M80 -4.5 L88 -4.5 L88 4.5 L80 4.5 Z M83 -4.5 L83 4.5 M85.5 -4.5 L85.5 4.5', NEAR, LT, R);
+      pen.pencil(pc, 'M88 -4.5 L94 -4.5 Q99 -4.5 99 0 Q99 4.5 94 4.5 L88 4.5', NEAR, LT, R);
+      plain(pc);
+    }
+
+    function wob(s, k) { return .45 * Math.sin(s * .21 + k) + .25 * Math.sin(s * .53 + 2 * k); }
+    var cam = null, camV = 0, rotS = null, rotV = 0;
+    function render(t, dt) {
+      var d = dist(t), s = d.s, tip = at(s);
+      // trail: the last TRAIL units of the route, with a slight hand wobble
+      var a = '', b = '';
+      for (var u = Math.max(0, s - TRAIL); u <= s; u += 2) { var q = at(u), q2 = at(u + 1), nx = -(q2[1] - q[1]), ny = q2[0] - q[0], l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l;
+        var o1 = wob(u, 0), o2 = wob(u, 1.7) + .6; a += (a ? 'L' : 'M') + (q[0] + nx * o1).toFixed(1) + ' ' + (q[1] + ny * o1).toFixed(1) + ' '; b += (b ? 'L' : 'M') + (q[0] + nx * o2).toFixed(1) + ' ' + (q[1] + ny * o2).toFixed(1) + ' '; }
+      var tq = tip; a += 'L' + tq[0].toFixed(1) + ' ' + tq[1].toFixed(1); n.t1.setAttribute('d', a); n.t2.setAttribute('d', b);
+      // camera: tip stays near (TIPX, TIPY); vertical follows softly (critically damped)
+      if (cam === null || dt === 0) cam = tip[1]; var Kc = 5, Cc = 2 * Math.sqrt(Kc); camV += (Kc * (tip[1] - cam) - Cc * camV) * dt; cam += camV * dt;
+      var ox = TIPX - tip[0], oy = TIPY - cam;
+      var tr = 'translate(' + ox.toFixed(2) + 'px,' + oy.toFixed(2) + 'px)';
+      n.t1.style.transform = tr; n.t2.style.transform = tr;
+      // a lively hand: leans into each turn (underdamped, so it sways), presses along the stroke,
+      // and while thinking lifts, hovers and taps the paper twice before going on
+      var ahead = at(s + 6), ang = Math.atan2(ahead[1] - tip[1], ahead[0] - tip[0]) / D;
+      var target = -50 + 20 * Math.sin(ang * D) - 10 * Math.cos(ang * D) + 2.5 * Math.sin(t * 7.3);
+      if (rotS === null || dt === 0) { rotS = target; rotV = 0; } var Kr = 70, Cr = .9 * Math.sqrt(Kr); rotV += (Kr * (target - rotS) - Cr * rotV) * dt; rotS += rotV * dt;
+      var th = d.think, lift = 0, wig = 0;
+      if (th > 0) { lift = Math.sin(Math.PI * Math.min(1, th * 1.4)) * 9; if (th > .55) { var k = (th - .55) / .45; lift = Math.abs(Math.sin(k * Math.PI * 2)) * 5 * (1 - k); } wig = Math.sin(th * Math.PI * 3) * 6; }
+      var press = d.think > 0 ? 0 : Math.sin(s * .35) * 1.2;
+      var rot = rotS + wig, ax = Math.cos(rot * D), ay = Math.sin(rot * D);
+      var px = TIPX + ax * press, py = TIPY + (tip[1] - cam) - lift + ay * press;
+      n.pencil.style.transform = 'translate(' + px.toFixed(2) + 'px,' + py.toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg)';
+      n.shadow.style.transform = 'translate(' + (px + 5 + lift * .9).toFixed(2) + 'px,' + (py + 5 + lift * 1.1).toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg)';
+    }
+
+    var running = false, last = 0, clock = 2;
+    function loop(now) { if (!running) return; var dt = Math.min(.05, (now - last) / 1000); clock += dt; last = now; render(clock, dt); requestAnimationFrame(loop); }
+    function start() { if (running) return; running = true; last = performance.now(); requestAnimationFrame(loop); }
+    build();
+    if (reduce) render(4, 0);
+    else {
+      render(clock, 0);
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else running = false; }); }, { threshold: .3 });
+      io.observe(svg);
+    }
+  }
+</script>

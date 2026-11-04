@@ -1,0 +1,120 @@
+---
+/**
+ * Chapter 2's pencil conversation. Ported from Claude outputs/chapter2-talk-demo.html.
+ * Two people take turns talking, nodding and listening. It only runs while the drawing
+ * is at least 30% in view. Reduced motion holds the frame at 1 second.
+ */
+---
+
+<svg
+  data-talk
+  viewBox="0 0 330 240"
+  overflow="visible"
+  role="img"
+  aria-label="Pencil drawing: two people sit at a small table. They take turns talking, nodding and listening."
+  class="block h-auto w-full"
+></svg>
+
+<script>
+  // @ts-nocheck -- ported as plain JS from the chapter demo
+  import { clamp, easeIO, rng, el, createPen, NEAR, FAR } from '@/components/hero/handDrawn.js';
+
+  const svg = document.querySelector('[data-talk]');
+  if (svg) {
+    // "talk" so these filters don't share ids with the hero's hd-* drawing or the lamp.
+    var pen = createPen(svg, 'talk'), GROUND = 212;
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var LN = 2.3, LT = 1.5, LL = 1.2;
+    function P(pts, close) { return 'M' + pts.map(function (p) { return p[0] + ' ' + p[1]; }).join(' L') + (close ? ' Z' : ''); }
+    /** Two half-arcs, so the circle is centred on (cx, cy). */
+    function circ(cx, cy, r) { return 'M' + (cx - r) + ' ' + cy + ' a' + r + ' ' + r + ' 0 1 0 ' + (2 * r) + ' 0 a' + r + ' ' + r + ' 0 1 0 ' + (-2 * r) + ' 0'; }
+    function plain(g) { [].slice.call(g.querySelectorAll('g[filter]')).forEach(function (x) { x.removeAttribute('filter'); }); return g; }
+    function grp(parent) { var g = el('g', {}); parent.appendChild(g); return g; }
+    var n = {};
+    function build() {
+      svg.innerHTML = ''; pen.defs(); var R = rng(21);
+      var back = grp(svg), mid = grp(svg), top = grp(svg);
+      pen.pencil(back, 'M18 ' + GROUND + ' L322 ' + GROUND, NEAR, LT, R);
+      // shadows on the ground, lower right (light from upper left)
+      pen.hatch(back, P([[150, GROUND], [182, GROUND], [198, GROUND + 9], [166, GROUND + 9]], true), .5);
+      pen.hatch(back, P([[206, GROUND], [268, GROUND], [292, GROUND + 11], [232, GROUND + 11]], true), .5);
+      var sh = el('path', { fill: 'url(#talk-hatch)', opacity: .5 }); back.appendChild(sh); n.myShadow = sh;
+
+      // table, cup, notebook
+      pen.pencil(mid, 'M136 158 L194 158 M138 161 L192 161', NEAR, LN, R);
+      pen.pencil(mid, 'M165 161 L165 ' + GROUND + ' M152 ' + GROUND + ' L178 ' + GROUND, NEAR, LT, R);
+      pen.pencil(mid, P([[174, 146], [186, 146], [184, 158], [176, 158]], true) + ' M186 149 C192 149 192 155 185 155', NEAR, LT, R);
+      pen.pencil(mid, P([[130, 151], [156, 151], [160, 157], [134, 157]], true), NEAR, LT, R);
+      n.steam = [0, 1].map(function (i) { var g = grp(mid); pen.pencil(g, 'M' + (179 + i * 5) + ' 140 C' + (175 + i * 5) + ' 134 ' + (185 + i * 5) + ' 130 ' + (180 + i * 5) + ' 122', FAR, LL, R); return plain(g); });
+      n.notes = [0, 1, 2].map(function (i) { var g = grp(mid); pen.pencil(g, 'M' + (135 + i * 1.2) + ' ' + (152.6 + i * 1.6) + ' L' + (147 + i * 2.5) + ' ' + (152.6 + i * 1.6), NEAR, .9, R); return plain(g); });
+
+      // their chair + legs (static), torso, gesturing arm, head
+      pen.pencil(mid, 'M234 176 L268 176 M266 176 L268 128 M236 176 L234 ' + GROUND + ' M264 176 L266 ' + GROUND, NEAR, LT, R);
+      pen.pencil(mid, 'M250 172 L216 170 L214 210 L205 211', NEAR, LN, R);
+      var them = grp(top);
+      them.appendChild(el('path', { d: 'M246 128 C252 145 256 160 254 172 L236 172 C234 158 232 145 232 132 Z', fill: '#fff' }));
+      pen.pencil(them, 'M246 128 C252 145 256 160 254 172 L236 172 C234 158 232 145 232 132 Z', NEAR, LT, R);
+      var tHead = grp(them); tHead.appendChild(el('circle', { cx: 234, cy: 112, r: 11, fill: '#fff' }));
+      pen.pencil(tHead, circ(234, 112, 11), NEAR, LN, R);
+      var tEye = grp(tHead); pen.pencil(tEye, 'M228 108 L228 115', NEAR, LN, R); plain(tEye); n.tEye = tEye;
+      plain(tHead);
+      var tUpper = grp(them); pen.pencil(tUpper, 'M241 138 L228 160', NEAR, LN, R);
+      var tFore = grp(them); pen.pencil(tFore, 'M228 160 L208 150', NEAR, LN, R); plain(tFore);
+      n.tFore = tFore; n.tHead = tHead; n.them = them;
+      n.myArcs = [4, 8, 12].map(function (r) { var g = grp(top), x = 111; pen.pencil(g, 'M' + x + ' ' + (114 - r) + ' A' + r + ' ' + r + ' 0 0 1 ' + x + ' ' + (114 + r), FAR, LL, R); g.style.transform = 'translate(' + (r * .7) + 'px,0)'; return plain(g); });
+      n.arcs = [4, 8, 12].map(function (r) { var g = grp(top), x = 219; pen.pencil(g, 'M' + x + ' ' + (114 - r) + ' A' + r + ' ' + r + ' 0 0 0 ' + x + ' ' + (114 + r), FAR, LL, R); g.style.transform = 'translate(' + (-r * .7) + 'px,0)'; return plain(g); });
+
+      // my chair + legs (static), then the torso that leans in, the head that nods, the writing hand
+      pen.pencil(mid, 'M62 176 L96 176 M64 176 L62 128 M66 176 L64 ' + GROUND + ' M94 176 L96 ' + GROUND, NEAR, LT, R);
+      pen.pencil(mid, 'M80 172 L114 170 L116 210 L125 211', NEAR, LN, R);
+      var me = grp(top);
+      me.appendChild(el('path', { d: 'M84 128 C78 145 74 160 76 172 L94 172 C96 158 98 145 98 132 Z', fill: '#fff' }));
+      pen.pencil(me, 'M84 128 C78 145 74 160 76 172 L94 172 C96 158 98 145 98 132 Z', NEAR, LT, R);
+      pen.pencil(me, 'M94 134 L110 156', NEAR, LN, R);
+      var hand = grp(me); pen.pencil(hand, 'M110 156 L144 153 M144 153 L151 141', NEAR, LN, R); plain(hand);
+      var head = grp(me); head.appendChild(el('circle', { cx: 96, cy: 112, r: 11, fill: '#fff' }));
+      pen.pencil(head, circ(96, 112, 11), NEAR, LN, R);
+      var eye = grp(head); pen.pencil(eye, 'M102 108 L102 115', NEAR, LN, R); plain(eye); n.eye = eye;
+      plain(head); plain(me);
+      n.me = me; n.head = head; n.hand = hand;
+    }
+
+    function bump(t, c, w) { return Math.exp(-Math.pow((t - c) / w, 2)); }
+    function render(t) {
+      var T = 5, p = t % T, theyTalk = p < 2.2, iTalk = p > 2.5 && p < 4.6;
+      function ripple(arcs, on, ph) { var q = (ph % 0.9) / 0.9; arcs.forEach(function (a, k) { a.style.opacity = on ? clamp(1 - Math.abs(q * 3 - k - .5) * .9).toFixed(2) : '0'; }); }
+      ripple(n.arcs, theyTalk, p); ripple(n.myArcs, iTalk, p - 2.5);
+      // they: gesture while talking, lean in and nod while listening
+      n.tFore.style.transformOrigin = '228px 160px'; n.tFore.style.transform = 'rotate(' + (theyTalk ? (-9 * Math.abs(Math.sin(p * 5.2))) : 0).toFixed(2) + 'deg)';
+      var tNod = bump(p, 3.2, .14) + bump(p, 4.0, .14), tLean = easeIO(clamp((p - 2.6) / .6)) * (1 - easeIO(clamp((p - 4.4) / .5)));
+      n.tHead.style.transformOrigin = '238px 124px'; n.tHead.style.transform = 'rotate(' + (-10 * tNod + (theyTalk ? -2 * Math.sin(p * 4.4) : 0)).toFixed(2) + 'deg)';
+      n.them.style.transformOrigin = '250px 172px'; n.them.style.transform = 'rotate(' + (-4 * tLean).toFixed(2) + 'deg)';
+      // me: lean in and nod while they talk, jot notes, then answer with a little pencil gesture
+      var lean = easeIO(clamp((p - .2) / .6)) * (1 - easeIO(clamp((p - 2.2) / .5)));
+      n.me.style.transformOrigin = '84px 172px'; n.me.style.transform = 'rotate(' + (5 * lean).toFixed(2) + 'deg)';
+      var nod = bump(p, 0.8, .14) + bump(p, 1.5, .14);
+      n.head.style.transformOrigin = '92px 124px'; n.head.style.transform = 'rotate(' + (10 * nod + (iTalk ? 2 * Math.sin(p * 4.4) : 0)).toFixed(2) + 'deg)';
+      var writing = p > 1.7 && p < 2.4;
+      n.hand.style.transformOrigin = '110px 156px';
+      n.hand.style.transform = iTalk ? 'rotate(' + (-7 * Math.abs(Math.sin((p - 2.5) * 5))).toFixed(2) + 'deg)' : 'translate(' + (writing ? 1.4 * Math.sin(p * 38) : 0).toFixed(2) + 'px,' + (writing ? .6 * Math.sin(p * 19) : 0).toFixed(2) + 'px)';
+      n.notes.forEach(function (g, k) { g.style.opacity = p > 1.75 + k * .22 ? '1' : '0'; });
+      function blink(g, cx, times) { var b = 0; times.forEach(function (c) { b = Math.max(b, clamp(1 - Math.abs(p - c) / .07)); }); g.style.transformOrigin = cx + 'px 111.5px'; g.style.transform = 'scaleY(' + (1 - .88 * b).toFixed(3) + ')'; }
+      blink(n.eye, 102, [0.4, 2.6, 4.7]); blink(n.tEye, 228, [1.2, 3.6]);
+      // my shadow reaches toward theirs as I lean in
+      var L = lean * 44; n.myShadow.setAttribute('d', P([[62, GROUND], [126, GROUND], [150 + L, GROUND + 10], [82 + L * .5, GROUND + 10]], true));
+      // steam drifts up forever
+      n.steam.forEach(function (g, i) { var ph = ((t / 1.6) + i * .5) % 1; g.style.transform = 'translate(0px,' + (-ph * 10).toFixed(2) + 'px)'; g.style.opacity = (Math.sin(Math.PI * ph) * .9).toFixed(2); });
+    }
+
+    var running = false, last = 0, clock = 0;
+    function loop(now) { if (!running) return; clock += Math.min(.05, (now - last) / 1000); last = now; render(clock); requestAnimationFrame(loop); }
+    function start() { if (running) return; running = true; last = performance.now(); requestAnimationFrame(loop); }
+    build();
+    if (reduce) render(1.0);
+    else {
+      render(0);
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else running = false; }); }, { threshold: .3 });
+      io.observe(svg);
+    }
+  }
+</script>
