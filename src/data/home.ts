@@ -20,7 +20,7 @@ export const chapters = [
     label: 'Chapter 01',
     title: 'Make the call.',
     subtitle:
-      'I decide which design ships, and why. I sketch by hand, build with AI, and treat every problem as its own puzzle.',
+      'I decide which design ships, and why. I sketch by hand, prototype with AI, and treat every problem as its own puzzle.',
     projects: ['idea-ai-wiki', 'idea-mapping'],
   },
   {
@@ -28,7 +28,7 @@ export const chapters = [
     label: 'Chapter 02',
     title: 'Sit with people.',
     subtitle:
-      'I listen to real users and feel what they feel. Empathy starts my design, and clear thinking turns it into a solution.',
+      'I listen to real users and feel what they feel. Empathy starts my design, and structured analysis turns it into solutions.',
     projects: ['seattle-ai-permitting', 'colleague-ai'],
   },
   {
