@@ -1,7 +1,7 @@
 ---
 /**
- * The MW monogram as two semi-transparent "glass" strokes: where they share the vertical
- * line they overlap and read denser. The live variant adds a cast shadow and a sun that
+ * The MW monogram. The nav mark stays two semi-transparent "glass" strokes. The live footer
+ * variant is a pencil drawing (one graphite colour) with a hatched shadow and a sun that
  * follow Seattle's real sun (a hollow moon at night). Around it the pointer becomes the sun:
  * the shadow falls away from it, and it sets below the ground line.
  */
@@ -30,13 +30,20 @@ interface Props {
 const { variant = 'mark', theme = 'light', label, class: className } = Astro.props;
 const live = variant === 'live';
 const sun = sunSpot(DEFAULT_SHADOW.dir);
-const blurId = `mw-blur-${Math.random().toString(36).slice(2, 8)}`;
 
 const LIVE_WIDTH = 262;
 const [viewX, , viewWidth] = LIVE_VIEWBOX.split(' ').map(Number);
 const [markX, , markWidth] = MARK_VIEWBOX.split(' ').map(Number);
 /** The hint starts 20px right of the letters. */
 const hintLeft = Math.round(((markX + markWidth - viewX) / viewWidth) * LIVE_WIDTH + 20);
+/** Screen px → viewBox units at the live logo's width. */
+const toUnits = (px: number) => (px * viewWidth) / LIVE_WIDTH;
+const LETTER_W = toUnits(2.2);
+const GROUND_W = toUnits(1.5);
+const GROUND_EXT = toUnits(12);
+/** Same clearance the shadow keeps from the drawing's edge. */
+const groundX0 = viewX + STROKE * 1.5;
+const groundX1 = viewX + viewWidth - STROKE * 1.5;
 
 const Wrapper = live ? 'div' : Fragment;
 const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
@@ -46,6 +53,11 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
   <svg
     class:list={['mw-logo block', live ? 'h-auto' : ['h-[22px] w-auto', className]]}
     style={live ? `width: ${LIVE_WIDTH}px` : undefined}
+    data-mw-letter-w={live ? LETTER_W : undefined}
+    data-mw-ground-w={live ? GROUND_W : undefined}
+    data-mw-ground-x0={live ? groundX0 : undefined}
+    data-mw-ground-x1={live ? groundX1 : undefined}
+    data-mw-ground-ext={live ? GROUND_EXT : undefined}
     data-theme={theme}
     data-variant={variant}
     viewBox={live ? LIVE_VIEWBOX : MARK_VIEWBOX}
@@ -57,19 +69,53 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
     {
       live && (
         <>
-          <filter id={blurId} filterUnits="userSpaceOnUse" x="-500" y={GROUND - 120} width="1500" height="260">
-            <feGaussianBlur stdDeviation="3" />
-          </filter>
-          <path
-            class="mw-shadow"
-            d={shadowPath(DEFAULT_SHADOW)}
-            filter={`url(#${blurId})`}
+          <defs>
+            <pattern id="mw-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)">
+              <line x1="0" y1="0" x2="0" y2="5" stroke="#2A2A2A" stroke-width="1.2" />
+            </pattern>
+            <mask id="mw-shadow-mask" maskUnits="userSpaceOnUse" x="-500" y={GROUND - 80} width="1500" height="240">
+              <path
+                d={shadowPath(DEFAULT_SHADOW)}
+                fill="none"
+                stroke="#fff"
+                stroke-width={LETTER_W}
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                data-mw-shadow
+              />
+            </mask>
+          </defs>
+          <rect
+            class="mw-hatch"
+            data-mw-hatch
+            x="-500"
+            y={GROUND - 40}
+            width="1500"
+            height="200"
+            fill="url(#mw-hatch)"
+            mask="url(#mw-shadow-mask)"
+            opacity="0.55"
+          />
+          <g
+            data-mw-ground-fallback
             fill="none"
-            stroke-width="20"
+            stroke-linecap="round"
+          >
+            <line x1={groundX0 - GROUND_EXT} y1={GROUND} x2={groundX0} y2={GROUND} stroke="#8E8E8E" stroke-width={GROUND_W * 0.75} />
+            <line x1={groundX0} y1={GROUND} x2={groundX1} y2={GROUND} stroke="#151515" stroke-width={GROUND_W} />
+            <line x1={groundX1} y1={GROUND} x2={groundX1 + GROUND_EXT} y2={GROUND} stroke="#8E8E8E" stroke-width={GROUND_W * 0.75} />
+          </g>
+          <g
+            data-mw-fallback
+            fill="none"
+            stroke="#151515"
+            stroke-width={LETTER_W}
             stroke-linecap="round"
             stroke-linejoin="round"
-            data-mw-shadow
-          />
+          >
+            <path d={toPath(M_POINTS)} />
+            <path d={toPath(W_POINTS)} />
+          </g>
           <circle
             class="mw-sun"
             cx={sun.x}
@@ -83,10 +129,14 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
         </>
       )
     }
-    <g class="mw-glass" fill="none" stroke-width={STROKE} stroke-linecap="round" stroke-linejoin="round">
-      <path d={toPath(M_POINTS)} />
-      <path d={toPath(W_POINTS)} />
-    </g>
+    {
+      !live && (
+        <g class="mw-glass" fill="none" stroke-width={STROKE} stroke-linecap="round" stroke-linejoin="round">
+          <path d={toPath(M_POINTS)} />
+          <path d={toPath(W_POINTS)} />
+        </g>
+      )
+    }
   </svg>
   {
     live && (
@@ -106,8 +156,6 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
   .mw-logo {
     --mw-glass: rgb(0 0 0 / 0.5);
     --mw-sun: #111;
-    --mw-shadow: rgb(0 0 0 / 0.12);
-    --mw-shadow-active: rgb(0 0 0 / 0.22);
     overflow: visible;
   }
   /* The small nav mark sits over the leaf shadows, so it needs a bit more ink. */
@@ -117,8 +165,6 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
   .mw-logo[data-theme='dark'] {
     --mw-glass: rgb(255 255 255 / 0.55);
     --mw-sun: #fff;
-    --mw-shadow: rgb(255 255 255 / 0.1);
-    --mw-shadow-active: rgb(255 255 255 / 0.18);
   }
   .mw-glass {
     stroke: var(--mw-glass);
@@ -126,14 +172,6 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
   .mw-sun {
     fill: var(--mw-sun);
     stroke: var(--mw-sun);
-  }
-  .mw-shadow {
-    stroke: var(--mw-shadow);
-    transition: stroke 300ms ease;
-  }
-  /* Clearer while the pointer is the sun. */
-  [data-mw-zone][data-mw-active] .mw-shadow {
-    stroke: var(--mw-shadow-active);
   }
 
   [data-mw-zone] {
@@ -156,16 +194,21 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
 <script>
   import {
     DEFAULT_SHADOW,
+    GROUND,
     GROUND_LINE,
     MARK_VIEWBOX,
+    M_POINTS,
     STROKE,
+    W_POINTS,
     maxShadowK,
     shadowFromPoint,
     shadowFromSun,
     shadowPath,
     sunSpot,
+    toPath,
   } from '@/lib/monogram';
   import { seattleSun } from '@/lib/seattle';
+  import { rng, el, createPen, NEAR, FAR } from '@/components/hero/handDrawn.js';
 
   const UPDATE_EVERY = 60_000;
   /** Share of the gap to the pointer closed per 60fps frame. */
@@ -210,9 +253,37 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
   document.querySelectorAll<HTMLElement>('[data-mw-zone]').forEach((zone) => {
     const svg = zone.querySelector<SVGSVGElement>('svg')!;
     const shadow = zone.querySelector<SVGPathElement>('[data-mw-shadow]')!;
+    const hatch = zone.querySelector<SVGElement>('[data-mw-hatch]')!;
     const sun = zone.querySelector<SVGCircleElement>('[data-mw-sun]')!;
     const hint = zone.querySelector<HTMLElement>('[data-mw-hint]');
     const container = zone.parentElement!;
+
+    // Pencil letters and the horizon. The plain paths stay for no-JS, then hide.
+    const pen = createPen(svg, 'mw');
+    pen.defs();
+    const seen = new Set<string>();
+    svg.querySelectorAll<SVGElement>('[id]').forEach((node) => {
+      if (seen.has(node.id)) node.remove();
+      else seen.add(node.id);
+    });
+    const letterW = Number(svg.dataset.mwLetterW);
+    const groundW = Number(svg.dataset.mwGroundW);
+    const x0 = Number(svg.dataset.mwGroundX0);
+    const x1 = Number(svg.dataset.mwGroundX1);
+    const ext = Number(svg.dataset.mwGroundExt);
+    const ink = el('g', { 'data-mw-ink': '' });
+    const fallback = svg.querySelector('[data-mw-fallback]')!;
+    fallback.after(ink);
+    const strokes = rng(7);
+    pen.pencil(ink, toPath(M_POINTS), NEAR, letterW, strokes);
+    pen.pencil(ink, toPath(W_POINTS), NEAR, letterW, strokes);
+    fallback.setAttribute('visibility', 'hidden');
+    const ground = el('g', { 'data-mw-ground': '' });
+    fallback.before(ground);
+    pen.pencil(ground, `M${x0} ${GROUND} L${x1} ${GROUND}`, NEAR, groundW, rng(19));
+    pen.pencil(ground, `M${x0 - ext} ${GROUND} L${x0} ${GROUND}`, FAR, groundW * 0.75, rng(23));
+    pen.pencil(ground, `M${x1} ${GROUND} L${x1 + ext} ${GROUND}`, FAR, groundW * 0.75, rng(29));
+    svg.querySelector('[data-mw-ground-fallback]')?.setAttribute('visibility', 'hidden');
 
     // `night` runs 0 → 1 so the sun can fade into the moon's ring instead of snapping.
     let cur: State = { ...sunSpot(DEFAULT_SHADOW.dir), ...DEFAULT_SHADOW, night: 0 };
@@ -230,7 +301,8 @@ const wrapperProps = live ? { class: className, 'data-mw-zone': '' } : {};
 
     function draw() {
       shadow.setAttribute('d', shadowPath(cur));
-      shadow.style.opacity = String(1 - cur.night);
+      const ink = zone.hasAttribute('data-mw-active') ? 0.75 : 0.55;
+      hatch.style.opacity = String(ink * (1 - cur.night));
       sun.setAttribute('cx', cur.x.toFixed(1));
       sun.setAttribute('cy', cur.y.toFixed(1));
       sun.setAttribute('fill-opacity', String(1 - cur.night));
