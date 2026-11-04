@@ -1,8 +1,7 @@
 ---
 /**
  * Homepage opening: eyes adjusting to light. The room starts dark and the light comes up in place; the
- * nav, hero text and readouts rise in almost at once, while the leaf shadows pull from blur into focus
- * (hunting very slightly before they settle).
+ * nav, hero text and the scroll hint rise in almost at once.
  *
  * Render it first in <body> (BaseLayout's "intro" slot) so the dark overlay is in the initial HTML and
  * paints before anything else. The inline script right after it decides, before the hero is parsed,
@@ -12,8 +11,7 @@
  *
  * Timeline:
  *   0–0.5s    the dark overlay fades out (ease-out)
- *   0–1.4s    leaf shadows: blur 24px → 0 (ease-in-out), a short soft hunt, then settled; opacity 0.6 → 1
- *   0.15s–    nav and headline, intro, credentials, readouts rise 12px, 0.06s apart, 0.6s each
+ *   0.15s–    nav and headline, intro, credentials, scroll hint rise 12px, 0.06s apart, 0.6s each
  * When every step has finished, the overlay is removed and html[data-eyes-intro] becomes "done", which
  * drops the intro's animations so the hero is exactly as it is without the intro.
  */
@@ -70,11 +68,7 @@
     animation: eyes-light-up 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) 0s forwards;
   }
 
-  [data-eyes-intro='play'] .hero-leaves > * {
-    animation: eyes-focus 1.4s 0s both;
-  }
-
-  [data-eyes-intro='play'] :is(header.nav .enter, .hero h1 .hero-enter, .hero p.hero-enter, .hero > .enter, .hero > div:has([data-sun-position])) {
+  [data-eyes-intro='play'] :is(header.nav .enter, .hero h1 .hero-enter, .hero p.hero-enter, .hero > .enter) {
     animation: eyes-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) calc(0.15s + var(--eyes-d, 0s)) both;
   }
   [data-eyes-intro='play'] .hero h1 + p.hero-enter {
@@ -83,42 +77,19 @@
   [data-eyes-intro='play'] .hero p.hero-enter + p.hero-enter {
     --eyes-d: 0.12s;
   }
-  [data-eyes-intro='play'] :is(.hero > .enter, .hero > div:has([data-sun-position])) {
+  [data-eyes-intro='play'] .hero > .enter {
     --eyes-d: 0.18s;
   }
 
   /* Finished: drop the intro's animations (each already rests on its final frame), so nothing replays and
      the hero's own hover transitions take over again. */
-  [data-eyes-intro='done'] :is(.hero-leaves > *, header.nav .enter, .hero .hero-enter, .hero > .enter, .hero > div:has([data-sun-position])) {
+  [data-eyes-intro='done'] :is(header.nav .enter, .hero .hero-enter, .hero > .enter) {
     animation: none;
   }
 
   @keyframes eyes-light-up {
     to {
       opacity: 0;
-    }
-  }
-  /* 1.4s: focus pulls in over the first 1.2s, overshoots a touch soft for ~90ms, then settles. */
-  @keyframes eyes-focus {
-    0% {
-      opacity: 0.6;
-      filter: blur(24px);
-      animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-    50% {
-      opacity: 1;
-    }
-    87.5% {
-      filter: blur(0);
-      animation-timing-function: ease-in-out;
-    }
-    93.75% {
-      filter: blur(1.2px);
-      animation-timing-function: ease-in-out;
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0);
     }
   }
   @keyframes eyes-rise {

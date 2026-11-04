@@ -2,14 +2,13 @@
 import Container from '@/components/layout/Container.astro';
 import RotatingWord from '@/components/hero/RotatingWord.astro';
 import ScrollHint from './ScrollHint.astro';
-import SunReadout from './SunReadout.astro';
 import { hero } from '@/data/home';
 ---
 
 <!--
   Pulled up under the nav (h-20) so the hero spans exactly one viewport from the top.
   data-hero: the nav stays transparent while this is in view.
-  data-cursor-zone="hero": the cursor becomes a leaf shadow over it.
+  data-cursor-zone="hero": the cursor gets a hatched pencil shadow over it.
   Entrance order continues from the nav (step 0).
 -->
 <section class="hero relative -mt-20 flex items-center overflow-hidden pt-20" data-hero data-cursor-zone="hero">
@@ -63,7 +62,6 @@ import { hero } from '@/data/home';
   </Container>
 
   <ScrollHint target="work" class="enter [--enter:4]" />
-  <SunReadout />
 </section>
 
 <style>
@@ -73,8 +71,7 @@ import { hero } from '@/data/home';
     min-height: 640px;
   }
 
-  /* Visible from the first frame: no fade and no delay, so it never waits on the leaf shadow's
-     start-up work. */
+  /* Visible from the first frame: no fade and no delay. */
   .hero-enter {
     animation: hero-rise 300ms cubic-bezier(0.22, 1, 0.36, 1);
   }
