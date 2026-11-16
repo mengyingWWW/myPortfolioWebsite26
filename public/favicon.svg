@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="36 35 440 440">
-  <rect x="36" y="35" width="440" height="440" fill="#000"/>
-  <g fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <circle cx="32" cy="32" r="31" fill="#111114" stroke="#D4D4D8" stroke-width="1"/>
+  <!-- Same strokes as the nav mark (M_POINTS / W_POINTS, stroke 18), scaled to sit inside the circle. -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" transform="translate(0 0.125) scale(0.125)">
     <path d="M90,345 L90,165 L172,290 L258,165 L258,345"/>
     <path d="M258,165 L258,345 L342,222 L422,345 L422,165"/>
   </g>
